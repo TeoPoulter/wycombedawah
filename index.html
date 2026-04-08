@@ -415,7 +415,7 @@
     }
 
     .dua {
-      padding: 8px 0 30px;
+      padding: 8px 0 22px;
     }
 
     .dua-card {
@@ -436,32 +436,42 @@
       margin-bottom: 4px;
     }
 
-    .footer {
+    .ayah {
       padding: 0 0 70px;
     }
 
-    .footer-card {
+    .ayah-card {
       border-radius: 24px;
-      padding: 22px;
+      padding: 24px 22px;
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.08);
       box-shadow: var(--shadow);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
+      text-align: center;
     }
 
-    .footer-card p {
+    .ayah-arabic {
       margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 0.95rem;
+      font-size: clamp(1.35rem, 3vw, 2rem);
+      line-height: 2;
+      color: #f6e8ab;
+      direction: rtl;
+      font-weight: 600;
     }
 
-    .footer-card strong {
-      color: var(--text);
+    .ayah-english {
+      margin: 18px auto 0;
+      max-width: 820px;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 0.98rem;
+    }
+
+    .ayah-ref {
+      margin-top: 14px;
+      color: #d9be61;
+      font-size: 0.88rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
     .reveal {
@@ -517,8 +527,12 @@
         width: 100%;
       }
 
-      .footer-card {
-        align-items: flex-start;
+      .ayah-card {
+        padding: 22px 18px;
+      }
+
+      .ayah-arabic {
+        line-height: 1.9;
       }
     }
   </style>
@@ -549,7 +563,7 @@
     <section class="hero">
       <div class="hero-card reveal">
         <div class="pill">Support the da'wah</div>
-        <h1>Support Wycombe Da'wah</h1>
+        <h1>Support the Da’wah in High Wycombe</h1>
         <p class="hero-sub">Choose the easiest way to give below.</p>
 
         <div class="hero-actions">
@@ -616,19 +630,17 @@
     <section class="dua">
       <div class="dua-card reveal">
         <strong>May Allah reward you.</strong>
-        Every donation helps support the da'wah and spread benefit.
+        Every donation helps support our grassroots Da’wah and spread the Truth far and wide.
       </div>
     </section>
 
-    <footer class="footer">
-      <div class="footer-card reveal">
-        <p>
-          <strong>Wycombe Da'wah Donations</strong><br>
-          Simple, smooth and accessible on all devices.
-        </p>
-        <a class="btn btn-primary" href="https://pay.sumup.com/b2c/Q8NPNOMR" target="_blank" rel="noopener noreferrer">Donate Now</a>
+    <section class="ayah">
+      <div class="ayah-card reveal">
+        <p class="ayah-arabic">وَمَنْ أَحْسَنُ قَوْلًا مِّمَّن دَعَا إِلَى ٱللَّهِ وَعَمِلَ صَٰلِحًا وَقَالَ إِنَّنِى مِنَ ٱلْمُسْلِمِينَ</p>
+        <p class="ayah-english">And who is better in speech than one who calls to Allah, does righteousness, and says, “Indeed, I am of the Muslims.”</p>
+        <div class="ayah-ref">Qur’an 41:33</div>
       </div>
-    </footer>
+    </section>
   </main>
 
   <script>
