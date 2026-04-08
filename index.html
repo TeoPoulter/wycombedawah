@@ -22,7 +22,8 @@ body {
   margin: 0;
   font-family: Inter, system-ui, sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(212,175,55,0.1), transparent),
+    radial-gradient(circle at 10% 10%, rgba(212,175,55,0.08), transparent),
+    radial-gradient(circle at 90% 20%, rgba(255,255,255,0.05), transparent),
     linear-gradient(180deg, #090b10, #05070b);
   color: var(--text);
 }
@@ -31,8 +32,8 @@ body {
 .nav {
   position: sticky;
   top: 0;
-  backdrop-filter: blur(15px);
-  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(16px);
+  background: rgba(0,0,0,0.65);
   border-bottom: 1px solid var(--border);
 }
 
@@ -47,33 +48,46 @@ body {
 
 .brand {
   font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
 .nav a {
   color: var(--muted);
   margin-left: 16px;
   text-decoration: none;
+  transition: 0.2s;
+}
+
+.nav a:hover {
+  color: var(--text);
 }
 
 /* HERO */
 .hero {
   text-align: center;
-  padding: 80px 20px 40px;
+  padding: 90px 20px 50px;
 }
 
 .hero h1 {
-  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
   margin: 0;
+  letter-spacing: -1px;
+}
+
+.hero p {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 1.05rem;
 }
 
 .hero .btn {
-  margin-top: 25px;
+  margin-top: 28px;
 }
 
 /* BUTTONS */
 .btn {
   display: inline-block;
-  padding: 14px 22px;
+  padding: 15px 24px;
   border-radius: 999px;
   font-weight: 700;
   text-decoration: none;
@@ -83,6 +97,7 @@ body {
 .btn-primary {
   background: linear-gradient(#e2c15b, #cda32d);
   color: black;
+  box-shadow: 0 10px 25px rgba(212,175,55,0.2);
 }
 
 .btn-secondary {
@@ -95,13 +110,14 @@ body {
   transform: translateY(-2px);
 }
 
-/* CARDS */
+/* SECTION */
 .section {
   max-width: 1100px;
   margin: auto;
   padding: 20px;
 }
 
+/* CARDS */
 .cards {
   display: grid;
   gap: 20px;
@@ -109,24 +125,27 @@ body {
 }
 
 .card {
-  background: var(--card);
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04));
   border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 22px;
+  border-radius: 22px;
+  padding: 24px;
   transition: 0.3s;
+  backdrop-filter: blur(10px);
 }
 
 .card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
+  border-color: rgba(212,175,55,0.3);
 }
 
 .card h3 {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
+  font-size: 1.2rem;
 }
 
 /* BANK */
 .bank {
-  margin-top: 15px;
+  margin-top: 12px;
 }
 
 .row {
@@ -134,7 +153,7 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
-  padding: 12px;
+  padding: 13px;
   background: rgba(255,255,255,0.04);
   border-radius: 12px;
 }
@@ -142,10 +161,11 @@ body {
 .copy {
   background: rgba(255,255,255,0.08);
   border: none;
-  padding: 8px 12px;
+  padding: 9px 13px;
   border-radius: 10px;
   cursor: pointer;
   color: white;
+  font-weight: 600;
 }
 
 .copy.copied {
@@ -153,11 +173,20 @@ body {
   color: black;
 }
 
+/* DUA MESSAGE */
+.dua {
+  margin-top: 40px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
 /* ANIMATION */
 .reveal {
   opacity: 0;
-  transform: translateY(20px);
-  transition: 0.7s ease;
+  transform: translateY(25px);
+  transition: 0.8s cubic-bezier(.22,.61,.36,1);
 }
 
 .reveal.show {
@@ -192,6 +221,8 @@ body {
 <!-- HERO -->
 <section class="hero reveal">
   <h1>Support the Da'wah</h1>
+  <p>Quick. Simple. Rewarding.</p>
+
   <a class="btn btn-primary" href="https://pay.sumup.com/b2c/Q8NPNOMR" target="_blank">
     Donate Now
   </a>
@@ -241,15 +272,21 @@ body {
     </div>
 
   </div>
+
+  <!-- DUA -->
+  <div class="dua reveal">
+    May Allah reward you immensely for your support and place barakah in your wealth.
+  </div>
+
 </section>
 
 <script>
-/* animations */
+/* reveal animation */
 const els = document.querySelectorAll('.reveal');
 const obs = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
+  entries.forEach((e,i)=>{
     if(e.isIntersecting){
-      e.target.classList.add('show');
+      setTimeout(()=> e.target.classList.add('show'), i*100);
     }
   });
 });
