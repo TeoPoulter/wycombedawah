@@ -1,310 +1,695 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wycombe Da'wah Donations</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wycombe Da'wah Donations</title>
+  <meta name="description" content="Support Wycombe Da'wah through quick and simple donation methods." />
+  <style>
+    :root {
+      --bg: #07090d;
+      --bg-soft: rgba(255,255,255,0.04);
+      --card: rgba(255,255,255,0.05);
+      --card-strong: rgba(255,255,255,0.08);
+      --border: rgba(255,255,255,0.10);
+      --text: #f5f7fb;
+      --muted: #9aa3b2;
+      --accent: #d4af37;
+      --accent-soft: rgba(212,175,55,0.12);
+      --success: #9ee6b8;
+      --shadow: 0 20px 60px rgba(0,0,0,0.42);
+      --radius: 24px;
+      --radius-sm: 16px;
+      --transition: 0.35s cubic-bezier(.22,.61,.36,1);
+      --max: 1120px;
+    }
 
-<style>
-:root {
-  --bg: #07090d;
-  --card: rgba(255,255,255,0.05);
-  --border: rgba(255,255,255,0.1);
-  --text: #f5f7fb;
-  --muted: #9aa3b2;
-  --accent: #d4af37;
-  --success: #9ee6b8;
-}
+    * {
+      box-sizing: border-box;
+    }
 
-* { box-sizing: border-box; }
+    html {
+      scroll-behavior: smooth;
+    }
 
-body {
-  margin: 0;
-  font-family: Inter, system-ui, sans-serif;
-  background:
-    radial-gradient(circle at 10% 10%, rgba(212,175,55,0.08), transparent),
-    radial-gradient(circle at 90% 20%, rgba(255,255,255,0.05), transparent),
-    linear-gradient(180deg, #090b10, #05070b);
-  color: var(--text);
-}
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(212,175,55,0.10), transparent 30%),
+        radial-gradient(circle at 85% 12%, rgba(255,255,255,0.06), transparent 20%),
+        linear-gradient(180deg, #090b10 0%, #05070b 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-/* NAV */
-.nav {
-  position: sticky;
-  top: 0;
-  backdrop-filter: blur(16px);
-  background: rgba(0,0,0,0.65);
-  border-bottom: 1px solid var(--border);
-}
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
 
-.nav-inner {
-  max-width: 1100px;
-  margin: auto;
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.34;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: radial-gradient(circle at center, black 35%, transparent 82%);
+    }
 
-.brand {
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
+    .glow {
+      position: fixed;
+      width: 480px;
+      height: 480px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(28px);
+      background: radial-gradient(circle, rgba(212,175,55,0.13), transparent 68%);
+      animation: drift 16s ease-in-out infinite alternate;
+    }
 
-.nav a {
-  color: var(--muted);
-  margin-left: 16px;
-  text-decoration: none;
-  transition: 0.2s;
-}
+    .glow.one {
+      top: -120px;
+      left: -120px;
+    }
 
-.nav a:hover {
-  color: var(--text);
-}
+    .glow.two {
+      right: -140px;
+      bottom: -160px;
+      animation-duration: 19s;
+    }
 
-/* HERO */
-.hero {
-  text-align: center;
-  padding: 90px 20px 50px;
-}
+    @keyframes drift {
+      from {
+        transform: translate3d(0,0,0) scale(1);
+      }
+      to {
+        transform: translate3d(28px,-18px,0) scale(1.08);
+      }
+    }
 
-.hero h1 {
-  font-size: clamp(2.2rem, 5vw, 3.8rem);
-  margin: 0;
-  letter-spacing: -1px;
-}
+    .wrap {
+      position: relative;
+      z-index: 1;
+      width: min(100% - 32px, var(--max));
+      margin: 0 auto;
+    }
 
-.hero p {
-  margin-top: 14px;
-  color: var(--muted);
-  font-size: 1.05rem;
-}
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(7,9,13,0.72);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
 
-.hero .btn {
-  margin-top: 28px;
-}
+    .nav-inner {
+      width: min(100% - 32px, var(--max));
+      margin: 0 auto;
+      padding: 16px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+    }
 
-/* BUTTONS */
-.btn {
-  display: inline-block;
-  padding: 15px 24px;
-  border-radius: 999px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: 0.3s;
-}
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
 
-.btn-primary {
-  background: linear-gradient(#e2c15b, #cda32d);
-  color: black;
-  box-shadow: 0 10px 25px rgba(212,175,55,0.2);
-}
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(212,175,55,0.18), rgba(255,255,255,0.05));
+      border: 1px solid rgba(212,175,55,0.20);
+      color: var(--accent);
+      font-size: 16px;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
 
-.btn-secondary {
-  background: var(--card);
-  border: 1px solid var(--border);
-  color: var(--text);
-}
+    .brand-text {
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      line-height: 1.05;
+      white-space: nowrap;
+    }
 
-.btn:hover {
-  transform: translateY(-2px);
-}
+    .brand-text small {
+      display: block;
+      font-size: 0.76rem;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 3px;
+    }
 
-/* SECTION */
-.section {
-  max-width: 1100px;
-  margin: auto;
-  padding: 20px;
-}
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
 
-/* CARDS */
-.cards {
-  display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-}
+    .nav-links a {
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--muted);
+      transition: var(--transition);
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
 
-.card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04));
-  border: 1px solid var(--border);
-  border-radius: 22px;
-  padding: 24px;
-  transition: 0.3s;
-  backdrop-filter: blur(10px);
-}
+    .nav-links a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+    }
 
-.card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(212,175,55,0.3);
-}
+    .hero {
+      padding: 72px 0 26px;
+    }
 
-.card h3 {
-  margin: 0 0 12px;
-  font-size: 1.2rem;
-}
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 32px;
+      padding: 42px 26px 28px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.035)),
+        radial-gradient(circle at top right, rgba(212,175,55,0.12), transparent 28%);
+      box-shadow: var(--shadow);
+    }
 
-/* BANK */
-.bank {
-  margin-top: 12px;
-}
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(255,255,255,0.04), transparent 26%, transparent 72%, rgba(212,175,55,0.05));
+    }
 
-.row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
-  padding: 13px;
-  background: rgba(255,255,255,0.04);
-  border-radius: 12px;
-}
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(212,175,55,0.08);
+      border: 1px solid rgba(212,175,55,0.18);
+      color: #f2db8c;
+      font-size: 0.86rem;
+      margin-bottom: 18px;
+    }
 
-.copy {
-  background: rgba(255,255,255,0.08);
-  border: none;
-  padding: 9px 13px;
-  border-radius: 10px;
-  cursor: pointer;
-  color: white;
-  font-weight: 600;
-}
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+      max-width: 760px;
+    }
 
-.copy.copied {
-  background: var(--success);
-  color: black;
-}
+    .hero-sub {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.7;
+      max-width: 620px;
+    }
 
-/* DUA MESSAGE */
-.dua {
-  margin-top: 40px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
 
-/* ANIMATION */
-.reveal {
-  opacity: 0;
-  transform: translateY(25px);
-  transition: 0.8s cubic-bezier(.22,.61,.36,1);
-}
+    .hero-note {
+      margin-top: 18px;
+      display: inline-block;
+      color: #eadca3;
+      background: rgba(212,175,55,0.06);
+      border: 1px solid rgba(212,175,55,0.14);
+      padding: 12px 15px;
+      border-radius: 16px;
+      font-size: 0.94rem;
+      line-height: 1.55;
+    }
 
-.reveal.show {
-  opacity: 1;
-  transform: translateY(0);
-}
+    .btn {
+      appearance: none;
+      border: 1px solid transparent;
+      outline: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 22px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.98rem;
+      transition:
+        transform var(--transition),
+        border-color var(--transition),
+        background var(--transition),
+        box-shadow var(--transition),
+        color var(--transition);
+      min-height: 50px;
+    }
 
-/* MOBILE */
-@media(max-width:600px){
-  .row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-}
-</style>
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #e2c15b, #cda32d);
+      color: #111;
+      box-shadow: 0 12px 30px rgba(212,175,55,0.16);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 16px 36px rgba(212,175,55,0.22);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.10);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.07);
+    }
+
+    .section {
+      padding: 18px 0 28px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+      padding: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.035));
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      transition:
+        transform var(--transition),
+        border-color var(--transition),
+        background var(--transition);
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(212,175,55,0.22);
+      background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.04));
+    }
+
+    .icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, rgba(212,175,55,0.18), rgba(255,255,255,0.06));
+      border: 1px solid rgba(212,175,55,0.18);
+      color: var(--accent);
+      font-size: 19px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 1.14rem;
+      letter-spacing: -0.02em;
+    }
+
+    .card p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .bank-box {
+      display: grid;
+      gap: 12px;
+      margin-top: 2px;
+    }
+
+    .bank-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: var(--transition);
+    }
+
+    .bank-row:hover {
+      background: rgba(255,255,255,0.055);
+      border-color: rgba(255,255,255,0.11);
+    }
+
+    .bank-copy {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      min-width: 84px;
+      flex-shrink: 0;
+    }
+
+    .bank-copy:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.10);
+    }
+
+    .bank-copy.copied {
+      background: var(--success);
+      color: #08140d;
+      border-color: transparent;
+    }
+
+    .bank-label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 4px;
+    }
+
+    .bank-value {
+      color: var(--text);
+      font-size: 0.98rem;
+      font-weight: 700;
+      word-break: break-word;
+      letter-spacing: 0.01em;
+    }
+
+    .dua {
+      padding: 8px 0 30px;
+    }
+
+    .dua-card {
+      border-radius: 22px;
+      padding: 20px 20px;
+      background: rgba(212,175,55,0.06);
+      border: 1px solid rgba(212,175,55,0.16);
+      color: #f0e3b0;
+      text-align: center;
+      line-height: 1.7;
+      box-shadow: var(--shadow);
+    }
+
+    .dua-card strong {
+      color: #f7e8a7;
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .footer {
+      padding: 0 0 70px;
+    }
+
+    .footer-card {
+      border-radius: 24px;
+      padding: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .footer-card strong {
+      color: var(--text);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+      will-change: opacity, transform;
+    }
+
+    .reveal.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 980px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card {
+        padding: 36px 22px 24px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-links {
+        width: 100%;
+      }
+
+      .nav-links a {
+        padding: 10px 12px;
+      }
+
+      .hero {
+        padding-top: 54px;
+      }
+
+      .hero-sub {
+        font-size: 0.98rem;
+      }
+
+      .bank-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .bank-copy {
+        width: 100%;
+      }
+
+      .footer-card {
+        align-items: flex-start;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="bg-grid"></div>
+  <div class="glow one"></div>
+  <div class="glow two"></div>
 
-<!-- NAV -->
-<div class="nav">
-  <div class="nav-inner">
-    <div class="brand">Wycombe Da'wah</div>
-    <div>
-      <a href="#donate">Donate</a>
-      <a href="#bank">Bank</a>
-    </div>
-  </div>
-</div>
-
-<!-- HERO -->
-<section class="hero reveal">
-  <h1>Support the Da'wah</h1>
-  <p>Quick. Simple. Rewarding.</p>
-
-  <a class="btn btn-primary" href="https://pay.sumup.com/b2c/Q8NPNOMR" target="_blank">
-    Donate Now
-  </a>
-</section>
-
-<!-- OPTIONS -->
-<section class="section" id="donate">
-  <div class="cards">
-
-    <!-- LINK -->
-    <div class="card reveal">
-      <h3>Quick Donate</h3>
-      <a class="btn btn-primary" href="https://pay.sumup.com/b2c/Q8NPNOMR" target="_blank">
-        Open Link
-      </a>
-    </div>
-
-    <!-- QR -->
-    <div class="card reveal">
-      <h3>Scan</h3>
-      <a class="btn btn-secondary" href="DONATE%20DAWAH%20PDF.pdf" target="_blank">
-        Open QR
-      </a>
-    </div>
-
-    <!-- BANK -->
-    <div class="card reveal" id="bank">
-      <h3>Bank Transfer</h3>
-
-      <div class="bank">
-        <div class="row">
-          <div>Teo Poulter</div>
-          <button class="copy" data="Teo Poulter">Copy</button>
-        </div>
-
-        <div class="row">
-          <div>66216656</div>
-          <button class="copy" data="66216656">Copy</button>
-        </div>
-
-        <div class="row">
-          <div>041450</div>
-          <button class="copy" data="041450">Copy</button>
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand">
+        <div class="brand-mark">✦</div>
+        <div class="brand-text">
+          Wycombe Da'wah
+          <small>Donations</small>
         </div>
       </div>
 
+      <div class="nav-links">
+        <a href="#donate">Donate</a>
+        <a href="#bank">Bank Transfer</a>
+      </div>
     </div>
+  </nav>
 
-  </div>
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-card reveal">
+        <div class="pill">Support the da'wah</div>
+        <h1>Support Wycombe Da'wah</h1>
+        <p class="hero-sub">Choose the easiest way to give below.</p>
 
-  <!-- DUA -->
-  <div class="dua reveal">
-    May Allah reward you immensely for your support and place barakah in your wealth.
-  </div>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="https://pay.sumup.com/b2c/Q8NPNOMR" target="_blank" rel="noopener noreferrer">Donate Now</a>
+          <a class="btn btn-secondary" href="#bank">Bank Details</a>
+        </div>
 
-</section>
+        <div class="hero-note">
+          May Allah reward you for every donation and every effort made to support the da'wah.
+        </div>
+      </div>
+    </section>
 
-<script>
-/* reveal animation */
-const els = document.querySelectorAll('.reveal');
-const obs = new IntersectionObserver(entries=>{
-  entries.forEach((e,i)=>{
-    if(e.isIntersecting){
-      setTimeout(()=> e.target.classList.add('show'), i*100);
-    }
-  });
-});
-els.forEach(el=>obs.observe(el));
+    <section class="section" id="donate">
+      <div class="cards">
+        <div class="card reveal">
+          <div class="icon">↗</div>
+          <h3>Quick Donate</h3>
+          <p>Open the secure SumUp donation link.</p>
+          <a class="btn btn-primary" href="https://pay.sumup.com/b2c/Q8NPNOMR" target="_blank" rel="noopener noreferrer">Open Link</a>
+        </div>
 
-/* copy */
-document.querySelectorAll('.copy').forEach(btn=>{
-  btn.onclick = async () => {
-    await navigator.clipboard.writeText(btn.getAttribute('data'));
-    btn.classList.add('copied');
-    btn.innerText = 'Copied';
-    setTimeout(()=>{
-      btn.classList.remove('copied');
-      btn.innerText = 'Copy';
-    },1200);
-  }
-});
-</script>
+        <div class="card reveal">
+          <div class="icon">⌁</div>
+          <h3>Scan to Donate</h3>
+          <p>Open the QR sheet and donate from your phone.</p>
+          <a class="btn btn-secondary" href="DONATE%20DAWAH%20PDF.pdf" target="_blank" rel="noopener noreferrer">Open QR</a>
+        </div>
 
+        <div class="card reveal" id="bank">
+          <div class="icon">£</div>
+          <h3>Bank Transfer</h3>
+          <p>Copy the details below and donate manually.</p>
+
+          <div class="bank-box">
+            <div class="bank-row">
+              <div>
+                <div class="bank-label">Account holder</div>
+                <div class="bank-value">Teo Poulter</div>
+              </div>
+              <button class="bank-copy" data-copy="Teo Poulter" type="button">Copy</button>
+            </div>
+
+            <div class="bank-row">
+              <div>
+                <div class="bank-label">Account number</div>
+                <div class="bank-value">66216656</div>
+              </div>
+              <button class="bank-copy" data-copy="66216656" type="button">Copy</button>
+            </div>
+
+            <div class="bank-row">
+              <div>
+                <div class="bank-label">Sort code</div>
+                <div class="bank-value">041450</div>
+              </div>
+              <button class="bank-copy" data-copy="041450" type="button">Copy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dua">
+      <div class="dua-card reveal">
+        <strong>May Allah reward you.</strong>
+        Every donation helps support the da'wah and spread benefit.
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-card reveal">
+        <p>
+          <strong>Wycombe Da'wah Donations</strong><br>
+          Simple, smooth and accessible on all devices.
+        </p>
+        <a class="btn btn-primary" href="https://pay.sumup.com/b2c/Q8NPNOMR" target="_blank" rel="noopener noreferrer">Donate Now</a>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      const revealItems = document.querySelectorAll('.reveal');
+
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries, obs) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('show');
+              obs.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12 });
+
+        revealItems.forEach((item) => observer.observe(item));
+      } else {
+        revealItems.forEach((item) => item.classList.add('show'));
+      }
+
+      const copyButtons = document.querySelectorAll('.bank-copy');
+
+      copyButtons.forEach((button) => {
+        button.addEventListener('click', async () => {
+          const originalText = 'Copy';
+          const textToCopy = button.getAttribute('data-copy');
+
+          try {
+            if (navigator.clipboard && window.isSecureContext) {
+              await navigator.clipboard.writeText(textToCopy);
+            } else {
+              const textArea = document.createElement('textarea');
+              textArea.value = textToCopy;
+              textArea.style.position = 'fixed';
+              textArea.style.opacity = '0';
+              textArea.style.pointerEvents = 'none';
+              document.body.appendChild(textArea);
+              textArea.focus();
+              textArea.select();
+              document.execCommand('copy');
+              document.body.removeChild(textArea);
+            }
+
+            button.textContent = 'Copied';
+            button.classList.add('copied');
+
+            window.setTimeout(() => {
+              button.textContent = originalText;
+              button.classList.remove('copied');
+            }, 1400);
+          } catch (error) {
+            button.textContent = 'Failed';
+
+            window.setTimeout(() => {
+              button.textContent = originalText;
+            }, 1400);
+          }
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
