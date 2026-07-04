@@ -252,7 +252,7 @@ async function saveStatus(event) {
   store.set('wmcAdminApproved', 'true');
   store.set('wmcAdminPin', pin);
 
-  els.saveStatusBtn.disabled = true;
+if (els.saveStatusBtn) els.saveStatusBtn.disabled = true;
   els.saveStatusBtn.textContent = 'Saving...';
 
   try {
@@ -271,7 +271,7 @@ async function saveStatus(event) {
     els.adminNote.textContent = 'Could not update live status. Check Airtable settings.';
     els.adminNote.style.color = '#ffb3ac';
   } finally {
-    els.saveStatusBtn.disabled = false;
+    if (els.saveStatusBtn) els.saveStatusBtn.disabled = false;
     els.saveStatusBtn.textContent = 'Save Status';
   }
 }
