@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#123840" />
+  <meta name="description" content="Live office status and calendar for Wycombe Muslim Collective." />
+  <title>WMC Office Status | Wycombe Muslim Collective</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="status-open preloading">
+  <main class="app-shell">
+    <aside class="brand-rail no-tv" aria-hidden="true">
+      <div class="rail-line"></div>
+      <div class="rail-dots"><i></i><i></i><i></i></div>
+      <div class="rail-gold-block"></div>
+    </aside>
+
+    <section class="status-page">
+      <header class="topbar no-tv">
+        <div class="brand-lockup">
+          <img class="brand-logo" src="assets/wmc-logo-dark.png" alt="Wycombe Muslim Collective" />
+          <div>
+            <p class="eyebrow">Wycombe Muslim Collective</p>
+            <h1>Office Status</h1>
+          </div>
+        </div>
+
+        <div class="top-actions">
+          <button class="icon-button" id="tvModeBtn" type="button" aria-label="TV Mode" title="TV Mode">
+            <img src="assets/tv-icon.png" alt="" />
+          </button>
+          <button class="ghost-button" id="openAvailabilityBtn" type="button">Calendar</button>
+          <button class="primary-pill" id="openAdminBtn" type="button">Update Status</button>
+        </div>
+      </header>
+
+      <section class="status-card public-card" aria-live="polite">
+        <img class="tv-logo only-tv" src="assets/wmc-logo-dark.png" alt="Wycombe Muslim Collective" />
+        <p class="tv-exit-hint only-tv">Press Esc or double-click to exit TV Mode</p>
+        <div class="status-display" id="statusDisplay">
+          <div class="pulse-wrap"><div class="status-dot" id="statusDot"></div></div>
+          <p class="status-label" id="statusLabel">Open Workspace</p>
+          <h2 id="statusTitle">Anyone can come and use the office.</h2>
+          <p class="statusText" id="statusText">Please come with purpose: work, planning, meetings, calls, projects, da’wah/admin, study or agreed tasks.</p>
+          <div class="live-booking-pill no-tv" id="liveBookingPill" hidden></div>
+        </div>
+
+        <div class="amanah-panel no-tv">
+          <p class="mini-heading">This space is an amānah</p>
+          <p>This office has been entrusted for beneficial work, service and focused use. Please respect the space, respect those using it, and leave it better than you found it.</p>
+          <a class="rules-link" href="assets/desbox-office-rules.pdf" target="_blank" rel="noopener">Read the office rules here</a>
+        </div>
+
+        <footer class="meta-grid no-tv">
+          <div>
+            <span>Last updated</span>
+            <strong id="lastUpdated">--:--</strong>
+          </div>
+          <div>
+            <span>Updated by</span>
+            <strong id="updatedBy">WMC Team</strong>
+          </div>
+        </footer>
+      </section>
+    </section>
+  </main>
+
+  <dialog class="admin-modal" id="adminModal">
+    <form class="admin-card modal-card" id="adminForm" autocomplete="off">
+      <button class="close-button" id="closeAdminBtn" type="button" aria-label="Close">×</button>
+      <p class="eyebrow">Admin Console</p>
+      <h3>Update Status</h3>
+
+      <label class="field-label" for="statusSelect">Office status</label>
+      <select id="statusSelect" class="visually-hidden-select" autocomplete="off" aria-hidden="true" tabindex="-1">
+        <option value="open">Open Workspace</option>
+        <option value="knock">Knock First</option>
+        <option value="closed">Out of Bounds</option>
+      </select>
+      <div class="status-choice-grid" id="statusChoiceGrid" role="radiogroup" aria-label="Office status">
+        <button type="button" class="status-choice active" data-status-choice="open" role="radio" aria-checked="true"><span class="choice-dot choice-open"></span><span>Open Workspace</span></button>
+        <button type="button" class="status-choice" data-status-choice="knock" role="radio" aria-checked="false"><span class="choice-dot choice-knock"></span><span>Knock First</span></button>
+        <button type="button" class="status-choice" data-status-choice="closed" role="radio" aria-checked="false"><span class="choice-dot choice-closed"></span><span>Out of Bounds</span></button>
+      </div>
+
+      <label class="field-label pin-label">Admin PIN</label>
+      <div class="pin-system" id="pinSystem" aria-label="Admin PIN entry">
+        <div class="pin-dots" id="pinDots" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <div class="pin-keypad" id="pinKeypad">
+          <button type="button" data-pin="1">1</button><button type="button" data-pin="2">2</button><button type="button" data-pin="3">3</button>
+          <button type="button" data-pin="4">4</button><button type="button" data-pin="5">5</button><button type="button" data-pin="6">6</button>
+          <button type="button" data-pin="7">7</button><button type="button" data-pin="8">8</button><button type="button" data-pin="9">9</button>
+          <button type="button" data-action="clear">Clear</button><button type="button" data-pin="0">0</button><button type="button" data-action="backspace">⌫</button>
+        </div>
+      </div>
+
+      <label class="field-label" for="nameInput">Updated by</label>
+      <input id="nameInput" type="text" placeholder="Your name / WMC Team" autocomplete="off" autocorrect="off" spellcheck="false" />
+
+      <button class="primary-button" id="saveStatusBtn" type="submit">Save Status</button>
+      <p class="admin-note" id="adminNote" aria-live="polite"></p>
+    </form>
+  </dialog>
+
+  <dialog class="availability-modal" id="availabilityModal">
+    <section class="availability-card modal-card">
+      <button class="close-button" id="closeAvailabilityBtn" type="button" aria-label="Close">×</button>
+      <div class="availability-head">
+        <div>
+          <p class="eyebrow">Office Availability</p>
+          <h3>Book the office</h3>
+        </div>
+        <button class="small-pill" id="showBookingFormBtn" type="button">Add Booking</button>
+      </div>
+
+      <div class="availability-tabs" role="tablist" aria-label="Availability range">
+        <button type="button" class="active" data-range="today">Today</button>
+        <button type="button" data-range="tomorrow">Tomorrow</button>
+        <button type="button" data-range="week">This Week</button>
+      </div>
+
+      <div class="booking-form-wrap" id="bookingFormWrap" hidden>
+        <form class="booking-form" id="bookingForm" autocomplete="off">
+          <div class="form-grid">
+            <label class="form-field wide">Booking title<input id="bookingTitle" type="text" placeholder="e.g. Meeting / recording / study" required /></label>
+            <label class="form-field wide">Your name<input id="bookingName" type="text" placeholder="Who is responsible?" required /></label>
+
+            <div class="form-field wide date-field">
+              <span class="form-label">Date</span>
+              <div class="date-presets" aria-label="Date presets">
+                <button type="button" data-date-preset="today">Today</button>
+                <button type="button" data-date-preset="tomorrow">Tomorrow</button>
+              </div>
+              <button class="custom-date-trigger" id="customDateTrigger" type="button">
+                <span id="selectedDateLabel">Select date</span>
+                <small id="selectedDateSubLabel">Choose a day</small>
+              </button>
+              <input id="bookingDate" type="hidden" required />
+              <div class="mini-calendar" id="miniCalendar" hidden>
+                <div class="calendar-head">
+                  <button type="button" id="prevMonthBtn" aria-label="Previous month">‹</button>
+                  <strong id="calendarMonthLabel">Month</strong>
+                  <button type="button" id="nextMonthBtn" aria-label="Next month">›</button>
+                </div>
+                <div class="calendar-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+                <div class="calendar-days" id="calendarDays"></div>
+              </div>
+            </div>
+
+            <div class="time-row wide">
+              <label class="form-field">Start time<input id="bookingStart" type="time" required /></label>
+              <label class="form-field">End time<input id="bookingEnd" type="time" required /></label>
+            </div>
+
+            <div class="form-field wide">
+              <span class="form-label">Status during booking</span>
+              <input id="bookingStatus" type="hidden" value="knock" required />
+              <div class="status-choice-grid booking-status-grid" role="radiogroup" aria-label="Status during booking">
+                <button type="button" class="status-choice booking-status-choice" data-booking-status="open" role="radio" aria-checked="false"><span class="choice-dot choice-open"></span><span>Open Workspace</span></button>
+                <button type="button" class="status-choice booking-status-choice active" data-booking-status="knock" role="radio" aria-checked="true"><span class="choice-dot choice-knock"></span><span>Knock First</span></button>
+                <button type="button" class="status-choice booking-status-choice" data-booking-status="closed" role="radio" aria-checked="false"><span class="choice-dot choice-closed"></span><span>Out of Bounds</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="ghost-mini" type="button" id="cancelBookingBtn">Cancel</button>
+            <button class="primary-button compact" type="submit" id="saveBookingBtn">Save Booking</button>
+          </div>
+          <p class="admin-note" id="bookingNote" aria-live="polite"></p>
+        </form>
+      </div>
+
+      <div class="bookings-summary" id="bookingsSummary"></div>
+      <div class="bookings-list" id="bookingsList" aria-live="polite"></div>
+    </section>
+  </dialog>
+
+  <div class="toast" id="toast">Status updated</div>
+  <div class="tv-transition-overlay" id="tvTransitionOverlay" aria-hidden="true"></div>
+  <script src="script.js"></script>
+</body>
+</html>
