@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Christianity Objectively monogram</title>
+  <desc id="desc">The letters C and O within a fine circular border</desc>
+  <circle cx="128" cy="128" r="112" fill="none" stroke="#cfad68" stroke-width="3"/>
+  <circle cx="128" cy="128" r="102" fill="none" stroke="#cfad68" stroke-width="1" opacity=".72"/>
+  <text x="128" y="153" fill="#cfad68" font-family="Georgia, 'Times New Roman', serif" font-size="80" letter-spacing="-10" text-anchor="middle">CO</text>
+  <path d="M128 80v96" stroke="#b84f38" stroke-width="2" opacity=".9"/>
+</svg>

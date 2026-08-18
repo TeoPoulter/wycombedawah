@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 180" role="img" aria-labelledby="title desc">
+  <title id="title">Christianity Objectively</title>
+  <desc id="desc">Christianity Objectively monogram and wordmark</desc>
+  <circle cx="90" cy="90" r="72" fill="none" stroke="#cfad68" stroke-width="2.5"/>
+  <circle cx="90" cy="90" r="65" fill="none" stroke="#cfad68" stroke-width="1" opacity=".72"/>
+  <text x="90" y="107" fill="#cfad68" font-family="Georgia, 'Times New Roman', serif" font-size="53" letter-spacing="-7" text-anchor="middle">CO</text>
+  <path d="M90 57v66" stroke="#b84f38" stroke-width="1.5"/>
+  <text x="190" y="82" fill="#101b2c" font-family="Georgia, 'Times New Roman', serif" font-size="45">Christianity</text>
+  <text x="192" y="116" fill="#557069" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" letter-spacing="4">OBJECTIVELY</text>
+</svg>
