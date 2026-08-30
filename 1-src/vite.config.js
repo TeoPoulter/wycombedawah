@@ -16,6 +16,11 @@ export default defineConfig(({ command }) => ({
         host: resolve(import.meta.dirname, 'index.html'),
         join: resolve(import.meta.dirname, 'join/index.html'),
         admin: resolve(import.meta.dirname, 'admin/index.html')
+      },
+      output: {
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name][extname]'
       }
     }
   }
