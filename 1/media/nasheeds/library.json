@@ -1,0 +1,324 @@
+{
+  "version": 1,
+  "generatedAt": "2026-08-31T13:10:29.281Z",
+  "playlists": [
+    {
+      "id": "ambience",
+      "title": "WMC Ambience",
+      "description": "Atmospheric, reflective background nasheeds.",
+      "cover": "/1/media/nasheeds/ambience/cover.webp",
+      "tracks": [
+        {
+          "id": "ambience-01",
+          "title": "'Chase' (Nasheed Background) Vocals and Daf HalalBeats",
+          "src": "/1/media/nasheeds/ambience/01-chase-nasheed-background-vocals-and-daf-halalbeats-mp4.mp3",
+          "duration": 192
+        },
+        {
+          "id": "ambience-02",
+          "title": "Allah Allah (Muffled)",
+          "src": "/1/media/nasheeds/ambience/02-allah-allah-muffled-mp4.mp3",
+          "duration": 434
+        },
+        {
+          "id": "ambience-03",
+          "title": "Allahu Ya'lamu (Muffled)",
+          "src": "/1/media/nasheeds/ambience/03-allahu-ya-lamu-muffled-mp4.mp3",
+          "duration": 178
+        },
+        {
+          "id": "ambience-04",
+          "title": "Allahu Yunadeek (Muffled)",
+          "src": "/1/media/nasheeds/ambience/04-allahu-yunadeek-muffled-mp4.mp3",
+          "duration": 236
+        },
+        {
+          "id": "ambience-05",
+          "title": "Arihna Biha (Muffled)",
+          "src": "/1/media/nasheeds/ambience/05-arihna-biha-muffled-mp4.mp3",
+          "duration": 268
+        },
+        {
+          "id": "ambience-06",
+          "title": "Ashtaki Lillahi X Ilaika Ashkoo (Muffled) · Nasheed Mix · Mansour AlKhulaifii",
+          "src": "/1/media/nasheeds/ambience/06-ashtaki-lillahi-x-ilaika-ashkoo-muffled-nasheed-mix-mansour-alkhulaifii-.mp3",
+          "duration": 366
+        },
+        {
+          "id": "ambience-07",
+          "title": "Asmoo (muffled) · Abdul raziq · I rise nasheed nasheeds",
+          "src": "/1/media/nasheeds/ambience/07-asmoo-muffled-abdul-raziq-i-rise-nasheed-nasheeds-mp4.mp3",
+          "duration": 263
+        },
+        {
+          "id": "ambience-08",
+          "title": "Bika Moulhimi Nasheed (Muffled) [Slowed Reverb]",
+          "src": "/1/media/nasheeds/ambience/08-bika-moulhimi-nasheed-muffled-slowed-reverb-mp4.mp3",
+          "duration": 348
+        },
+        {
+          "id": "ambience-09",
+          "title": "Bika Moulhimi Nasheed slowed reverb @Nasheedharmony Maher Zain @NHQ-Channel",
+          "src": "/1/media/nasheeds/ambience/09-bika-moulhimi-nasheed-slowed-reverb-nasheedharmony-maher-zain-nhq-channe.mp3",
+          "duration": 281
+        },
+        {
+          "id": "ambience-10",
+          "title": "Ila Rabbi Nasheed (Muffled) · AbdulAziz AlRashed",
+          "src": "/1/media/nasheeds/ambience/10-ila-rabbi-nasheed-muffled-abdulaziz-alrashed-mp4.mp3",
+          "duration": 190
+        },
+        {
+          "id": "ambience-11",
+          "title": "Mountains Of Friendship · ربى الأنس · Muhammad Al Muqit",
+          "src": "/1/media/nasheeds/ambience/11-mountains-of-friendship-muhammad-al-muqit-mp4.mp3",
+          "duration": 329
+        },
+        {
+          "id": "ambience-12",
+          "title": "Naseed My hope (Allah) Sub Bahasa Indonesia · Slowed & reverb",
+          "src": "/1/media/nasheeds/ambience/12-naseed-my-hope-allah-sub-bahasa-indonesia-slowed-reverb-mp4.mp3",
+          "duration": 362
+        },
+        {
+          "id": "ambience-13",
+          "title": "Subhanallah (Muffled) · Ali Dawud",
+          "src": "/1/media/nasheeds/ambience/13-subhanallah-muffled-ali-dawud-mp4.mp3",
+          "duration": 395
+        }
+      ]
+    },
+    {
+      "id": "chill",
+      "title": "WMC Chill",
+      "description": "Calm vocals for a relaxed room.",
+      "cover": "/1/media/nasheeds/chill/cover.webp",
+      "tracks": [
+        {
+          "id": "chill-01",
+          "title": "Abdullah Aljarallah Ft. Ahmad Al Nufais - Fiya Hubbun Nasheed في حبٌ",
+          "src": "/1/media/nasheeds/chill/01-abdullah-aljarallah-ft-ahmad-al-nufais-fiya-hubbun-nasheed-mp4.mp3",
+          "duration": 149
+        },
+        {
+          "id": "chill-02",
+          "title": "ALLAHU YA' LAMU - الله يعلم · Lyrics · Hashnooor",
+          "src": "/1/media/nasheeds/chill/02-allahu-ya-lamu-lyrics-hashnooor-mp4.mp3",
+          "duration": 423
+        },
+        {
+          "id": "chill-03",
+          "title": "Fiya Hubbun في حب Nasheed Official Cinematic Video @NHQ-Channel @AbdullahAljarallah",
+          "src": "/1/media/nasheeds/chill/03-fiya-hubbun-nasheed-official-cinematic-video-nhq-channel-abdullahaljaral.mp3",
+          "duration": 168
+        },
+        {
+          "id": "chill-04",
+          "title": "Mo Vocals - Muhammad Nabina (2021) · Official Nasheed Video · (NO MUSIC) · Arabic Nasheed ·",
+          "src": "/1/media/nasheeds/chill/04-mo-vocals-muhammad-nabina-2021-official-nasheed-video-no-music-arabic-na.mp3",
+          "duration": 239
+        },
+        {
+          "id": "chill-05",
+          "title": "Qalbi Lak",
+          "src": "/1/media/nasheeds/chill/05-qalbi-lak-mp4.mp3",
+          "duration": 51
+        },
+        {
+          "id": "chill-06",
+          "title": "Wadili Salami - Mohamad Kendo · وديلي سلامي - محمد كندو",
+          "src": "/1/media/nasheeds/chill/06-wadili-salami-mohamad-kendo-mp4.mp3",
+          "duration": 76
+        },
+        {
+          "id": "chill-07",
+          "title": "Ya Quluban",
+          "src": "/1/media/nasheeds/chill/07-ya-quluban-mp4.mp3",
+          "duration": 208
+        },
+        {
+          "id": "chill-08",
+          "title": "إلى ربي · عبدالعزيز الراشد",
+          "src": "/1/media/nasheeds/chill/08-mp4.mp3",
+          "duration": 80
+        },
+        {
+          "id": "chill-09",
+          "title": "اجمل منبه لقيام الليل · الله يناديك سُحيراً - عمر العملة",
+          "src": "/1/media/nasheeds/chill/09-mp4.mp3",
+          "duration": 68
+        },
+        {
+          "id": "chill-10",
+          "title": "المشتاق · يوسف الأيوب",
+          "src": "/1/media/nasheeds/chill/10-mp4.mp3",
+          "duration": 202
+        },
+        {
+          "id": "chill-11",
+          "title": "خذني إليك · حامد الظفيري ·",
+          "src": "/1/media/nasheeds/chill/11-mp4.mp3",
+          "duration": 172
+        },
+        {
+          "id": "chill-12",
+          "title": "ربى الأنس · محمد_المقيط · 2023 Muhammad Almuqit · Mountains Of Friendship",
+          "src": "/1/media/nasheeds/chill/12-2023-muhammad-almuqit-mountains-of-friendship-mp4.mp3",
+          "duration": 237
+        },
+        {
+          "id": "chill-13",
+          "title": "رحماك · يوسف الأيوب",
+          "src": "/1/media/nasheeds/chill/13-mp4.mp3",
+          "duration": 161
+        },
+        {
+          "id": "chill-14",
+          "title": "سلام سلام كمسك الختام · أحمد النفيس",
+          "src": "/1/media/nasheeds/chill/14-mp4.mp3",
+          "duration": 193
+        },
+        {
+          "id": "chill-15",
+          "title": "سيجبرك اللطيف · يوسف الأيوب & عبدالعزيز الراشد",
+          "src": "/1/media/nasheeds/chill/15-mp4.mp3",
+          "duration": 60
+        },
+        {
+          "id": "chill-16",
+          "title": "طال ليلي · يوسف الأيوب",
+          "src": "/1/media/nasheeds/chill/16-mp4.mp3",
+          "duration": 195
+        },
+        {
+          "id": "chill-17",
+          "title": "طالما أشكو غرامي - يوسف الأيوب · Lyrics Video – Exclusive",
+          "src": "/1/media/nasheeds/chill/17-lyrics-video-exclusive-mp4.mp3",
+          "duration": 177
+        },
+        {
+          "id": "chill-18",
+          "title": "فجر الزمان · حامد الظفيري · Fajr Alzaman · Hamid Althufiri ·",
+          "src": "/1/media/nasheeds/chill/18-fajr-alzaman-hamid-althufiri-mp4.mp3",
+          "duration": 124
+        },
+        {
+          "id": "chill-19",
+          "title": "فيّ حبٌ · عبدالله الجارالله - أحمد النفيس · دويتو",
+          "src": "/1/media/nasheeds/chill/19-mp4.mp3",
+          "duration": 149
+        }
+      ]
+    },
+    {
+      "id": "upbeat",
+      "title": "WMC Upbeat",
+      "description": "Bright, energetic vocals for the show.",
+      "cover": "/1/media/nasheeds/upbeat/cover.webp",
+      "tracks": [
+        {
+          "id": "upbeat-01",
+          "title": "Benevolent Rain - Uplifting Nasheed by Muhammad al Muqit",
+          "src": "/1/media/nasheeds/upbeat/01-benevolent-rain-uplifting-nasheed-by-muhammad-al-muqit-mp4.mp3",
+          "duration": 162
+        },
+        {
+          "id": "upbeat-02",
+          "title": "I Stood My Speech",
+          "src": "/1/media/nasheeds/upbeat/02-i-stood-my-speech-mp4.mp3",
+          "duration": 298
+        },
+        {
+          "id": "upbeat-03",
+          "title": "Light Bursts",
+          "src": "/1/media/nasheeds/upbeat/03-light-bursts-mp4.mp3",
+          "duration": 166
+        },
+        {
+          "id": "upbeat-04",
+          "title": "Muslim Belal - Traveller",
+          "src": "/1/media/nasheeds/upbeat/04-muslim-belal-traveller-mp4.mp3",
+          "duration": 248
+        },
+        {
+          "id": "upbeat-05",
+          "title": "My Dream - Short Nasheed By： Muhammad al Muqit",
+          "src": "/1/media/nasheeds/upbeat/05-my-dream-short-nasheed-by-muhammad-al-muqit-mp4.mp3",
+          "duration": 77
+        },
+        {
+          "id": "upbeat-06",
+          "title": "QalbyStudios： Muslim Belal & Essam - KABIR",
+          "src": "/1/media/nasheeds/upbeat/06-qalbystudios-muslim-belal-essam-kabir-mp4.mp3",
+          "duration": 336
+        },
+        {
+          "id": "upbeat-07",
+          "title": "Sanakhudu - Mahmud Huzaifa x Mazharul Islam",
+          "src": "/1/media/nasheeds/upbeat/07-sanakhudu-mahmud-huzaifa-x-mazharul-islam-mp4.mp3",
+          "duration": 177
+        },
+        {
+          "id": "upbeat-08",
+          "title": "Tabalagh Bil Qaleel · تبلغ بالقليل · Arabic Nasheed · English Subtitles ·",
+          "src": "/1/media/nasheeds/upbeat/08-tabalagh-bil-qaleel-arabic-nasheed-english-subtitles-mp4.mp3",
+          "duration": 236
+        },
+        {
+          "id": "upbeat-09",
+          "title": "The Beauty of Existence - Heart Touching Nasheed",
+          "src": "/1/media/nasheeds/upbeat/09-the-beauty-of-existence-heart-touching-nasheed-mp4.mp3",
+          "duration": 260
+        },
+        {
+          "id": "upbeat-10",
+          "title": "The Source of Faith",
+          "src": "/1/media/nasheeds/upbeat/10-the-source-of-faith-mp4.mp3",
+          "duration": 233
+        },
+        {
+          "id": "upbeat-11",
+          "title": "The Way of The Tears - Exclusive Nasheed - Muhammad al Muqit",
+          "src": "/1/media/nasheeds/upbeat/11-the-way-of-the-tears-exclusive-nasheed-muhammad-al-muqit-mp4.mp3",
+          "duration": 265
+        },
+        {
+          "id": "upbeat-12",
+          "title": "Wadili Salami - Mohamad Kendo · وديلي سلامي - محمد كندو",
+          "src": "/1/media/nasheeds/upbeat/12-wadili-salami-mohamad-kendo-mp4.mp3",
+          "duration": 76
+        },
+        {
+          "id": "upbeat-13",
+          "title": "Wedding Nasheed - Muhammad Al Muqit · Lyrics Arabic + Terjemahan ⧸ 𝘈𝘳𝘢𝘣𝘪𝘤 𝘕𝘢𝘴𝘩𝘦𝘦𝘥 · محمد المقيط",
+          "src": "/1/media/nasheeds/upbeat/13-wedding-nasheed-muhammad-al-muqit-lyrics-arabic-terjemahan-arabic-nashee.mp3",
+          "duration": 164
+        },
+        {
+          "id": "upbeat-14",
+          "title": "خير الدرر · محمد_المقيط 2019",
+          "src": "/1/media/nasheeds/upbeat/14-2019-mp4.mp3",
+          "duration": 241
+        },
+        {
+          "id": "upbeat-15",
+          "title": "سلام سلام كمسك الختام · أحمد النفيس",
+          "src": "/1/media/nasheeds/upbeat/15-mp4.mp3",
+          "duration": 193
+        },
+        {
+          "id": "upbeat-16",
+          "title": "طاب غراسكم · محمد المقيط 2015",
+          "src": "/1/media/nasheeds/upbeat/16-2015-mp4.mp3",
+          "duration": 121
+        },
+        {
+          "id": "upbeat-17",
+          "title": "غيمة الأفراح · محمد المقيط 2018 · Mohammed Almuqit",
+          "src": "/1/media/nasheeds/upbeat/17-2018-mohammed-almuqit-mp4.mp3",
+          "duration": 281
+        }
+      ]
+    }
+  ]
+}

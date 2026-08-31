@@ -9,7 +9,8 @@
     "preview": "vite preview --host 0.0.0.0",
     "index:questions": "node scripts/index-question-bank.mjs",
     "optimize:media": "node scripts/optimize-web-media.mjs",
-    "seed:questions": "node scripts/generate-question-seed.mjs"
+    "seed:questions": "node scripts/generate-question-seed.mjs",
+    "import:nasheeds": "node scripts/import-nasheed-library.mjs"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.57.0",

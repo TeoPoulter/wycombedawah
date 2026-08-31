@@ -3,6 +3,7 @@ import QRCode from 'qrcode';
 
 const HOST = 'wmc-host-v2';
 const PLAYER = 'wmc-player-v2';
+const MUSIC = 'wmc-music-v1';
 const LEVELS = [90, 80, 70, 60, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 1];
 const joinBase = import.meta.env.DEV && import.meta.env.VITE_LAN_URL
   ? import.meta.env.VITE_LAN_URL
@@ -10,12 +11,14 @@ const joinBase = import.meta.env.DEV && import.meta.env.VITE_LAN_URL
 const brandLogo = new URL('./wmc-brand-logo.png', import.meta.url).href;
 const gameLogo = new URL('./wmc-one-percent-logo.webp', import.meta.url).href;
 const howVideoUrl = '/1/media/how-it-works.web.mp4';
+const passVideoUrl = '/1/media/pass-intro.mp4';
+const musicLibraryUrl = '/1/media/nasheeds/library.json';
 const decodedMedia = new Map();
 const mediaLoads = new Map();
-let howVideoBlobUrl = '';
-let howVideoLoad;
-let howVideoProgress = 0;
-const howVideoProgressListeners = new Set();
+const videoBlobUrls = new Map();
+const videoLoads = new Map();
+const videoProgress = new Map();
+const videoProgressListeners = new Map();
 
 const uuid = () => crypto.randomUUID?.() || ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (character) => (
   character ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> character / 4
@@ -43,11 +46,17 @@ const icons = {
   film: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 9h4M17 9h4M3 15h4M17 15h4"/></svg>',
   link: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1-1"/></svg>',
   lock: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
+  music: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>',
+  next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 5 9 7-9 7zM18 5v14"/></svg>',
+  pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>',
   play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>',
+  previous: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m17 5-9 7 9 7zM6 5v14"/></svg>',
   power: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v10M6.3 5.7a8 8 0 1 0 11.4 0"/></svg>',
   sparkle: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.4 5.1L18 10l-4.6 2.9L12 18l-1.4-5.1L6 10l4.6-2.9z"/><path d="m19 16 .7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7z"/></svg>',
+  shuffle: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h3c5 0 7 10 12 10h3M18 14l3 3-3 3M3 17h3c2 0 3.5-1.6 5-3.7M14 7.8C15.2 6.8 16.4 7 18 7h3M18 4l3 3-3 3"/></svg>',
   upload: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>',
   users: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>',
+  volume: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4zM15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>',
   wifi: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="20" r="1"/></svg>',
   x: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>'
 };
@@ -112,31 +121,31 @@ async function decodeImage(path, priority = 'high') {
   try { return await load; } finally { mediaLoads.delete(path); }
 }
 
-async function prepareQuestionMedia(question) {
+async function prepareQuestionMedia(question, { waitForAnswer = false } = {}) {
   if (!question) return;
-  await Promise.all([
-    decodeImage(question.question_image_path),
-    decodeImage(question.answer_image_path, 'low')
-  ]);
+  await decodeImage(question.question_image_path);
+  const answerLoad = decodeImage(question.answer_image_path, 'low').catch(() => '');
+  if (waitForAnswer) await answerLoad;
 }
 
-function updateHowVideoProgress(progress) {
-  howVideoProgress = progress;
-  howVideoProgressListeners.forEach((listener) => listener(progress));
+function updateVideoProgress(url, progress) {
+  videoProgress.set(url, progress);
+  (videoProgressListeners.get(url) || new Set()).forEach((listener) => listener(progress));
 }
 
-async function bufferHowVideo() {
-  if (howVideoBlobUrl) return howVideoBlobUrl;
-  if (howVideoLoad) return howVideoLoad;
-  howVideoLoad = (async () => {
-    const response = await fetch(howVideoUrl, { cache: 'force-cache' });
-    if (!response.ok) throw new Error('The How It Works video could not be loaded.');
+async function bufferVideo(url) {
+  if (videoBlobUrls.has(url)) return videoBlobUrls.get(url);
+  if (videoLoads.has(url)) return videoLoads.get(url);
+  const load = (async () => {
+    const response = await fetch(url, { cache: 'force-cache' });
+    if (!response.ok) throw new Error('The studio video could not be loaded.');
     const total = Number(response.headers.get('content-length')) || 0;
     if (!response.body?.getReader) {
       const blob = await response.blob();
-      updateHowVideoProgress(1);
-      howVideoBlobUrl = URL.createObjectURL(blob);
-      return howVideoBlobUrl;
+      updateVideoProgress(url, 1);
+      const objectUrl = URL.createObjectURL(blob);
+      videoBlobUrls.set(url, objectUrl);
+      return objectUrl;
     }
     const reader = response.body.getReader();
     const chunks = [];
@@ -146,16 +155,18 @@ async function bufferHowVideo() {
       if (done) break;
       chunks.push(value);
       received += value.byteLength;
-      updateHowVideoProgress(total ? Math.min(1, received / total) : 0.5);
+      updateVideoProgress(url, total ? Math.min(1, received / total) : 0.5);
     }
-    howVideoBlobUrl = URL.createObjectURL(new Blob(chunks, { type: 'video/mp4' }));
-    updateHowVideoProgress(1);
-    return howVideoBlobUrl;
+    const objectUrl = URL.createObjectURL(new Blob(chunks, { type: 'video/mp4' }));
+    videoBlobUrls.set(url, objectUrl);
+    updateVideoProgress(url, 1);
+    return objectUrl;
   })();
-  try { return await howVideoLoad; } catch (error) { howVideoLoad = null; throw error; }
+  videoLoads.set(url, load);
+  try { return await load; } catch (error) { videoLoads.delete(url); throw error; }
 }
 
-async function playHowVideo() {
+async function playStudioVideo(url, options = {}) {
   const overlay = document.querySelector('#how-overlay');
   const video = overlay?.querySelector('video');
   if (!overlay || !video) return;
@@ -165,22 +176,29 @@ async function playHowVideo() {
     if (progress) progress.style.setProperty('--progress', `${Math.round(value * 100)}%`);
     if (progressLabel) progressLabel.textContent = value >= 1 ? 'Ready' : `Loading ${Math.round(value * 100)}%`;
   };
-  syncProgress(howVideoProgress);
-  howVideoProgressListeners.add(syncProgress);
+  syncProgress(videoProgress.get(url) || 0);
+  if (!videoProgressListeners.has(url)) videoProgressListeners.set(url, new Set());
+  videoProgressListeners.get(url).add(syncProgress);
   const message = overlay.querySelector('[data-video-message]');
-  if (message) message.textContent = 'Preparing the complete video';
+  const kicker = overlay.querySelector('[data-video-kicker]');
+  const videoName = options.kicker || 'Studio video';
+  if (kicker) kicker.innerHTML = `<i></i> ${esc(videoName)}`;
+  overlay.setAttribute('aria-label', `${videoName} video`);
+  if (message) message.textContent = options.message || 'Preparing the complete video';
   let cancelled = false;
   let requestClose;
   const closePromise = new Promise((resolve) => { requestClose = resolve; });
   const closeButton = overlay.querySelector('[data-close-how]');
+  closeButton?.setAttribute('aria-label', `Close ${videoName} video`);
   const close = () => { cancelled = true; requestClose(); };
   closeButton?.addEventListener('click', close);
   overlay.hidden = false;
   overlay.setAttribute('aria-hidden', 'false');
+  options.beforeOpen?.();
   requestAnimationFrame(() => overlay.classList.add('open'));
   overlay.requestFullscreen?.().catch(() => {});
   try {
-    const source = await Promise.race([bufferHowVideo(), closePromise.then(() => '')]);
+    const source = await Promise.race([bufferVideo(url), closePromise.then(() => '')]);
     if (!source || cancelled) return;
     if (video.src !== source) {
       video.src = source;
@@ -214,10 +232,15 @@ async function playHowVideo() {
     await sleep(320);
     overlay.hidden = true;
     if (document.fullscreenElement === overlay) document.exitFullscreen?.().catch(() => {});
-    howVideoProgressListeners.delete(syncProgress);
+    videoProgressListeners.get(url)?.delete(syncProgress);
     closeButton?.removeEventListener('click', close);
+    options.afterClose?.();
   }
 }
+
+const playHowVideo = (options = {}) => playStudioVideo(howVideoUrl, {
+  kicker: 'How it works', message: 'Preparing the complete video', ...options
+});
 
 async function copyText(value) {
   try {
@@ -254,9 +277,16 @@ const atmosphere = () => `
     <div class="spark-field"></div><div class="stage-floor"></div>
   </div>`;
 
-const levelRail = (activePercentage = null) => `
+const levelRail = (activePercentage = null, history = [], interactive = false, reviewPosition = null) => `
   <div class="level-rail" aria-label="Question levels">
-    ${LEVELS.map((level) => `<span class="${level === Number(activePercentage) ? 'active' : ''} ${activePercentage && level > Number(activePercentage) ? 'complete' : ''}">${level}%</span>`).join('')}
+    ${LEVELS.map((level) => {
+      const item = history.find((entry) => Number(entry.percentage) === level);
+      const complete = item ? Boolean(item.revealed) : Boolean(activePercentage && level > Number(activePercentage));
+      const active = level === Number(activePercentage);
+      const reviewing = Number(item?.position) === Number(reviewPosition);
+      if (interactive && complete && !active) return `<button type="button" class="complete ${reviewing ? 'reviewing' : ''}" data-review-position="${item.position}" aria-label="Review the ${level}% question">${level}%</button>`;
+      return `<span class="${active ? 'active' : ''} ${complete ? 'complete' : ''}">${level}%</span>`;
+    }).join('')}
   </div>`;
 
 async function rpc(name, params = {}) {
@@ -288,8 +318,98 @@ function hostPage() {
   let roundTransition = null;
   let deadlineRefreshRound = '';
   let knownPlayerIds = null;
+  let reviewPosition = null;
+  let reviewShowAnswer = false;
+  let musicLibrary = null;
+  let musicOpen = false;
+  let resumeMusicAfterVideo = false;
   const arrivalUntil = new Map();
   const mediaReadyQuestions = new Set();
+  const watchedAnswerMedia = new Set();
+  const musicAudio = new Audio();
+  const savedMusic = load(MUSIC) || {};
+  const musicState = {
+    playlistId: savedMusic.playlistId || 'ambience',
+    trackIndex: Number(savedMusic.trackIndex) || 0,
+    shuffle: Boolean(savedMusic.shuffle),
+    volume: Number.isFinite(Number(savedMusic.volume)) ? Number(savedMusic.volume) : 0.68
+  };
+  musicAudio.preload = 'metadata';
+  musicAudio.volume = Math.max(0, Math.min(1, musicState.volume));
+
+  const saveMusic = () => save(MUSIC, musicState);
+  const currentPlaylist = () => musicLibrary?.playlists?.find((playlist) => playlist.id === musicState.playlistId) || musicLibrary?.playlists?.[0];
+  const currentTrack = () => currentPlaylist()?.tracks?.[musicState.trackIndex] || currentPlaylist()?.tracks?.[0];
+  const formatTime = (seconds = 0) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+
+  async function loadMusicLibrary() {
+    try {
+      const response = await fetch(musicLibraryUrl, { cache: 'force-cache' });
+      if (!response.ok) throw new Error('The nasheed library is unavailable.');
+      musicLibrary = await response.json();
+      if (!currentPlaylist()) musicState.playlistId = musicLibrary.playlists?.[0]?.id || 'ambience';
+      musicState.trackIndex = Math.min(musicState.trackIndex, Math.max(0, (currentPlaylist()?.tracks?.length || 1) - 1));
+      render();
+    } catch (caught) {
+      console.warn(caught.message);
+    }
+  }
+
+  function syncMusicProgress() {
+    const duration = Number(musicAudio.duration) || Number(currentTrack()?.duration) || 0;
+    const current = Number(musicAudio.currentTime) || 0;
+    app.querySelectorAll('[data-music-progress]').forEach((element) => {
+      element.style.setProperty('--music-progress', `${duration ? Math.min(100, (current / duration) * 100) : 0}%`);
+      if (element.matches('input')) element.value = duration ? String((current / duration) * 100) : '0';
+    });
+    const elapsed = app.querySelector('[data-music-elapsed]');
+    if (elapsed) elapsed.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
+  }
+
+  async function playMusicTrack(index = musicState.trackIndex) {
+    const playlist = currentPlaylist();
+    if (!playlist?.tracks?.length) return;
+    musicState.trackIndex = Math.max(0, Math.min(index, playlist.tracks.length - 1));
+    const track = currentTrack();
+    if (musicAudio.dataset.trackId !== track.id) {
+      musicAudio.src = track.src;
+      musicAudio.dataset.trackId = track.id;
+      musicAudio.load();
+    }
+    saveMusic();
+    try {
+      await musicAudio.play();
+      error = '';
+    } catch {
+      error = 'Press play again to start the selected nasheed.';
+    }
+    render();
+  }
+
+  function moveMusic(direction = 1) {
+    const playlist = currentPlaylist();
+    if (!playlist?.tracks?.length) return;
+    const next = musicState.shuffle
+      ? Math.floor(Math.random() * playlist.tracks.length)
+      : (musicState.trackIndex + direction + playlist.tracks.length) % playlist.tracks.length;
+    playMusicTrack(next);
+  }
+
+  const pauseMusicForVideo = () => {
+    resumeMusicAfterVideo = !musicAudio.paused;
+    if (resumeMusicAfterVideo) musicAudio.pause();
+  };
+  const restoreMusicAfterVideo = () => {
+    if (resumeMusicAfterVideo) musicAudio.play().catch(() => {});
+    resumeMusicAfterVideo = false;
+    render();
+  };
+
+  musicAudio.addEventListener('timeupdate', syncMusicProgress);
+  musicAudio.addEventListener('loadedmetadata', syncMusicProgress);
+  musicAudio.addEventListener('ended', () => moveMusic(1));
+  musicAudio.addEventListener('play', () => render());
+  musicAudio.addEventListener('pause', () => render());
 
   const flash = (message) => {
     notice = message;
@@ -330,12 +450,19 @@ function hostPage() {
           render();
         });
       }
+      if (snapshot?.question?.answer_image_path && !decodedMedia.has(snapshot.question.answer_image_path) && !watchedAnswerMedia.has(snapshot.question.id)) {
+        watchedAnswerMedia.add(snapshot.question.id);
+        decodeImage(snapshot.question.answer_image_path, 'low').then(() => render()).catch(() => {});
+      }
       if (next?.next_question && !mediaReadyQuestions.has(next.next_question.id)) {
         prepareQuestionMedia(next.next_question).then(() => {
           mediaReadyQuestions.add(next.next_question.id);
         }).catch(() => {});
       }
-      if (snapshot?.game?.phase === 'lobby') bufferHowVideo().catch(() => {});
+      if (snapshot?.game?.phase === 'lobby') {
+        bufferVideo(howVideoUrl).catch(() => {});
+        bufferVideo(passVideoUrl).catch(() => {});
+      }
     } catch (caught) {
       if (error !== caught.message) {
         error = caught.message;
@@ -401,8 +528,13 @@ function hostPage() {
         sessionStorage.setItem(passIntroKey, 'shown');
         roundTransition = { mode: 'pass', count: null };
         render();
-        await Promise.all([mediaPromise, sleep(1500)]);
-        await playHowVideo();
+        await Promise.all([mediaPromise, sleep(900)]);
+        await playStudioVideo(passVideoUrl, {
+          kicker: 'The pass',
+          message: 'Preparing the pass introduction',
+          beforeOpen: pauseMusicForVideo,
+          afterClose: restoreMusicAfterVideo
+        });
       } else {
         await mediaPromise;
       }
@@ -429,7 +561,10 @@ function hostPage() {
     busy = true;
     render();
     try {
-      if (ending?.id && hasSupabase) await rpc('host_end_game', { p_game_id: ending.id, p_host_token: ending.token });
+      if (ending?.id && hasSupabase) await Promise.race([
+        rpc('host_end_game', { p_game_id: ending.id, p_host_token: ending.token }),
+        sleep(2200)
+      ]);
     } catch (caught) {
       error = caught.message;
     } finally {
@@ -440,6 +575,22 @@ function hostPage() {
       busy = false;
       render();
     }
+  }
+
+  function startFreshGame() {
+    const ending = creds;
+    stop();
+    localStorage.removeItem(HOST);
+    creds = null;
+    snapshot = null;
+    reviewPosition = null;
+    busy = false;
+    error = '';
+    render();
+    if (ending?.id && hasSupabase) rpc('host_end_game', {
+      p_game_id: ending.id,
+      p_host_token: ending.token
+    }).catch(() => {});
   }
 
   const playerList = (players, currentRound = 0) => {
@@ -453,12 +604,85 @@ function hostPage() {
       const waiting = Number(player.eligible_from_round || 0) > Number(currentRound);
       const arriving = Number(arrivalUntil.get(player.id) || 0) > Date.now();
       return `
-      <div class="player-chip ${player.has_locked_answer ? 'submitted' : ''} ${player.is_alive ? '' : 'out'} ${arriving ? 'arriving' : ''}" style="--delay:${index * 45}ms">
+      <div class="player-chip ${player.used_pass ? 'passed' : player.has_locked_answer ? 'submitted' : ''} ${player.is_alive ? '' : 'out'} ${arriving ? 'arriving' : ''}" style="--delay:${index * 45}ms">
         <span class="player-avatar">${esc(player.name.slice(0, 1).toUpperCase())}</span>
         <span class="player-name">${esc(player.name)}</span>
-        <span class="player-state">${waiting ? 'Next round' : player.is_alive ? (player.has_locked_answer ? `${icon('check')} Locked` : 'Ready') : 'Spectating'}</span>
+        <span class="player-state">${waiting ? 'Next round' : player.is_alive ? (player.used_pass ? '<span class="pass-mini">P</span> Pass used' : player.has_locked_answer ? `${icon('check')} Locked` : 'Ready') : 'Spectating'}</span>
       </div>`;
     }).join('');
+  };
+
+  const musicButton = () => {
+    const track = currentTrack();
+    return `<button class="music-launch ${!musicAudio.paused ? 'playing' : ''}" type="button" data-music-toggle aria-label="Open nasheed player">
+      <span class="music-launch-icon">${icon(musicAudio.paused ? 'music' : 'pause')}<i></i></span>
+      <span><small>Nasheed player</small><strong>${esc(track?.title || (musicLibrary ? 'Choose a track' : 'Loading library…'))}</strong></span>
+    </button>`;
+  };
+
+  const musicPanel = () => {
+    if (!musicOpen) return '';
+    if (!musicLibrary) return `<div class="music-scrim" data-music-close><section class="music-panel loading" role="dialog" aria-label="Nasheed player" onclick="event.stopPropagation()"><button class="round-icon-button music-close" data-music-close type="button" aria-label="Close">${icon('x')}</button><span class="media-spinner"><i></i></span><strong>Preparing your nasheed archive</strong><small>Loading all three WMC playlists…</small></section></div>`;
+    const playlist = currentPlaylist();
+    const track = currentTrack();
+    const duration = Number(musicAudio.duration) || Number(track?.duration) || 0;
+    return `<div class="music-scrim" data-music-close>
+      <section class="music-panel" role="dialog" aria-label="Nasheed player" onclick="event.stopPropagation()">
+        <header class="music-panel-head">
+          <div><span class="broadcast-kicker"><i></i> WMC sound</span><h2>Nasheed archive</h2></div>
+          <button class="round-icon-button music-close" data-music-close type="button" aria-label="Close nasheed player">${icon('x')}</button>
+        </header>
+        <div class="playlist-switcher">
+          ${musicLibrary.playlists.map((item) => `<button type="button" class="playlist-card ${item.id === playlist?.id ? 'active' : ''}" data-playlist="${esc(item.id)}"><img src="${esc(item.cover)}" alt=""><span><strong>${esc(item.title)}</strong><small>${item.tracks.length} tracks</small></span></button>`).join('')}
+        </div>
+        <div class="now-playing">
+          <img src="${esc(playlist?.cover || '')}" alt="${esc(playlist?.title || '')} cover">
+          <div class="now-playing-copy"><small>${musicAudio.paused ? 'Ready to play' : 'Now playing'} · ${esc(playlist?.title || '')}</small><strong>${esc(track?.title || 'Choose a track')}</strong><span>${esc(playlist?.description || '')}</span></div>
+          <div class="transport-controls">
+            <button type="button" data-music-shuffle class="${musicState.shuffle ? 'active' : ''}" aria-label="Shuffle">${icon('shuffle')}</button>
+            <button type="button" data-music-prev aria-label="Previous track">${icon('previous')}</button>
+            <button type="button" class="transport-play" data-music-play aria-label="${musicAudio.paused ? 'Play' : 'Pause'}">${icon(musicAudio.paused ? 'play' : 'pause')}</button>
+            <button type="button" data-music-next aria-label="Next track">${icon('next')}</button>
+          </div>
+        </div>
+        <div class="music-timeline">
+          <input type="range" min="0" max="100" value="${duration ? (musicAudio.currentTime / duration) * 100 : 0}" data-music-progress aria-label="Track position">
+          <small data-music-elapsed>${formatTime(musicAudio.currentTime)} / ${formatTime(duration)}</small>
+          <label>${icon('volume')}<input type="range" min="0" max="1" step="0.01" value="${musicState.volume}" data-music-volume aria-label="Volume"></label>
+        </div>
+        <div class="track-list" aria-label="${esc(playlist?.title || '')} tracks">
+          ${playlist?.tracks?.map((item, index) => `<button type="button" class="track-row ${index === musicState.trackIndex ? 'active' : ''}" data-track="${index}"><span class="track-number">${index === musicState.trackIndex && !musicAudio.paused ? icon('music') : String(index + 1).padStart(2, '0')}</span><span><strong>${esc(item.title)}</strong><small>${formatTime(item.duration)}</small></span>${index === musicState.trackIndex ? '<i>Selected</i>' : ''}</button>`).join('') || ''}
+        </div>
+      </section>
+    </div>`;
+  };
+
+  async function openHistory(position) {
+    const item = snapshot?.history?.find((entry) => Number(entry.position) === Number(position));
+    if (!item?.revealed) return;
+    reviewPosition = Number(position);
+    reviewShowAnswer = false;
+    render();
+    try {
+      await prepareQuestionMedia(item, { waitForAnswer: true });
+      render();
+    } catch (caught) {
+      error = caught.message;
+      render();
+    }
+  }
+
+  const historyReviewStage = (item) => {
+    const originalImage = reviewShowAnswer ? (item.answer_image_path || item.question_image_path) : item.question_image_path;
+    const displayImage = decodedMedia.get(originalImage) || webMediaPath(originalImage);
+    return `<div class="question-stage history-stage">
+      <div class="question-meta">
+        <div class="round-ident"><span class="percentage-medallion"><span><strong>${item.percentage}</strong><small>%</small></span></span><div><span class="broadcast-kicker"><i></i> Question history</span><h1>${reviewShowAnswer ? 'Answer freeze-frame' : 'Question freeze-frame'}</h1></div></div>
+        <div class="history-badge">Review only · live game paused visually</div>
+      </div>
+      <div class="question-frame ${reviewShowAnswer ? 'answer-frame' : ''}"><div class="frame-glow"></div><img src="${esc(displayImage)}" alt="${reviewShowAnswer ? 'Answer' : 'Question'} slide" data-question-image title="Double-click to toggle image fullscreen">${reviewShowAnswer ? '<span class="reveal-ribbon">Answer</span>' : ''}</div>
+      <div class="control-dock question-controls"><div class="phase-caption"><span>The live round is unchanged</span><small>You are viewing a completed question.</small></div><div class="dock-actions"><button class="btn ghost" type="button" data-history-answer>${icon('eye')} ${reviewShowAnswer ? 'Show question' : 'Show answer'}</button><button class="btn primary" type="button" data-history-close>Return to live game ${icon('arrow')}</button></div></div>
+    </div>`;
   };
 
   const lobbyStage = (game, players) => {
@@ -501,6 +725,9 @@ function hostPage() {
     const revealSeconds = game.phase === 'locked' && game.reveal_at
       ? Math.max(0, Math.ceil((new Date(game.reveal_at) - Date.now()) / 1000))
       : 0;
+    const advanceSeconds = game.phase === 'revealed' && game.advance_at
+      ? Math.max(0, Math.ceil((new Date(game.advance_at) - Date.now()) / 1000))
+      : 20;
     const originalImage = game.phase === 'revealed'
       ? (question?.answer_image_path || question?.question_image_path)
       : question?.question_image_path;
@@ -508,11 +735,13 @@ function hostPage() {
     const phaseName = game.phase === 'revealed' ? 'Answer reveal' : game.phase === 'locked' ? 'Answers locked' : timerRunning ? 'Timer live' : 'Question ready';
     const primaryAction = game.phase === 'question' && !timerRunning
       ? `<button class="btn primary wide" data-start-round="resume" ${mediaReadyQuestions.has(question?.id) && !busy ? '' : 'disabled'}>${icon('play')} ${mediaReadyQuestions.has(question?.id) ? 'Start question' : 'Preparing question…'}</button>`
+      : timerRunning
+        ? `<button class="btn ghost wide" data-action="lock" ${busy ? 'disabled' : ''}>${icon('lock')} End timer now</button>`
       : game.phase === 'revealed'
-          ? `<button class="btn primary wide" data-start-round="next">Next question ${icon('arrow')}</button>`
+          ? `<button class="btn primary wide" data-start-round="next">Next question now ${icon('arrow')}</button>`
           : '';
     return `
-      <div class="question-stage view-enter ${game.phase === 'revealed' ? 'is-reveal' : ''}">
+      <div class="question-stage ${game.phase === 'revealed' ? 'is-reveal' : ''}">
         <div class="question-meta">
           <div class="round-ident">
             <span class="percentage-medallion"><span><strong>${question?.percentage || '–'}</strong><small>%</small></span></span>
@@ -526,24 +755,30 @@ function hostPage() {
         </div>
         <div class="question-frame ${game.phase === 'revealed' ? 'answer-frame' : ''}">
           <div class="frame-glow"></div>
-          ${game.phase === 'locked' ? `
-            ${displayImage ? `<img class="time-up-backdrop" src="${esc(displayImage)}" alt="">` : ''}
-            <div class="time-up-burst"><span>Answers locked</span><strong>Time's up!</strong><small>Answer revealing in <b data-reveal-countdown>${revealSeconds}</b></small></div>`
+          ${game.phase === 'locked' ? '<div class="question-ready-card"><strong>Answers are locked</strong></div>'
             : game.phase === 'question' && !timerRunning ? `
               <div class="question-ready-card"><span class="media-spinner"><i></i></span><strong>${mediaReadyQuestions.has(question?.id) ? 'Question ready' : 'Preparing question'}</strong><small>${mediaReadyQuestions.has(question?.id) ? 'Press Start question when everyone is ready.' : 'Loading the complete artwork before it appears.'}</small></div>`
+            : game.phase === 'revealed' && question?.answer_image_path && !displayImage ? '<div class="question-ready-card"><span class="media-spinner"><i></i></span><strong>Preparing the answer reveal</strong><small>The complete answer slide will appear together.</small></div>'
             : displayImage ? `<img src="${esc(displayImage)}" alt="${game.phase === 'revealed' ? 'Answer' : 'Question'} slide" data-question-image title="Double-click for image fullscreen">`
             : `<div class="question-copy">${esc(question?.question_text || 'Preparing question artwork…')}</div>`}
           ${game.phase === 'revealed' ? '<span class="reveal-ribbon">Answer</span>' : ''}
         </div>
         ${game.phase === 'revealed' && !question?.answer_image_path ? `<div class="answer-reveal"><span>Correct answer</span><strong>${esc(question?.answer_text)}</strong></div>` : ''}
+        ${game.phase === 'revealed' ? `<div class="auto-advance-card"><div><span>Automatic next question</span><strong>Continuing in <b data-auto-countdown>${advanceSeconds}</b> seconds</strong></div><div class="auto-advance-track"><i data-auto-progress style="--auto-progress:${Math.max(0, Math.min(100, advanceSeconds / 20 * 100))}%"></i></div><small>Use “Next question now” whenever the room is ready.</small></div>` : ''}
         <div class="control-dock question-controls">
-          <div class="phase-caption"><span>Round ${Number(game.current_round) + 1} of ${LEVELS.length}</span><small>${timerRunning ? 'Submissions are open' : game.phase === 'question' ? 'Players can see answer controls after the timer starts' : 'Host controls the pace'}</small></div>
+          <div class="phase-caption"><span>${timerRunning ? (submitted === alive.length && alive.length ? 'Everyone has answered' : 'Submissions are open') : game.phase === 'question' ? 'Ready when the room is' : game.phase === 'revealed' ? 'Automatic advance is armed' : 'Answers are closed'}</span><small>${timerRunning ? 'End the timer early whenever everyone is ready.' : game.phase === 'question' ? 'Players see answer controls when the timer starts.' : 'The host can continue immediately.'}</small></div>
           <div class="dock-actions">
             ${primaryAction}
             <button class="btn danger icon-only" type="button" data-leave aria-label="End session">${icon('power')}</button>
           </div>
         </div>
       </div>`;
+  };
+
+  const timeUpScreen = (game) => {
+    if (game?.phase !== 'locked') return '';
+    const revealSeconds = game.reveal_at ? Math.max(0, Math.ceil((new Date(game.reveal_at) - Date.now()) / 1000)) : 0;
+    return `<div class="time-up-screen" role="status"><div class="time-up-rays" aria-hidden="true"></div><span class="broadcast-kicker"><i></i> Answers locked</span><strong>Time's up!</strong><small>Answer revealing in <b data-reveal-countdown>${revealSeconds}</b></small><div class="time-up-count" data-time-up-count>${revealSeconds}</div></div>`;
   };
 
   const roundTransitionScreen = (question) => {
@@ -553,7 +788,7 @@ function hostPage() {
         <div class="transition-rings" aria-hidden="true"><i></i><i></i><i></i></div>
         <span class="broadcast-kicker"><i></i> New from the 60% question</span>
         <strong>The pass is now in play.</strong>
-        <small>How It Works is about to begin.</small>
+        <small>The pass introduction is ready.</small>
       </div>`;
     if (roundTransition.mode === 'countdown') return `
       <div class="round-transition countdown-intro" role="status">
@@ -602,6 +837,9 @@ function hostPage() {
         </div>`;
     } else if (!snapshot) {
       stage = `<div class="connecting-stage view-enter"><span class="signal-loader"><i></i><i></i><i></i></span><p class="broadcast-kicker">Reconnecting securely</p><h1>Opening room ${esc(creds.pin)}…</h1><p>Your host controls are being restored.</p></div>`;
+    } else if (reviewPosition !== null) {
+      const historyItem = snapshot.history?.find((item) => Number(item.position) === Number(reviewPosition));
+      stage = historyItem ? historyReviewStage(historyItem) : questionStage(game, question, players);
     } else if (game.phase === 'lobby') {
       stage = lobbyStage(game, players);
     } else if (game.phase === 'finished') {
@@ -611,7 +849,7 @@ function hostPage() {
           <span class="broadcast-kicker"><i></i> Game complete</span>
           <h1>${alive.length ? 'Still standing' : 'That was The 1% Club'}</h1>
           <p class="finalists">${alive.length ? alive.map((player) => esc(player.name)).join(' · ') : 'Thanks for playing'}</p>
-          <button class="btn primary" data-leave>Start another game ${icon('arrow')}</button>
+          <button class="btn primary" data-new-game>Start another game ${icon('arrow')}</button>
         </div>`;
     } else {
       stage = questionStage(game, question, players);
@@ -623,8 +861,8 @@ function hostPage() {
       <div class="host-shell">
         <header class="host-topbar">
           ${brand('host-brand')}
-          ${levelRail(currentPercentage)}
-          <div class="header-actions">${connectionPill()}<button class="round-icon-button" type="button" data-fullscreen aria-label="Enter fullscreen">${icon('expand')}</button></div>
+          ${levelRail(currentPercentage, snapshot?.history || [], Boolean(creds && game && (game.phase === 'revealed' || (game.phase === 'question' && !game.ends_at))), reviewPosition)}
+          <div class="header-actions">${musicButton()}${connectionPill()}<button class="round-icon-button" type="button" data-fullscreen aria-label="Enter fullscreen">${icon('expand')}</button></div>
         </header>
         ${error ? `<div class="notice bad global-notice">${err(error)}</div>` : ''}
         ${notice ? `<div class="toast" role="status">${icon('check')} ${esc(notice)}</div>` : ''}
@@ -638,15 +876,50 @@ function hostPage() {
           </aside>` : ''}
         </main>
         ${roundTransitionScreen(question)}
+        ${timeUpScreen(game)}
+        ${musicPanel()}
       </div>`;
 
     app.querySelector('#create-game')?.addEventListener('submit', (event) => { event.preventDefault(); create(event.currentTarget); });
     app.querySelector('[data-fullscreen]')?.addEventListener('click', () => document.documentElement.requestFullscreen?.());
     app.querySelector('[data-leave]')?.addEventListener('click', leave);
+    app.querySelector('[data-new-game]')?.addEventListener('click', startFreshGame);
     app.querySelectorAll('[data-action]').forEach((button) => button.addEventListener('click', () => act(button.dataset.action)));
     app.querySelectorAll('[data-start-round]').forEach((button) => button.addEventListener('click', () => stageAndStartRound(button.dataset.startRound)));
-    app.querySelector('[data-how]')?.addEventListener('click', playHowVideo);
-    app.querySelector('[data-question-image]')?.addEventListener('dblclick', (event) => event.currentTarget.requestFullscreen?.());
+    app.querySelector('[data-how]')?.addEventListener('click', () => playHowVideo({ beforeOpen: pauseMusicForVideo, afterClose: restoreMusicAfterVideo }));
+    app.querySelector('[data-question-image]')?.addEventListener('dblclick', (event) => {
+      if (document.fullscreenElement === event.currentTarget) document.exitFullscreen?.().catch(() => {});
+      else event.currentTarget.requestFullscreen?.().catch(() => {});
+    });
+    app.querySelectorAll('[data-review-position]').forEach((button) => button.addEventListener('click', () => openHistory(button.dataset.reviewPosition)));
+    app.querySelector('[data-history-close]')?.addEventListener('click', () => { reviewPosition = null; reviewShowAnswer = false; render(); });
+    app.querySelector('[data-history-answer]')?.addEventListener('click', () => { reviewShowAnswer = !reviewShowAnswer; render(); });
+    app.querySelector('[data-music-toggle]')?.addEventListener('click', () => { musicOpen = !musicOpen; render(); });
+    app.querySelectorAll('[data-music-close]').forEach((element) => element.addEventListener('click', (event) => {
+      if (event.currentTarget.classList.contains('music-scrim') && event.target !== event.currentTarget) return;
+      musicOpen = false;
+      render();
+    }));
+    app.querySelectorAll('[data-playlist]').forEach((button) => button.addEventListener('click', () => {
+      musicState.playlistId = button.dataset.playlist;
+      musicState.trackIndex = 0;
+      saveMusic();
+      playMusicTrack(0);
+    }));
+    app.querySelectorAll('[data-track]').forEach((button) => button.addEventListener('click', () => playMusicTrack(Number(button.dataset.track))));
+    app.querySelector('[data-music-play]')?.addEventListener('click', () => musicAudio.paused ? playMusicTrack() : musicAudio.pause());
+    app.querySelector('[data-music-prev]')?.addEventListener('click', () => moveMusic(-1));
+    app.querySelector('[data-music-next]')?.addEventListener('click', () => moveMusic(1));
+    app.querySelector('[data-music-shuffle]')?.addEventListener('click', () => { musicState.shuffle = !musicState.shuffle; saveMusic(); render(); });
+    app.querySelector('[data-music-volume]')?.addEventListener('input', (event) => {
+      musicState.volume = Number(event.target.value);
+      musicAudio.volume = musicState.volume;
+      saveMusic();
+    });
+    app.querySelector('[data-music-progress]')?.addEventListener('input', (event) => {
+      if (Number.isFinite(musicAudio.duration)) musicAudio.currentTime = Number(event.target.value) / 100 * musicAudio.duration;
+      syncMusicProgress();
+    });
     app.querySelectorAll('[data-copy-pin]').forEach((button) => button.addEventListener('click', async () => {
       const copied = await copyText(button.dataset.copyPin);
       flash(copied ? `PIN ${button.dataset.copyPin} copied` : `PIN: ${button.dataset.copyPin}`);
@@ -682,8 +955,10 @@ function hostPage() {
         const left = Math.max(0, Math.ceil((new Date(game.reveal_at) - Date.now()) / 1000));
         const timer = app.querySelector('[data-timer] > span');
         const caption = app.querySelector('[data-reveal-countdown]');
+        const centreCount = app.querySelector('[data-time-up-count]');
         if (timer) timer.textContent = left;
         if (caption) caption.textContent = left;
+        if (centreCount) centreCount.textContent = left;
         if (left === 0 && deadlineRefreshRound !== `reveal:${snapshot?.round?.id}`) {
           deadlineRefreshRound = `reveal:${snapshot?.round?.id || ''}`;
           refresh();
@@ -691,9 +966,25 @@ function hostPage() {
       };
       tickReveal();
       ticker = setInterval(tickReveal, 250);
+    } else if (game?.phase === 'revealed' && game.advance_at && reviewPosition === null) {
+      const tickAdvance = () => {
+        const left = Math.max(0, Math.ceil((new Date(game.advance_at) - Date.now()) / 1000));
+        const caption = app.querySelector('[data-auto-countdown]');
+        const progress = app.querySelector('[data-auto-progress]');
+        if (caption) caption.textContent = left;
+        if (progress) progress.style.setProperty('--auto-progress', `${Math.max(0, Math.min(100, left / 20 * 100))}%`);
+        if (left === 0 && deadlineRefreshRound !== `advance:${snapshot?.round?.id}`) {
+          deadlineRefreshRound = `advance:${snapshot?.round?.id || ''}`;
+          stageAndStartRound('next');
+        }
+      };
+      tickAdvance();
+      ticker = setInterval(tickAdvance, 250);
     }
+    syncMusicProgress();
   }
 
+  loadMusicLibrary();
   if (creds) {
     stop = watch(creds.id, refresh);
     refresh();
@@ -881,15 +1172,15 @@ function playerPage() {
     } else if (game.phase === 'question' && !player.has_locked_answer && !locallyExpired) {
       const seconds = Math.max(0, Math.ceil((new Date(game.ends_at) - Date.now()) / 1000));
       body = `
-        <div class="answer-card view-enter">
+        <div class="answer-card">
           <div class="answer-heading"><div><span class="broadcast-kicker"><i></i> ${question.percentage}% question</span><h1>Lock in your answer</h1></div><span class="mini-timer ${seconds <= 5 ? 'low' : ''}" data-player-timer>${seconds}</span></div>
           ${error ? `<div class="notice bad">${err(error)}</div>` : ''}
           <p class="answer-rule">Submission is final! Answer wisely.</p>
           <form class="stack" id="answer-form">
             ${question.answer_kind === 'choice' ? `
               <div class="choice-grid">${(question.choices || []).map((choice, index) => {
-                const value = choice.match(/^([A-D])\b/)?.[1] || String.fromCharCode(65 + index);
-                const label = choice.replace(/^([A-D])\s*[—:-]\s*/, '');
+                const value = choice.match(/^([A-Z])\b/)?.[1] || String.fromCharCode(65 + index);
+                const label = choice.replace(/^([A-Z])\s*[—:-]\s*/, '');
                 const displayLabel = label === value ? `Option ${value}` : (label || choice);
                 return `<button type="button" class="choice ${selected === value ? 'selected' : ''}" data-choice="${esc(value)}"><span>${esc(value)}</span><strong>${esc(displayLabel)}</strong>${selected === value ? icon('check') : ''}</button>`;
               }).join('')}</div><input type="hidden" name="answer" value="${esc(selected)}" required>`

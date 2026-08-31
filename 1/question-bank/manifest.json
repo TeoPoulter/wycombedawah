@@ -33,8 +33,7 @@
       "choices": [
         "A",
         "B",
-        "C",
-        "D"
+        "C"
       ],
       "acceptedAnswers": [
         "B"
@@ -53,8 +52,7 @@
       "choices": [
         "A",
         "B",
-        "C",
-        "D"
+        "C"
       ],
       "acceptedAnswers": [
         "B"
@@ -72,9 +70,7 @@
       "answerText": "A",
       "choices": [
         "A",
-        "B",
-        "C",
-        "D"
+        "B"
       ],
       "acceptedAnswers": [
         "A"
@@ -137,9 +133,7 @@
       "answerText": "B",
       "choices": [
         "A",
-        "B",
-        "C",
-        "D"
+        "B"
       ],
       "acceptedAnswers": [
         "B"
@@ -273,8 +267,7 @@
       "choices": [
         "A",
         "B",
-        "C",
-        "D"
+        "C"
       ],
       "acceptedAnswers": [
         "A"
@@ -293,8 +286,7 @@
       "choices": [
         "A",
         "B",
-        "C",
-        "D"
+        "C"
       ],
       "acceptedAnswers": [
         "A"
@@ -333,8 +325,7 @@
       "choices": [
         "A",
         "B",
-        "C",
-        "D"
+        "C"
       ],
       "acceptedAnswers": [
         "A"
@@ -373,8 +364,7 @@
       "choices": [
         "A",
         "B",
-        "C",
-        "D"
+        "C"
       ],
       "acceptedAnswers": [
         "C"
@@ -393,8 +383,7 @@
       "choices": [
         "A",
         "B",
-        "C",
-        "D"
+        "C"
       ],
       "acceptedAnswers": [
         "C"
@@ -413,8 +402,7 @@
       "choices": [
         "A",
         "B",
-        "C",
-        "D"
+        "C"
       ],
       "acceptedAnswers": [
         "B"
@@ -448,8 +436,7 @@
       "choices": [
         "A",
         "B",
-        "C",
-        "D"
+        "C"
       ],
       "acceptedAnswers": [
         "C"
@@ -503,8 +490,7 @@
       "choices": [
         "A",
         "B",
-        "C",
-        "D"
+        "C"
       ],
       "acceptedAnswers": [
         "A"
@@ -678,8 +664,7 @@
       "choices": [
         "A",
         "B",
-        "C",
-        "D"
+        "C"
       ],
       "acceptedAnswers": [
         "C"
@@ -773,8 +758,7 @@
       "choices": [
         "A",
         "B",
-        "C",
-        "D"
+        "C"
       ],
       "acceptedAnswers": [
         "A"
