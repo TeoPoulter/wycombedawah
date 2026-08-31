@@ -78,6 +78,12 @@ const friendlySubmitError = (error) => {
   return message || 'Your answer could not be submitted.';
 };
 
+const friendlyConnectionError = (error) => {
+  const message = String(error?.message || error || '');
+  if (/fetch|network|offline|load failed/i.test(message)) return 'Connection interrupted. Reconnecting…';
+  return message || 'The live game connection was interrupted. Reconnecting…';
+};
+
 const normalisePin = (raw = '') => {
   const value = String(raw).trim();
   try {
@@ -355,6 +361,10 @@ function hostPage() {
   let launchTransition = false;
   let lastHostViewKey = '';
   let operationEpoch = 0;
+  let refreshRequest = 0;
+  let appliedRefresh = 0;
+  let reviewRemainingMs = 0;
+  let reviewResumeAt = 0;
   const animatedQuestionFrames = new Set();
   const animatedAnswerFrames = new Set();
   const arrivalUntil = new Map();
@@ -456,10 +466,14 @@ function hostPage() {
     if (!creds || !hasSupabase) return;
     const active = creds;
     const epoch = operationEpoch;
+    const request = ++refreshRequest;
     const previousPhase = snapshot?.game?.phase;
+    const previousRoundId = snapshot?.round?.id;
     try {
       const next = await rpc('host_game_snapshot', { p_game_id: active.id, p_host_token: active.token });
       if (epoch !== operationEpoch || creds?.id !== active.id) return;
+      if (request < appliedRefresh) return;
+      appliedRefresh = request;
       const hadError = Boolean(error);
       const changed = JSON.stringify(next) !== JSON.stringify(snapshot);
       const nextPlayerIds = new Set((next?.players || []).map((player) => player.id));
@@ -473,6 +487,10 @@ function hostPage() {
       }
       knownPlayerIds = nextPlayerIds;
       snapshot = next;
+      if (snapshot?.round?.id !== previousRoundId || snapshot?.game?.phase !== 'revealed') {
+        reviewRemainingMs = 0;
+        reviewResumeAt = 0;
+      }
       if (snapshot?.game?.phase === 'locked' && previousPhase !== 'locked') musicOpen = false;
       if (!snapshot?.game) {
         localStorage.removeItem(HOST);
@@ -504,8 +522,10 @@ function hostPage() {
         bufferVideo(passVideoUrl).catch(() => {});
       }
     } catch (caught) {
-      if (error !== caught.message) {
-        error = caught.message;
+      if (epoch !== operationEpoch || request < appliedRefresh) return;
+      const message = friendlyConnectionError(caught);
+      if (error !== message) {
+        error = message;
         render();
       }
     }
@@ -576,7 +596,10 @@ function hostPage() {
         await refresh();
       }
       if (epoch !== operationEpoch || creds?.id !== active.id) return;
-      if (!snapshot?.game || snapshot.game.phase === 'finished') return;
+      if (!snapshot?.game || snapshot.game.phase === 'finished') {
+        roundTransition = null;
+        return;
+      }
       const question = snapshot.question;
       if (!question?.id) throw new Error('The next question could not be prepared. Please try again.');
       const mediaPromise = prepareQuestionMedia(question).then(() => mediaReadyQuestions.add(question.id));
@@ -627,6 +650,8 @@ function hostPage() {
     snapshot = null;
     reviewPosition = null;
     reviewShowAnswer = false;
+    reviewRemainingMs = 0;
+    reviewResumeAt = 0;
     roundTransition = null;
     launchTransition = false;
     deadlineRefreshRound = '';
@@ -651,6 +676,8 @@ function hostPage() {
     snapshot = null;
     reviewPosition = null;
     reviewShowAnswer = false;
+    reviewRemainingMs = 0;
+    reviewResumeAt = 0;
     roundTransition = null;
     launchTransition = false;
     deadlineRefreshRound = '';
@@ -731,6 +758,11 @@ function hostPage() {
   async function openHistory(position) {
     const item = snapshot?.history?.find((entry) => Number(entry.position) === Number(position));
     if (!item?.revealed) return;
+    if (reviewPosition === null && snapshot?.game?.phase === 'revealed' && snapshot.game.advance_at) {
+      const activeDeadline = reviewResumeAt || new Date(snapshot.game.advance_at).getTime();
+      reviewRemainingMs = Math.max(1000, activeDeadline - Date.now());
+      reviewResumeAt = 0;
+    }
     reviewPosition = Number(position);
     reviewShowAnswer = false;
     render();
@@ -755,15 +787,15 @@ function hostPage() {
 
   const historyReviewStage = (item) => {
     const originalImage = reviewShowAnswer ? (item.answer_image_path || item.question_image_path) : item.question_image_path;
-    const displayImage = decodedMedia.get(originalImage) || webMediaPath(originalImage);
+    const displayImage = decodedMedia.get(originalImage) || '';
     return `<div class="question-stage history-stage">
       <div class="question-meta">
         <div class="round-ident"><span class="percentage-medallion"><span><strong>${item.percentage}</strong><small>%</small></span></span><div><span class="broadcast-kicker"><i></i> Question history</span><h1>${item.percentage}% ${reviewShowAnswer ? 'answer' : 'question'}</h1></div></div>
         <div class="history-badge">Reviewing completed question</div>
       </div>
-      <div class="question-frame ${reviewShowAnswer ? 'answer-frame' : ''}"><div class="frame-glow"></div><img src="${esc(displayImage)}" alt="${reviewShowAnswer ? 'Answer' : 'Question'} slide" data-question-image title="Double-click to toggle image fullscreen">${reviewShowAnswer ? '<span class="reveal-ribbon">Answer</span>' : ''}</div>
+      <div class="question-frame ${reviewShowAnswer ? 'answer-frame' : ''}"><div class="frame-glow"></div>${displayImage ? `<img src="${esc(displayImage)}" alt="${reviewShowAnswer ? 'Answer' : 'Question'} slide" data-question-image title="Double-click to toggle image fullscreen">` : '<div class="question-ready-card"><span class="media-spinner"><i></i></span><strong>Preparing this slide</strong><small>One moment</small></div>'}${reviewShowAnswer ? '<span class="reveal-ribbon">Answer</span>' : ''}</div>
       <div class="history-summary">${roundStats(item)}</div>
-      <div class="control-dock question-controls"><div class="phase-caption"><span>Completed question</span><small>Auto-advance pauses while history is open.</small></div><div class="dock-actions"><button class="btn ghost" type="button" data-history-answer>${icon('eye')} ${reviewShowAnswer ? 'Show question' : 'Show answer'}</button><button class="btn primary" type="button" data-history-close>Return to live game ${icon('arrow')}</button></div></div>
+      <div class="control-dock question-controls"><div class="phase-caption"><span>Completed question</span><small>The live countdown resumes when you return.</small></div><div class="dock-actions"><button class="btn ghost" type="button" data-history-answer>${icon('eye')} ${reviewShowAnswer ? 'Show question' : 'Show answer'}</button><button class="btn primary" type="button" data-history-close>Return to live game ${icon('arrow')}</button></div></div>
     </div>`;
   };
 
@@ -807,8 +839,9 @@ function hostPage() {
     const revealSeconds = game.phase === 'locked' && game.reveal_at
       ? Math.max(0, Math.ceil((new Date(game.reveal_at) - Date.now()) / 1000))
       : 0;
-    const advanceSeconds = game.phase === 'revealed' && game.advance_at
-      ? Math.max(0, Math.ceil((new Date(game.advance_at) - Date.now()) / 1000))
+    const advanceDeadline = reviewResumeAt || (game.advance_at ? new Date(game.advance_at).getTime() : 0);
+    const advanceSeconds = game.phase === 'revealed' && advanceDeadline
+      ? Math.max(0, Math.ceil((advanceDeadline - Date.now()) / 1000))
       : 20;
     const originalImage = game.phase === 'revealed'
       ? (question?.answer_image_path || question?.question_image_path)
@@ -997,7 +1030,13 @@ function hostPage() {
       else event.currentTarget.requestFullscreen?.().catch(() => {});
     });
     app.querySelectorAll('[data-review-position]').forEach((button) => button.addEventListener('click', () => openHistory(button.dataset.reviewPosition)));
-    app.querySelector('[data-history-close]')?.addEventListener('click', () => { reviewPosition = null; reviewShowAnswer = false; render(); });
+    app.querySelector('[data-history-close]')?.addEventListener('click', () => {
+      if (snapshot?.game?.phase === 'revealed' && reviewRemainingMs > 0) reviewResumeAt = Date.now() + reviewRemainingMs;
+      reviewRemainingMs = 0;
+      reviewPosition = null;
+      reviewShowAnswer = false;
+      render();
+    });
     app.querySelector('[data-history-answer]')?.addEventListener('click', () => { reviewShowAnswer = !reviewShowAnswer; render(); });
     app.querySelector('[data-music-toggle]')?.addEventListener('click', () => { musicOpen = !musicOpen; render(); });
     app.querySelectorAll('[data-music-close]').forEach((element) => element.addEventListener('click', (event) => {
@@ -1071,7 +1110,8 @@ function hostPage() {
       ticker = setInterval(tickReveal, 250);
     } else if (game?.phase === 'revealed' && game.advance_at && reviewPosition === null) {
       const tickAdvance = () => {
-        const left = Math.max(0, Math.ceil((new Date(game.advance_at) - Date.now()) / 1000));
+        const deadline = reviewResumeAt || new Date(game.advance_at).getTime();
+        const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
         const caption = app.querySelector('[data-auto-countdown]');
         const progress = app.querySelector('[data-auto-progress]');
         if (caption) caption.textContent = left;
@@ -1107,6 +1147,8 @@ function playerPage() {
   let localTimeUpRound = '';
   let lastPlayerViewKey = '';
   let operationEpoch = 0;
+  let refreshRequest = 0;
+  let appliedRefresh = 0;
   const spectatorMediaRequested = new Set();
   const suppliedPin = normalisePin(new URLSearchParams(location.search).get('pin') || '');
   let joinDraft = { pin: suppliedPin, name: '' };
@@ -1115,9 +1157,12 @@ function playerPage() {
     if (!creds || !hasSupabase) return;
     const active = creds;
     const epoch = operationEpoch;
+    const request = ++refreshRequest;
     try {
       const next = await rpc('player_snapshot', { p_player_id: active.id, p_player_token: active.token });
       if (epoch !== operationEpoch || creds?.id !== active.id) return;
+      if (request < appliedRefresh) return;
+      appliedRefresh = request;
       if (suppliedPin && next?.game?.pin && normalisePin(next.game.pin) !== suppliedPin) {
         operationEpoch += 1;
         stop();
@@ -1156,8 +1201,10 @@ function playerPage() {
         }
       }
     } catch (caught) {
-      if (error !== caught.message) {
-        error = caught.message;
+      if (epoch !== operationEpoch || request < appliedRefresh) return;
+      const message = friendlyConnectionError(caught);
+      if (error !== message) {
+        error = message;
         render();
       }
     }
@@ -1286,6 +1333,15 @@ function playerPage() {
         </div>`;
     } else if (!snapshot) {
       body = `<div class="player-state-card ${enterClass}"><span class="signal-loader"><i></i><i></i><i></i></span><span class="broadcast-kicker">Connecting live</span><h1>Opening your game…</h1><p>Restoring your place in the room.</p></div>`;
+    } else if (game.phase === 'finished') {
+      body = `
+        <div class="player-state-card finale-mobile ${enterClass}">
+          ${icon('sparkle')}
+          <span class="broadcast-kicker"><i></i> Game complete</span>
+          <h1>${player.is_alive ? 'You made it!' : 'That was The 1% Club.'}</h1>
+          <p>${player.is_alive ? `Congratulations, ${esc(player.name)} — you are still standing.` : `Thanks for playing, ${esc(player.name)}. We hope you enjoyed the game.`}</p>
+          <div class="result-status">${player.is_alive ? `${icon('sparkle')} Finalist` : 'Thanks for being part of the show'}</div>
+        </div>`;
     } else if (eliminatedThisRound) {
       body = `
         <div class="player-state-card reveal-result incorrect ${enterClass}">
@@ -1300,7 +1356,7 @@ function playerPage() {
       const spectatorImagePath = game.phase === 'revealed'
         ? (question?.answer_image_path || question?.question_image_path)
         : question?.question_image_path;
-      const spectatorImage = spectatorImagePath ? (decodedMedia.get(spectatorImagePath) || webMediaPath(spectatorImagePath)) : '';
+      const spectatorImage = spectatorImagePath ? (decodedMedia.get(spectatorImagePath) || '') : '';
       const spectatorSeconds = game.ends_at ? Math.max(0, Math.ceil((new Date(game.ends_at) - Date.now()) / 1000)) : null;
       body = `
         <div class="spectator-experience ${enterClass}">
@@ -1398,13 +1454,14 @@ function playerPage() {
           <div class="result-status">${correct ? `${icon('sparkle')} Get ready for the next question` : 'You will stay connected in spectator mode'}</div>
         </div>`;
     } else {
-      body = `<div class="player-state-card finale-mobile ${enterClass}">${icon('sparkle')}<span class="broadcast-kicker"><i></i> Game complete</span><h1>That was The 1% Club.</h1><p>Thanks for playing, ${esc(player.name)}.</p></div>`;
+      body = `<div class="player-state-card ${enterClass}"><span class="signal-loader"><i></i><i></i><i></i></span><span class="broadcast-kicker"><i></i> Live update</span><h1>Stay with us…</h1><p>The next game state is arriving now.</p></div>`;
     }
 
     app.innerHTML = `
       ${atmosphere()}
       <div class="player-shell">
         ${mobileHeader(game, player)}
+        ${error && creds ? `<div class="notice bad player-global-notice">${err(error)}</div>` : ''}
         ${game && question ? levelRail(question.percentage) : ''}
         <main class="player-main">${body}</main>
         <footer class="player-footer"><span>WMC · Wycombe Muslim Collective</span><span>${creds ? '<i class="online-dot"></i> Live' : 'Live gameshow experience'}</span></footer>
