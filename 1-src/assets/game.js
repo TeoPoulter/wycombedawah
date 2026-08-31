@@ -456,9 +456,11 @@ function hostPage() {
     if (!creds || !hasSupabase) return;
     const active = creds;
     const epoch = operationEpoch;
+    const previousPhase = snapshot?.game?.phase;
     try {
       const next = await rpc('host_game_snapshot', { p_game_id: active.id, p_host_token: active.token });
       if (epoch !== operationEpoch || creds?.id !== active.id) return;
+      const hadError = Boolean(error);
       const changed = JSON.stringify(next) !== JSON.stringify(snapshot);
       const nextPlayerIds = new Set((next?.players || []).map((player) => player.id));
       if (knownPlayerIds) {
@@ -471,13 +473,14 @@ function hostPage() {
       }
       knownPlayerIds = nextPlayerIds;
       snapshot = next;
+      if (snapshot?.game?.phase === 'locked' && previousPhase !== 'locked') musicOpen = false;
       if (!snapshot?.game) {
         localStorage.removeItem(HOST);
         creds = null;
         snapshot = null;
       }
       error = '';
-      if (changed) render();
+      if (changed || hadError) render();
       if (snapshot?.question && !mediaReadyQuestions.has(snapshot.question.id)) {
         prepareQuestionMedia(snapshot.question).then(() => {
           mediaReadyQuestions.add(snapshot.question.id);
@@ -760,7 +763,7 @@ function hostPage() {
       </div>
       <div class="question-frame ${reviewShowAnswer ? 'answer-frame' : ''}"><div class="frame-glow"></div><img src="${esc(displayImage)}" alt="${reviewShowAnswer ? 'Answer' : 'Question'} slide" data-question-image title="Double-click to toggle image fullscreen">${reviewShowAnswer ? '<span class="reveal-ribbon">Answer</span>' : ''}</div>
       <div class="history-summary">${roundStats(item)}</div>
-      <div class="control-dock question-controls"><div class="phase-caption"><span>Completed question</span><small>The live game continues unchanged.</small></div><div class="dock-actions"><button class="btn ghost" type="button" data-history-answer>${icon('eye')} ${reviewShowAnswer ? 'Show question' : 'Show answer'}</button><button class="btn primary" type="button" data-history-close>Return to live game ${icon('arrow')}</button></div></div>
+      <div class="control-dock question-controls"><div class="phase-caption"><span>Completed question</span><small>Auto-advance pauses while history is open.</small></div><div class="dock-actions"><button class="btn ghost" type="button" data-history-answer>${icon('eye')} ${reviewShowAnswer ? 'Show question' : 'Show answer'}</button><button class="btn primary" type="button" data-history-close>Return to live game ${icon('arrow')}</button></div></div>
     </div>`;
   };
 
@@ -842,7 +845,7 @@ function hostPage() {
           <div class="frame-glow"></div>
           ${game.phase === 'locked' ? '<div class="question-ready-card"><strong>Answers are locked</strong></div>'
             : game.phase === 'question' && !timerRunning ? `
-              <div class="question-ready-card"><span class="media-spinner"><i></i></span><strong>${mediaReadyQuestions.has(question?.id) ? 'Question ready' : 'Preparing question'}</strong><small>${mediaReadyQuestions.has(question?.id) ? 'Press Start question when everyone is ready.' : 'Loading the complete artwork before it appears.'}</small></div>`
+              <div class="question-ready-card"><span class="media-spinner"><i></i></span><strong>${mediaReadyQuestions.has(question?.id) ? 'Question ready' : 'Preparing question'}</strong><small>${mediaReadyQuestions.has(question?.id) ? 'Start when everyone is focused.' : 'One moment.'}</small></div>`
             : game.phase === 'revealed' && question?.answer_image_path && !displayImage ? '<div class="question-ready-card"><span class="media-spinner"><i></i></span><strong>Preparing the answer reveal</strong><small>The complete answer slide will appear together.</small></div>'
             : displayImage ? `${animateQuestion ? '<div class="question-unveil" aria-hidden="true"><i></i><i></i></div>' : ''}<img src="${esc(displayImage)}" alt="${game.phase === 'revealed' ? 'Answer' : 'Question'} slide" data-question-image title="Double-click for image fullscreen">`
             : `<div class="question-copy">${esc(question?.question_text || 'Preparing question artwork…')}</div>`}
@@ -851,7 +854,7 @@ function hostPage() {
         ${game.phase === 'revealed' && !question?.answer_image_path ? `<div class="answer-reveal"><span>Correct answer</span><strong>${esc(question?.answer_text)}</strong></div>` : ''}
         ${game.phase === 'revealed' ? `<div class="answer-summary ${stats ? '' : 'countdown-only'}">${stats}<div class="auto-advance-card"><div><span>Next question</span><strong>In <b data-auto-countdown>${advanceSeconds}</b> seconds</strong></div><div class="auto-advance-track"><i data-auto-progress style="--auto-progress:${Math.max(0, Math.min(100, advanceSeconds / 20 * 100))}%"></i></div></div></div>` : ''}
         <div class="control-dock question-controls">
-          <div class="phase-caption"><span>${timerRunning ? (submitted === alive.length && alive.length ? 'Everyone has answered' : 'Answers are open') : game.phase === 'question' ? 'Ready to begin' : game.phase === 'revealed' ? 'Answer revealed' : 'Answers are closed'}</span><small>${timerRunning ? 'End the timer whenever the room is ready.' : game.phase === 'question' ? 'Start the timer to open player controls.' : game.phase === 'revealed' ? 'Continue now or allow the countdown.' : 'The answer follows automatically.'}</small></div>
+          <div class="phase-caption"><span>${timerRunning ? (submitted === alive.length && alive.length ? 'Everyone has answered' : 'Answers are open') : game.phase === 'question' ? 'Room ready' : game.phase === 'revealed' ? 'Answer revealed' : 'Answers are closed'}</span><small>${timerRunning ? 'End the timer whenever the room is ready.' : game.phase === 'question' ? 'Start when everyone is focused.' : game.phase === 'revealed' ? 'Continue now or allow the countdown.' : 'The answer follows automatically.'}</small></div>
           <div class="dock-actions">
             ${primaryAction}
             <button class="btn danger icon-only" type="button" data-leave aria-label="End session">${icon('power')}</button>
@@ -1103,14 +1106,33 @@ function playerPage() {
   let ticker;
   let localTimeUpRound = '';
   let lastPlayerViewKey = '';
+  let operationEpoch = 0;
   const spectatorMediaRequested = new Set();
   const suppliedPin = normalisePin(new URLSearchParams(location.search).get('pin') || '');
   let joinDraft = { pin: suppliedPin, name: '' };
 
   async function refresh() {
     if (!creds || !hasSupabase) return;
+    const active = creds;
+    const epoch = operationEpoch;
     try {
-      const next = await rpc('player_snapshot', { p_player_id: creds.id, p_player_token: creds.token });
+      const next = await rpc('player_snapshot', { p_player_id: active.id, p_player_token: active.token });
+      if (epoch !== operationEpoch || creds?.id !== active.id) return;
+      if (suppliedPin && next?.game?.pin && normalisePin(next.game.pin) !== suppliedPin) {
+        operationEpoch += 1;
+        stop();
+        sessionStorage.removeItem(PLAYER);
+        creds = null;
+        snapshot = null;
+        selected = '';
+        localTimeUpRound = '';
+        joinDraft = { pin: suppliedPin, name: String(next?.player?.name || '').trim() };
+        error = '';
+        render();
+        rpc('player_leave_game', { p_player_id: active.id, p_player_token: active.token }).catch(() => {});
+        return;
+      }
+      const hadError = Boolean(error);
       const changed = JSON.stringify(next) !== JSON.stringify(snapshot);
       if (next?.round?.id !== snapshot?.round?.id) {
         selected = '';
@@ -1123,7 +1145,7 @@ function playerPage() {
         snapshot = null;
       }
       error = '';
-      if (changed) render();
+      if (changed || hadError) render();
       if (snapshot?.player && !snapshot.player.is_alive && snapshot?.question) {
         const spectatorPath = snapshot.game?.phase === 'revealed'
           ? (snapshot.question.answer_image_path || snapshot.question.question_image_path)
@@ -1149,58 +1171,67 @@ function playerPage() {
       render();
       return;
     }
+    const epoch = ++operationEpoch;
     busy = true;
     error = '';
     render();
     try {
       const result = (await rpc('join_game', { p_pin: joinDraft.pin, p_name: joinDraft.name }))[0];
+      if (epoch !== operationEpoch) return;
       creds = { id: result.player_id, token: result.player_token, gameId: result.game_id };
       saveSession(PLAYER, creds);
       stop();
       stop = watch(creds.gameId, refresh);
       await refresh();
     } catch (caught) {
+      if (epoch !== operationEpoch) return;
       error = friendlyJoinError(caught);
     }
+    if (epoch !== operationEpoch) return;
     busy = false;
     render();
   }
 
   async function submit(answer, usePass = false) {
+    const active = creds;
+    const activeRound = snapshot?.round;
+    const epoch = operationEpoch;
+    if (!active || !activeRound) return;
     busy = true;
     error = '';
     render();
     try {
       await rpc('submit_answer', {
-        p_player_id: creds.id, p_player_token: creds.token, p_round_id: snapshot.round.id,
+        p_player_id: active.id, p_player_token: active.token, p_round_id: activeRound.id,
         p_answer: usePass ? null : answer, p_use_pass: usePass
       });
+      if (epoch !== operationEpoch || creds?.id !== active.id) return;
       await refresh();
     } catch (caught) {
+      if (epoch !== operationEpoch) return;
       error = friendlySubmitError(caught);
     }
+    if (epoch !== operationEpoch) return;
     busy = false;
     render();
   }
 
   async function leave() {
-    if (!creds || busy) return;
-    busy = true;
+    if (!creds) return;
+    const leaving = creds;
+    operationEpoch += 1;
+    stop();
+    sessionStorage.removeItem(PLAYER);
+    creds = null;
+    snapshot = null;
+    selected = '';
+    localTimeUpRound = '';
+    busy = false;
     error = '';
     render();
     try {
-      await rpc('player_leave_game', { p_player_id: creds.id, p_player_token: creds.token });
-      stop();
-      sessionStorage.removeItem(PLAYER);
-      creds = null;
-      snapshot = null;
-      selected = '';
-      localTimeUpRound = '';
-    } catch (caught) {
-      error = caught.message;
-    }
-    busy = false;
-    render();
+      await rpc('player_leave_game', { p_player_id: leaving.id, p_player_token: leaving.token });
+    } catch {}
   }
 
   const mobileHeader = (game, player) => `
@@ -1217,11 +1248,16 @@ function playerPage() {
     const question = snapshot?.question;
     const submission = snapshot?.submission;
     const waitingForRound = player && game && Number(player.eligible_from_round || 0) > Number(game.current_round || 0);
+    const eliminatedThisRound = player && game && snapshot?.round
+      && !player.is_alive
+      && game.phase === 'revealed'
+      && Number(player.eliminated_at_round) === Number(snapshot.round.position);
     const locallyExpired = localTimeUpRound && localTimeUpRound === snapshot?.round?.id;
     document.body.dataset.state = player && !player.is_alive ? 'spectator' : game?.phase || (creds ? 'connecting' : 'join');
     const playerViewKey = !creds ? 'join'
       : !snapshot ? 'connecting'
-        : !player?.is_alive ? `spectator:${snapshot?.round?.id || 'none'}:${game?.phase || 'unknown'}`
+        : eliminatedThisRound ? `eliminated:${snapshot?.round?.id || 'none'}`
+          : !player?.is_alive ? `spectator:${snapshot?.round?.id || 'none'}:${game?.phase || 'unknown'}`
           : waitingForRound ? `waiting:${game?.current_round}`
             : `${snapshot?.round?.id || 'lobby'}:${game?.phase || 'unknown'}:${player?.has_locked_answer ? 'locked' : 'open'}`;
     const enterClass = playerViewKey !== lastPlayerViewKey ? 'view-enter' : '';
@@ -1250,6 +1286,16 @@ function playerPage() {
         </div>`;
     } else if (!snapshot) {
       body = `<div class="player-state-card ${enterClass}"><span class="signal-loader"><i></i><i></i><i></i></span><span class="broadcast-kicker">Connecting live</span><h1>Opening your game…</h1><p>Restoring your place in the room.</p></div>`;
+    } else if (eliminatedThisRound) {
+      body = `
+        <div class="player-state-card reveal-result incorrect ${enterClass}">
+          <div class="result-rays" aria-hidden="true"></div>
+          <div class="state-emblem">${icon('x')}</div>
+          <span class="broadcast-kicker"><i></i>${submission ? 'Incorrect answer' : 'No answer submitted'}</span>
+          <h1>You are out.</h1>
+          <p>Correct answer: <strong>${esc(question?.answer_text || 'shown on the main screen')}</strong></p>
+          <div class="result-status">Stay connected — spectator mode begins with the next question</div>
+        </div>`;
     } else if (!player.is_alive) {
       const spectatorImagePath = game.phase === 'revealed'
         ? (question?.answer_image_path || question?.question_image_path)
