@@ -191,7 +191,33 @@ async function playStudioVideo(url, options = {}) {
   const closeButton = overlay.querySelector('[data-close-how]');
   closeButton?.setAttribute('aria-label', `Close ${videoName} video`);
   const close = () => { cancelled = true; requestClose(); };
+  const handleVideoKeys = (event) => {
+    if (overlay.hidden || !overlay.classList.contains('open')) return;
+    if (event.code === 'Space') {
+      event.preventDefault();
+      event.stopPropagation();
+      if (video.paused) video.play().catch(() => {});
+      else video.pause();
+    } else if (event.code === 'ArrowRight') {
+      event.preventDefault();
+      event.stopPropagation();
+      video.currentTime = Math.min(Number(video.duration) || Infinity, video.currentTime + 10);
+    } else if (event.code === 'ArrowLeft') {
+      event.preventDefault();
+      event.stopPropagation();
+      video.currentTime = Math.max(0, video.currentTime - 10);
+    }
+  };
+  const blockVideoKeyUp = (event) => {
+    if (overlay.hidden || !overlay.classList.contains('open')) return;
+    if (['Space', 'ArrowRight', 'ArrowLeft'].includes(event.code)) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  };
   closeButton?.addEventListener('click', close);
+  document.addEventListener('keydown', handleVideoKeys, true);
+  document.addEventListener('keyup', blockVideoKeyUp, true);
   overlay.hidden = false;
   overlay.setAttribute('aria-hidden', 'false');
   options.beforeOpen?.();
@@ -210,6 +236,7 @@ async function playStudioVideo(url, options = {}) {
     ]);
     if (cancelled) return;
     overlay.classList.add('ready');
+    video.controls = true;
     video.currentTime = 0;
     try {
       await video.play();
@@ -234,6 +261,8 @@ async function playStudioVideo(url, options = {}) {
     if (document.fullscreenElement === overlay) document.exitFullscreen?.().catch(() => {});
     videoProgressListeners.get(url)?.delete(syncProgress);
     closeButton?.removeEventListener('click', close);
+    document.removeEventListener('keydown', handleVideoKeys, true);
+    document.removeEventListener('keyup', blockVideoKeyUp, true);
     options.afterClose?.();
   }
 }
@@ -323,6 +352,11 @@ function hostPage() {
   let musicLibrary = null;
   let musicOpen = false;
   let resumeMusicAfterVideo = false;
+  let launchTransition = false;
+  let lastHostViewKey = '';
+  let operationEpoch = 0;
+  const animatedQuestionFrames = new Set();
+  const animatedAnswerFrames = new Set();
   const arrivalUntil = new Map();
   const mediaReadyQuestions = new Set();
   const watchedAnswerMedia = new Set();
@@ -420,8 +454,11 @@ function hostPage() {
 
   async function refresh() {
     if (!creds || !hasSupabase) return;
+    const active = creds;
+    const epoch = operationEpoch;
     try {
-      const next = await rpc('host_game_snapshot', { p_game_id: creds.id, p_host_token: creds.token });
+      const next = await rpc('host_game_snapshot', { p_game_id: active.id, p_host_token: active.token });
+      if (epoch !== operationEpoch || creds?.id !== active.id) return;
       const changed = JSON.stringify(next) !== JSON.stringify(snapshot);
       const nextPlayerIds = new Set((next?.players || []).map((player) => player.id));
       if (knownPlayerIds) {
@@ -473,24 +510,32 @@ function hostPage() {
 
   async function create(form) {
     const timerSeconds = Number(new FormData(form).get('timer')) || 30;
+    const epoch = ++operationEpoch;
     busy = true;
+    launchTransition = true;
     error = '';
     render();
     try {
       const result = (await rpc('create_game', { p_timer_seconds: timerSeconds }))[0];
+      if (epoch !== operationEpoch) return;
       creds = { id: result.game_id, pin: result.game_pin, token: result.host_token };
       save(HOST, creds);
       stop();
       stop = watch(creds.id, refresh);
       await refresh();
+      await sleep(520);
     } catch (caught) {
       error = caught.message;
     }
+    launchTransition = false;
     busy = false;
     render();
   }
 
   async function act(action) {
+    const active = creds;
+    const epoch = operationEpoch;
+    if (!active) return;
     busy = true;
     error = '';
     render();
@@ -499,17 +544,23 @@ function hostPage() {
         start: 'host_start_game', timer: 'host_start_timer', lock: 'host_lock_answers',
         reveal: 'host_reveal_answer', next: 'host_next_round'
       };
-      await rpc(names[action], { p_game_id: creds.id, p_host_token: creds.token });
+      await rpc(names[action], { p_game_id: active.id, p_host_token: active.token });
+      if (epoch !== operationEpoch || creds?.id !== active.id) return;
       await refresh();
     } catch (caught) {
+      if (epoch !== operationEpoch) return;
       error = caught.message;
     }
+    if (epoch !== operationEpoch) return;
     busy = false;
     render();
   }
 
   async function stageAndStartRound(action = null) {
     if (busy) return;
+    const active = creds;
+    const epoch = operationEpoch;
+    if (!active) return;
     busy = true;
     error = '';
     roundTransition = { mode: 'loading', count: null };
@@ -517,13 +568,16 @@ function hostPage() {
     try {
       if (action === 'start' || action === 'next') {
         const rpcName = action === 'start' ? 'host_start_game' : 'host_next_round';
-        await rpc(rpcName, { p_game_id: creds.id, p_host_token: creds.token });
+        await rpc(rpcName, { p_game_id: active.id, p_host_token: active.token });
+        if (epoch !== operationEpoch || creds?.id !== active.id) return;
         await refresh();
       }
+      if (epoch !== operationEpoch || creds?.id !== active.id) return;
       if (!snapshot?.game || snapshot.game.phase === 'finished') return;
       const question = snapshot.question;
+      if (!question?.id) throw new Error('The next question could not be prepared. Please try again.');
       const mediaPromise = prepareQuestionMedia(question).then(() => mediaReadyQuestions.add(question.id));
-      const passIntroKey = `wmc-pass-intro:${creds.id}`;
+      const passIntroKey = `wmc-pass-intro:${active.id}`;
       if (question?.percentage === 60 && !sessionStorage.getItem(passIntroKey)) {
         sessionStorage.setItem(passIntroKey, 'shown');
         roundTransition = { mode: 'pass', count: null };
@@ -538,19 +592,24 @@ function hostPage() {
       } else {
         await mediaPromise;
       }
+      if (epoch !== operationEpoch || creds?.id !== active.id) return;
       for (const count of [3, 2, 1]) {
         roundTransition = { mode: 'countdown', count };
         render();
         await sleep(850);
+        if (epoch !== operationEpoch || creds?.id !== active.id) return;
       }
-      await rpc('host_start_timer', { p_game_id: creds.id, p_host_token: creds.token });
+      await rpc('host_start_timer', { p_game_id: active.id, p_host_token: active.token });
+      if (epoch !== operationEpoch || creds?.id !== active.id) return;
       roundTransition = null;
       deadlineRefreshRound = '';
       await refresh();
     } catch (caught) {
+      if (epoch !== operationEpoch) return;
       error = caught.message;
       roundTransition = null;
     } finally {
+      if (epoch !== operationEpoch) return;
       busy = false;
       render();
     }
@@ -558,32 +617,41 @@ function hostPage() {
 
   async function leave() {
     const ending = creds;
-    busy = true;
+    operationEpoch += 1;
+    stop();
+    localStorage.removeItem(HOST);
+    creds = null;
+    snapshot = null;
+    reviewPosition = null;
+    reviewShowAnswer = false;
+    roundTransition = null;
+    launchTransition = false;
+    deadlineRefreshRound = '';
+    knownPlayerIds = null;
+    busy = false;
+    error = '';
     render();
     try {
       if (ending?.id && hasSupabase) await Promise.race([
         rpc('host_end_game', { p_game_id: ending.id, p_host_token: ending.token }),
         sleep(2200)
       ]);
-    } catch (caught) {
-      error = caught.message;
-    } finally {
-      stop();
-      localStorage.removeItem(HOST);
-      creds = null;
-      snapshot = null;
-      busy = false;
-      render();
-    }
+    } catch {}
   }
 
   function startFreshGame() {
     const ending = creds;
+    operationEpoch += 1;
     stop();
     localStorage.removeItem(HOST);
     creds = null;
     snapshot = null;
     reviewPosition = null;
+    reviewShowAnswer = false;
+    roundTransition = null;
+    launchTransition = false;
+    deadlineRefreshRound = '';
+    knownPlayerIds = null;
     busy = false;
     error = '';
     render();
@@ -672,27 +740,38 @@ function hostPage() {
     }
   }
 
+  const roundStats = (item) => {
+    if (!item || !Number.isFinite(Number(item.eligible_count))) return '';
+    return `<div class="round-results" aria-label="Question results">
+      <span class="correct"><small>Correct</small><strong>${Number(item.correct_count) || 0}</strong></span>
+      <span class="incorrect"><small>Incorrect</small><strong>${Number(item.incorrect_count) || 0}</strong></span>
+      <span><small>No answer</small><strong>${Number(item.no_answer_count) || 0}</strong></span>
+      <span class="passed"><small>Passes</small><strong>${Number(item.pass_count) || 0}</strong></span>
+    </div>`;
+  };
+
   const historyReviewStage = (item) => {
     const originalImage = reviewShowAnswer ? (item.answer_image_path || item.question_image_path) : item.question_image_path;
     const displayImage = decodedMedia.get(originalImage) || webMediaPath(originalImage);
     return `<div class="question-stage history-stage">
       <div class="question-meta">
-        <div class="round-ident"><span class="percentage-medallion"><span><strong>${item.percentage}</strong><small>%</small></span></span><div><span class="broadcast-kicker"><i></i> Question history</span><h1>${reviewShowAnswer ? 'Answer freeze-frame' : 'Question freeze-frame'}</h1></div></div>
-        <div class="history-badge">Review only · live game paused visually</div>
+        <div class="round-ident"><span class="percentage-medallion"><span><strong>${item.percentage}</strong><small>%</small></span></span><div><span class="broadcast-kicker"><i></i> Question history</span><h1>${item.percentage}% ${reviewShowAnswer ? 'answer' : 'question'}</h1></div></div>
+        <div class="history-badge">Reviewing completed question</div>
       </div>
       <div class="question-frame ${reviewShowAnswer ? 'answer-frame' : ''}"><div class="frame-glow"></div><img src="${esc(displayImage)}" alt="${reviewShowAnswer ? 'Answer' : 'Question'} slide" data-question-image title="Double-click to toggle image fullscreen">${reviewShowAnswer ? '<span class="reveal-ribbon">Answer</span>' : ''}</div>
-      <div class="control-dock question-controls"><div class="phase-caption"><span>The live round is unchanged</span><small>You are viewing a completed question.</small></div><div class="dock-actions"><button class="btn ghost" type="button" data-history-answer>${icon('eye')} ${reviewShowAnswer ? 'Show question' : 'Show answer'}</button><button class="btn primary" type="button" data-history-close>Return to live game ${icon('arrow')}</button></div></div>
+      <div class="history-summary">${roundStats(item)}</div>
+      <div class="control-dock question-controls"><div class="phase-caption"><span>Completed question</span><small>The live game continues unchanged.</small></div><div class="dock-actions"><button class="btn ghost" type="button" data-history-answer>${icon('eye')} ${reviewShowAnswer ? 'Show question' : 'Show answer'}</button><button class="btn primary" type="button" data-history-close>Return to live game ${icon('arrow')}</button></div></div>
     </div>`;
   };
 
-  const lobbyStage = (game, players) => {
+  const lobbyStage = (game, players, enterClass = '') => {
     const joinUrl = `${joinBase}/1/join/?pin=${encodeURIComponent(game.pin)}`;
     return `
-      <div class="lobby-stage view-enter">
+      <div class="lobby-stage ${enterClass}">
         <div class="lobby-intro">
           <span class="broadcast-kicker"><i></i> Room is open</span>
-          <h1>Bring everyone<br><em>into the game.</em></h1>
-          <p>Scan the QR code, open the player link, or enter the four-digit PIN. The game will wait here until you start it.</p>
+          <h1>Your room<br><em>is live.</em></h1>
+          <p>Players can join by QR code, link or PIN. Start whenever everyone is in.</p>
         </div>
         <div class="join-command-centre">
           <button class="pin-command" type="button" data-copy-pin="${game.pin}" aria-label="Copy game PIN ${game.pin}">
@@ -717,7 +796,7 @@ function hostPage() {
       </div>`;
   };
 
-  const questionStage = (game, question, players) => {
+  const questionStage = (game, question, players, history = [], round = null) => {
     const alive = players.filter((player) => player.is_alive && Number(player.eligible_from_round || 0) <= Number(game.current_round));
     const submitted = alive.filter((player) => player.has_locked_answer).length;
     const timerRunning = game.phase === 'question' && Boolean(game.ends_at);
@@ -732,7 +811,13 @@ function hostPage() {
       ? (question?.answer_image_path || question?.question_image_path)
       : question?.question_image_path;
     const displayImage = decodedMedia.get(originalImage) || '';
-    const phaseName = game.phase === 'revealed' ? 'Answer reveal' : game.phase === 'locked' ? 'Answers locked' : timerRunning ? 'Timer live' : 'Question ready';
+    const historyItem = history.find((item) => Number(item.position) === Number(round?.position ?? game.current_round));
+    const stats = roundStats(historyItem);
+    const animateQuestion = Boolean(timerRunning && displayImage && question?.id && !animatedQuestionFrames.has(question.id));
+    const animateAnswer = Boolean(game.phase === 'revealed' && displayImage && question?.id && !animatedAnswerFrames.has(question.id));
+    if (animateQuestion) animatedQuestionFrames.add(question.id);
+    if (animateAnswer) animatedAnswerFrames.add(question.id);
+    const phaseName = game.phase === 'revealed' ? 'Answer reveal' : game.phase === 'locked' ? 'Answers locked' : timerRunning ? 'Live question' : 'Question ready';
     const primaryAction = game.phase === 'question' && !timerRunning
       ? `<button class="btn primary wide" data-start-round="resume" ${mediaReadyQuestions.has(question?.id) && !busy ? '' : 'disabled'}>${icon('play')} ${mediaReadyQuestions.has(question?.id) ? 'Start question' : 'Preparing question…'}</button>`
       : timerRunning
@@ -753,20 +838,20 @@ function hostPage() {
             <small>${timerRunning ? 'seconds' : game.phase === 'locked' ? 'to reveal' : game.phase === 'revealed' ? 'revealed' : ''}</small>
           </div>
         </div>
-        <div class="question-frame ${game.phase === 'revealed' ? 'answer-frame' : ''}">
+        <div class="question-frame ${game.phase === 'revealed' ? `answer-frame ${animateAnswer ? 'animate-answer' : ''}` : ''} ${displayImage ? 'has-slide' : ''}">
           <div class="frame-glow"></div>
           ${game.phase === 'locked' ? '<div class="question-ready-card"><strong>Answers are locked</strong></div>'
             : game.phase === 'question' && !timerRunning ? `
               <div class="question-ready-card"><span class="media-spinner"><i></i></span><strong>${mediaReadyQuestions.has(question?.id) ? 'Question ready' : 'Preparing question'}</strong><small>${mediaReadyQuestions.has(question?.id) ? 'Press Start question when everyone is ready.' : 'Loading the complete artwork before it appears.'}</small></div>`
             : game.phase === 'revealed' && question?.answer_image_path && !displayImage ? '<div class="question-ready-card"><span class="media-spinner"><i></i></span><strong>Preparing the answer reveal</strong><small>The complete answer slide will appear together.</small></div>'
-            : displayImage ? `<img src="${esc(displayImage)}" alt="${game.phase === 'revealed' ? 'Answer' : 'Question'} slide" data-question-image title="Double-click for image fullscreen">`
+            : displayImage ? `${animateQuestion ? '<div class="question-unveil" aria-hidden="true"><i></i><i></i></div>' : ''}<img src="${esc(displayImage)}" alt="${game.phase === 'revealed' ? 'Answer' : 'Question'} slide" data-question-image title="Double-click for image fullscreen">`
             : `<div class="question-copy">${esc(question?.question_text || 'Preparing question artwork…')}</div>`}
           ${game.phase === 'revealed' ? '<span class="reveal-ribbon">Answer</span>' : ''}
         </div>
         ${game.phase === 'revealed' && !question?.answer_image_path ? `<div class="answer-reveal"><span>Correct answer</span><strong>${esc(question?.answer_text)}</strong></div>` : ''}
-        ${game.phase === 'revealed' ? `<div class="auto-advance-card"><div><span>Automatic next question</span><strong>Continuing in <b data-auto-countdown>${advanceSeconds}</b> seconds</strong></div><div class="auto-advance-track"><i data-auto-progress style="--auto-progress:${Math.max(0, Math.min(100, advanceSeconds / 20 * 100))}%"></i></div><small>Use “Next question now” whenever the room is ready.</small></div>` : ''}
+        ${game.phase === 'revealed' ? `<div class="answer-summary ${stats ? '' : 'countdown-only'}">${stats}<div class="auto-advance-card"><div><span>Next question</span><strong>In <b data-auto-countdown>${advanceSeconds}</b> seconds</strong></div><div class="auto-advance-track"><i data-auto-progress style="--auto-progress:${Math.max(0, Math.min(100, advanceSeconds / 20 * 100))}%"></i></div></div></div>` : ''}
         <div class="control-dock question-controls">
-          <div class="phase-caption"><span>${timerRunning ? (submitted === alive.length && alive.length ? 'Everyone has answered' : 'Submissions are open') : game.phase === 'question' ? 'Ready when the room is' : game.phase === 'revealed' ? 'Automatic advance is armed' : 'Answers are closed'}</span><small>${timerRunning ? 'End the timer early whenever everyone is ready.' : game.phase === 'question' ? 'Players see answer controls when the timer starts.' : 'The host can continue immediately.'}</small></div>
+          <div class="phase-caption"><span>${timerRunning ? (submitted === alive.length && alive.length ? 'Everyone has answered' : 'Answers are open') : game.phase === 'question' ? 'Ready to begin' : game.phase === 'revealed' ? 'Answer revealed' : 'Answers are closed'}</span><small>${timerRunning ? 'End the timer whenever the room is ready.' : game.phase === 'question' ? 'Start the timer to open player controls.' : game.phase === 'revealed' ? 'Continue now or allow the countdown.' : 'The answer follows automatically.'}</small></div>
           <div class="dock-actions">
             ${primaryAction}
             <button class="btn danger icon-only" type="button" data-leave aria-label="End session">${icon('power')}</button>
@@ -778,8 +863,16 @@ function hostPage() {
   const timeUpScreen = (game) => {
     if (game?.phase !== 'locked') return '';
     const revealSeconds = game.reveal_at ? Math.max(0, Math.ceil((new Date(game.reveal_at) - Date.now()) / 1000)) : 0;
-    return `<div class="time-up-screen" role="status"><div class="time-up-rays" aria-hidden="true"></div><span class="broadcast-kicker"><i></i> Answers locked</span><strong>Time's up!</strong><small>Answer revealing in <b data-reveal-countdown>${revealSeconds}</b></small><div class="time-up-count" data-time-up-count>${revealSeconds}</div></div>`;
+    return `<div class="time-up-screen" role="status"><div class="time-up-rays" aria-hidden="true"></div><span class="broadcast-kicker"><i></i> Answers locked</span><strong>Time's up!</strong><div class="reveal-countdown-line"><span>Answer in</span><b data-reveal-countdown>${revealSeconds}</b></div></div>`;
   };
+
+  const launchTransitionScreen = () => launchTransition ? `
+    <div class="launch-transition" role="status">
+      <div class="launch-sweep" aria-hidden="true"></div>
+      <img src="${gameLogo}" alt="">
+      <span class="broadcast-kicker"><i></i> Opening your room</span>
+      <strong>Going live.</strong>
+    </div>` : '';
 
   const roundTransitionScreen = (question) => {
     if (!roundTransition) return '';
@@ -793,16 +886,16 @@ function hostPage() {
     if (roundTransition.mode === 'countdown') return `
       <div class="round-transition countdown-intro" role="status">
         <span class="transition-percentage"><strong>${question?.percentage || '–'}</strong><small>%</small></span>
-        <span class="broadcast-kicker"><i></i> Question fully loaded</span>
+        <span class="broadcast-kicker"><i></i> The ${question?.percentage || '–'}% question</span>
         <strong class="countdown-number">${roundTransition.count}</strong>
-        <small>Get ready</small>
+        <small>Eyes on the screen</small>
       </div>`;
     return `
       <div class="round-transition media-preflight" role="status">
         <span class="media-spinner large"><i></i></span>
-        <span class="broadcast-kicker"><i></i> Preparing the next question</span>
-        <strong>Loading the complete artwork.</strong>
-        <small>Nothing appears until every pixel is ready.</small>
+        <span class="broadcast-kicker"><i></i> Next question</span>
+        <strong>Preparing the screen.</strong>
+        <small>One moment</small>
       </div>`;
   };
 
@@ -813,38 +906,46 @@ function hostPage() {
     const players = snapshot?.players || [];
     const alive = players.filter((player) => player.is_alive);
     document.body.dataset.state = game?.phase || (creds ? 'connecting' : 'home');
+    const hostViewKey = !creds ? 'home'
+      : !snapshot ? 'connecting'
+        : reviewPosition !== null ? `history:${reviewPosition}:${reviewShowAnswer}`
+          : game?.phase === 'lobby' ? 'lobby'
+            : game?.phase === 'finished' ? 'finished'
+              : `round:${snapshot?.round?.id || 'none'}:${game?.phase || 'unknown'}`;
+    const enterClass = hostViewKey !== lastHostViewKey ? 'view-enter' : '';
+    lastHostViewKey = hostViewKey;
 
     let stage;
     if (!creds) {
       stage = `
-        <div class="launch-stage view-enter">
+        <div class="launch-stage ${enterClass}">
           <section class="launch-art">
             <div class="poster-halo"></div>
             <img src="${gameLogo}" alt="WMC The 1% Club">
             <div class="launch-art-copy"><span>A live gameshow experience</span></div>
           </section>
           <section class="launch-console">
-            <span class="broadcast-kicker"><i></i> Host control</span>
-            <h1>Your stage is ready.</h1>
-            <p>Create a live room, invite players by QR or PIN, and control every question, timer and reveal from here.</p>
+            <span class="broadcast-kicker"><i></i> WMC live gameshow</span>
+            <h1>Ready when<br>you are.</h1>
+            <p>Set the timer, open the room and invite your players.</p>
             ${!hasSupabase ? '<div class="notice bad">The live database is not configured on this build.</div>' : ''}
             <form class="launch-form" id="create-game">
               <label class="timer-control"><span>Question timer</span><div><input name="timer" type="number" min="5" max="300" value="30" required><small>seconds</small></div></label>
-              <button class="btn primary launch-button" ${busy || !hasSupabase ? 'disabled' : ''}>${busy ? '<span class="button-spinner"></span> Creating room…' : `Launch live game ${icon('arrow')}`}</button>
+              <button class="btn primary launch-button" ${busy || !hasSupabase ? 'disabled' : ''}>${busy ? '<span class="button-spinner"></span> Opening room…' : `Open game room ${icon('arrow')}`}</button>
             </form>
-            <div class="launch-features"><span>${icon('users')} No player accounts</span><span>${icon('wifi')} Realtime reconnect</span><span>${icon('lock')} Host controlled</span></div>
+            <div class="launch-note">${icon('arrow')} Your PIN and QR code appear on the next screen.</div>
           </section>
         </div>`;
     } else if (!snapshot) {
-      stage = `<div class="connecting-stage view-enter"><span class="signal-loader"><i></i><i></i><i></i></span><p class="broadcast-kicker">Reconnecting securely</p><h1>Opening room ${esc(creds.pin)}…</h1><p>Your host controls are being restored.</p></div>`;
+      stage = `<div class="connecting-stage ${enterClass}"><span class="signal-loader"><i></i><i></i><i></i></span><p class="broadcast-kicker">Connecting live</p><h1>Opening room ${esc(creds.pin)}…</h1></div>`;
     } else if (reviewPosition !== null) {
       const historyItem = snapshot.history?.find((item) => Number(item.position) === Number(reviewPosition));
-      stage = historyItem ? historyReviewStage(historyItem) : questionStage(game, question, players);
+      stage = historyItem ? historyReviewStage(historyItem) : questionStage(game, question, players, snapshot.history || [], snapshot.round);
     } else if (game.phase === 'lobby') {
-      stage = lobbyStage(game, players);
+      stage = lobbyStage(game, players, enterClass);
     } else if (game.phase === 'finished') {
       stage = `
-        <div class="finale-stage view-enter">
+        <div class="finale-stage ${enterClass}">
           <div class="finale-burst" aria-hidden="true"></div>${icon('sparkle')}
           <span class="broadcast-kicker"><i></i> Game complete</span>
           <h1>${alive.length ? 'Still standing' : 'That was The 1% Club'}</h1>
@@ -852,7 +953,7 @@ function hostPage() {
           <button class="btn primary" data-new-game>Start another game ${icon('arrow')}</button>
         </div>`;
     } else {
-      stage = questionStage(game, question, players);
+      stage = questionStage(game, question, players, snapshot.history || [], snapshot.round);
     }
 
     const currentPercentage = question?.percentage || null;
@@ -875,6 +976,7 @@ function hostPage() {
             <div class="players-foot"><span><i class="online-dot"></i>${alive.length} still playing</span><small>${players.length - alive.length ? `${players.length - alive.length} spectating` : 'Nobody eliminated'}</small></div>
           </aside>` : ''}
         </main>
+        ${launchTransitionScreen()}
         ${roundTransitionScreen(question)}
         ${timeUpScreen(game)}
         ${musicPanel()}
@@ -955,10 +1057,8 @@ function hostPage() {
         const left = Math.max(0, Math.ceil((new Date(game.reveal_at) - Date.now()) / 1000));
         const timer = app.querySelector('[data-timer] > span');
         const caption = app.querySelector('[data-reveal-countdown]');
-        const centreCount = app.querySelector('[data-time-up-count]');
         if (timer) timer.textContent = left;
         if (caption) caption.textContent = left;
-        if (centreCount) centreCount.textContent = left;
         if (left === 0 && deadlineRefreshRound !== `reveal:${snapshot?.round?.id}`) {
           deadlineRefreshRound = `reveal:${snapshot?.round?.id || ''}`;
           refresh();
@@ -1002,6 +1102,8 @@ function playerPage() {
   let stop = () => {};
   let ticker;
   let localTimeUpRound = '';
+  let lastPlayerViewKey = '';
+  const spectatorMediaRequested = new Set();
   const suppliedPin = normalisePin(new URLSearchParams(location.search).get('pin') || '');
   let joinDraft = { pin: suppliedPin, name: '' };
 
@@ -1022,6 +1124,15 @@ function playerPage() {
       }
       error = '';
       if (changed) render();
+      if (snapshot?.player && !snapshot.player.is_alive && snapshot?.question) {
+        const spectatorPath = snapshot.game?.phase === 'revealed'
+          ? (snapshot.question.answer_image_path || snapshot.question.question_image_path)
+          : snapshot.question.question_image_path;
+        if (spectatorPath && !decodedMedia.has(spectatorPath) && !spectatorMediaRequested.has(spectatorPath)) {
+          spectatorMediaRequested.add(spectatorPath);
+          decodeImage(spectatorPath).then(() => render()).catch(() => {});
+        }
+      }
     } catch (caught) {
       if (error !== caught.message) {
         error = caught.message;
@@ -1108,11 +1219,18 @@ function playerPage() {
     const waitingForRound = player && game && Number(player.eligible_from_round || 0) > Number(game.current_round || 0);
     const locallyExpired = localTimeUpRound && localTimeUpRound === snapshot?.round?.id;
     document.body.dataset.state = player && !player.is_alive ? 'spectator' : game?.phase || (creds ? 'connecting' : 'join');
+    const playerViewKey = !creds ? 'join'
+      : !snapshot ? 'connecting'
+        : !player?.is_alive ? `spectator:${snapshot?.round?.id || 'none'}:${game?.phase || 'unknown'}`
+          : waitingForRound ? `waiting:${game?.current_round}`
+            : `${snapshot?.round?.id || 'lobby'}:${game?.phase || 'unknown'}:${player?.has_locked_answer ? 'locked' : 'open'}`;
+    const enterClass = playerViewKey !== lastPlayerViewKey ? 'view-enter' : '';
+    lastPlayerViewKey = playerViewKey;
     let body;
 
     if (!creds) {
       body = `
-        <div class="join-layout view-enter">
+        <div class="join-layout ${enterClass}">
           <section class="join-showcase">
             <img src="${gameLogo}" alt="WMC The 1% Club">
             <div><span class="broadcast-kicker"><i></i> Live gameshow</span><h1>Think differently.<br><em>Stay in the game.</em></h1><p>Your question appears on the host screen. Your answer belongs here.</p></div>
@@ -1127,23 +1245,33 @@ function playerPage() {
               <label class="field-label">Your display name<input class="field" name="name" maxlength="24" autocomplete="name" value="${esc(joinDraft.name)}" placeholder="How should we show your name?" required autofocus></label>
               <button class="btn primary full join-button" ${busy || !hasSupabase ? 'disabled' : ''}>${busy ? '<span class="button-spinner"></span> Joining room…' : `Join live game ${icon('arrow')}`}</button>
             </form>
-            <div class="join-assurance"><span>${icon('check')} No account needed</span><span>${icon('lock')} One final answer</span></div>
+            <div class="join-assurance"><span>${icon('check')} No account needed</span></div>
           </section>
         </div>`;
     } else if (!snapshot) {
-      body = `<div class="player-state-card view-enter"><span class="signal-loader"><i></i><i></i><i></i></span><span class="broadcast-kicker">Connecting live</span><h1>Opening your game…</h1><p>Restoring your place in the room.</p></div>`;
+      body = `<div class="player-state-card ${enterClass}"><span class="signal-loader"><i></i><i></i><i></i></span><span class="broadcast-kicker">Connecting live</span><h1>Opening your game…</h1><p>Restoring your place in the room.</p></div>`;
     } else if (!player.is_alive) {
+      const spectatorImagePath = game.phase === 'revealed'
+        ? (question?.answer_image_path || question?.question_image_path)
+        : question?.question_image_path;
+      const spectatorImage = spectatorImagePath ? (decodedMedia.get(spectatorImagePath) || webMediaPath(spectatorImagePath)) : '';
+      const spectatorSeconds = game.ends_at ? Math.max(0, Math.ceil((new Date(game.ends_at) - Date.now()) / 1000)) : null;
       body = `
-        <div class="player-state-card spectator-card view-enter">
-          <div class="state-emblem out-emblem">${icon('x')}</div>
-          <span class="broadcast-kicker"><i></i> Spectator mode</span>
-          <h1>Still part of the show.</h1>
-          <p>Thanks for playing, ${esc(player.name)}. You have been eliminated, but you remain connected for every reveal.</p>
-          <div class="spectator-live"><i></i><span>Live connection active</span><strong>${question?.percentage || '–'}% round</strong></div>
+        <div class="spectator-experience ${enterClass}">
+          <div class="spectator-banner"><span><i></i> Spectator mode</span><strong>${question?.percentage || '–'}% ${game.phase === 'revealed' ? 'answer' : 'question'}</strong></div>
+          <div class="spectator-slide ${game.phase === 'revealed' ? 'answer' : ''}">
+            ${spectatorImage ? `<img src="${esc(spectatorImage)}" alt="${game.phase === 'revealed' ? 'Answer' : 'Question'} slide">` : `<div class="spectator-wait"><span class="media-spinner"><i></i></span><strong>${game.phase === 'locked' ? "Time's up!" : 'Follow the main screen'}</strong></div>`}
+            <div class="spectator-shade"></div>
+            <span class="spectator-watermark">Spectator</span>
+          </div>
+          <div class="spectator-status">
+            <div><span class="broadcast-kicker"><i></i> Still part of the show</span><strong>${game.phase === 'revealed' ? `Correct answer: ${esc(question?.answer_text || 'shown above')}` : game.phase === 'locked' ? "Time's up — answer coming next" : spectatorSeconds !== null ? `<span data-spectator-timer>${spectatorSeconds}</span> seconds remaining` : 'Waiting for the next question'}</strong></div>
+            <span class="spectator-live"><i></i><span>Connected live</span></span>
+          </div>
         </div>`;
     } else if (game.phase === 'lobby') {
       body = `
-        <div class="player-state-card welcome-card view-enter">
+        <div class="player-state-card welcome-card ${enterClass}">
           <div class="waiting-orbit"><span>${esc(player.name.slice(0, 1).toUpperCase())}</span><i></i><i></i></div>
           <span class="broadcast-kicker"><i></i> You are in</span>
           <h1>Welcome, ${esc(player.name)}.</h1>
@@ -1152,7 +1280,7 @@ function playerPage() {
         </div>`;
     } else if (waitingForRound) {
       body = `
-        <div class="player-state-card welcome-card midgame-wait view-enter">
+        <div class="player-state-card welcome-card midgame-wait ${enterClass}">
           <div class="waiting-orbit"><span>${esc(player.name.slice(0, 1).toUpperCase())}</span><i></i><i></i></div>
           <span class="broadcast-kicker"><i></i> Joined live</span>
           <h1>You are in.</h1>
@@ -1161,7 +1289,7 @@ function playerPage() {
         </div>`;
     } else if (game.phase === 'question' && !game.ends_at && !player.has_locked_answer) {
       body = `
-        <div class="player-state-card ready-card view-enter">
+        <div class="player-state-card ready-card ${enterClass}">
           <span class="percentage-orb"><span><strong>${question.percentage}</strong><small>%</small></span></span>
           <span class="broadcast-kicker"><i></i> Question on the main screen</span>
           <h1>Read it first.</h1>
@@ -1203,7 +1331,7 @@ function playerPage() {
       }, 250);
     } else if (game.phase === 'question' && player.has_locked_answer) {
       body = `
-        <div class="player-state-card locked-card view-enter">
+        <div class="player-state-card locked-card ${enterClass}">
           <div class="state-emblem success-emblem">${icon('check')}</div>
           <span class="broadcast-kicker"><i></i> Answer secured</span>
           <h1>${submission?.used_pass ? 'Pass used.' : 'You are locked in.'}</h1>
@@ -1211,11 +1339,11 @@ function playerPage() {
           <div class="lock-seal">${icon('lock')} Encrypted live submission</div>
         </div>`;
     } else if (game.phase === 'locked' || locallyExpired) {
-      body = `<div class="player-state-card locked-card time-up-player view-enter"><div class="state-emblem lock-emblem">${icon('lock')}</div><span class="broadcast-kicker"><i></i> Answers closed</span><h1>Time's up!</h1><p>Eyes on the host screen. The answer is about to be revealed.</p></div>`;
+      body = `<div class="player-state-card locked-card time-up-player ${enterClass}"><div class="state-emblem lock-emblem">${icon('lock')}</div><span class="broadcast-kicker"><i></i> Answers closed</span><h1>Time's up!</h1><p>Eyes on the host screen. The answer is about to be revealed.</p></div>`;
     } else if (game.phase === 'revealed') {
       const correct = submission?.used_pass || submission?.is_correct;
       body = `
-        <div class="player-state-card reveal-result ${correct ? 'correct' : 'incorrect'} view-enter">
+        <div class="player-state-card reveal-result ${correct ? 'correct' : 'incorrect'} ${enterClass}">
           <div class="result-rays" aria-hidden="true"></div>
           <div class="state-emblem">${correct ? icon('check') : icon('x')}</div>
           <span class="broadcast-kicker"><i></i>${submission?.used_pass ? 'Pass successful' : correct ? 'Correct answer' : 'Incorrect answer'}</span>
@@ -1224,7 +1352,7 @@ function playerPage() {
           <div class="result-status">${correct ? `${icon('sparkle')} Get ready for the next question` : 'You will stay connected in spectator mode'}</div>
         </div>`;
     } else {
-      body = `<div class="player-state-card finale-mobile view-enter">${icon('sparkle')}<span class="broadcast-kicker"><i></i> Game complete</span><h1>That was The 1% Club.</h1><p>Thanks for playing, ${esc(player.name)}.</p></div>`;
+      body = `<div class="player-state-card finale-mobile ${enterClass}">${icon('sparkle')}<span class="broadcast-kicker"><i></i> Game complete</span><h1>That was The 1% Club.</h1><p>Thanks for playing, ${esc(player.name)}.</p></div>`;
     }
 
     app.innerHTML = `
@@ -1252,6 +1380,13 @@ function playerPage() {
       if (answer) submit(answer);
     });
     app.querySelector('[data-pass]')?.addEventListener('click', () => submit(null, true));
+    if (player && !player.is_alive && game?.ends_at) {
+      ticker = setInterval(() => {
+        const timer = app.querySelector('[data-spectator-timer]');
+        if (!timer) return;
+        timer.textContent = Math.max(0, Math.ceil((new Date(game.ends_at) - Date.now()) / 1000));
+      }, 250);
+    }
   }
 
   if (creds) {
