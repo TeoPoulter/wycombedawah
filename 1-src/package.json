@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "index:questions": "node scripts/index-question-bank.mjs",
+    "optimize:media": "node scripts/optimize-web-media.mjs",
     "seed:questions": "node scripts/generate-question-seed.mjs"
   },
   "devDependencies": {

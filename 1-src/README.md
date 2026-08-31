@@ -21,7 +21,9 @@ The production-ready V1 is implemented and connected to Supabase. The host, play
 
 The PNG bank is indexed at `../1/question-bank/manifest.json`: 57 complete, reviewed question/answer pairs across the 90%, 80%, 70%, 60%, 50%, 45%, 40%, 35%, 30%, 25%, 20%, 15%, 10%, 5% and 1% levels. The imported images are byte-for-byte copies. All answer types and exact accepted answers are explicit, and the same 57 records are enabled in Supabase.
 
-The host chooses the timer length when creating a game. A question appears first, then the host starts the timer manually; reveal and next-question actions also remain manual. The host renders the question PNG and swaps to its answer PNG on reveal.
+The host chooses the timer length when creating a game. Starting or advancing a round preloads and fully decodes both slides behind a studio countdown before the timer begins. Answers lock automatically at zero, a visible five-second reveal countdown follows, and the answer slide then appears automatically. Moving to the next question remains under host control.
+
+Optimized WebP copies of the slide bank and a web-optimized, fast-start How It Works video are shipped alongside the untouched source PNGs and original video. The interface never exposes a partially downloaded slide: media is held behind a branded preparation state until it is ready. The pass is introduced with the full-screen How It Works presentation at 60%, remains available once per player from that point, and is unavailable at 1%.
 
 The administrator signs in at `/1/admin/` with the fixed username `admin` and a private Supabase Auth password. From there they can upload individual PNGs with metadata or safely re-import the reviewed bundled bank. The host-only How It Works video is available from the lobby.
 
@@ -39,10 +41,12 @@ This copies named pairs plus the three valid `download.png` questions that match
 
 - host and player reconnect on refresh
 - copied PINs, pasted full join links and QR links all resolve to the current public origin
-- timer remains closed until manually started by the host
+- Start Game and Next question preload the complete slide, run 3–2–1 and start the timer automatically
 - duplicate names and repeat submissions are rejected
-- no submission causes elimination on reveal
-- pass can be used once and is unavailable at 1%
+- leaving removes the connected player immediately and frees their display name
+- new players can join an active game and enter safely on the next round
+- no submission causes elimination when the reveal runs automatically
+- pass is introduced at 60%, can be used once and is unavailable at 1%
 - eliminated players remain connected as spectators
-- question and answer PNGs are host-only and reveal is manual
+- question and answer slides are host-only and the answer reveals five seconds after lock
 - past question usage reduces repeats across games

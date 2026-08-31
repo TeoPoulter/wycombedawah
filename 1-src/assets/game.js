@@ -8,7 +8,14 @@ const joinBase = import.meta.env.DEV && import.meta.env.VITE_LAN_URL
   ? import.meta.env.VITE_LAN_URL
   : location.origin;
 const brandLogo = new URL('./wmc-brand-logo.png', import.meta.url).href;
-const gameLogo = new URL('./wmc-one-percent-logo.png', import.meta.url).href;
+const gameLogo = new URL('./wmc-one-percent-logo.webp', import.meta.url).href;
+const howVideoUrl = '/1/media/how-it-works.web.mp4';
+const decodedMedia = new Map();
+const mediaLoads = new Map();
+let howVideoBlobUrl = '';
+let howVideoLoad;
+let howVideoProgress = 0;
+const howVideoProgressListeners = new Set();
 
 const uuid = () => crypto.randomUUID?.() || ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (character) => (
   character ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> character / 4
@@ -49,10 +56,17 @@ const icon = (name) => `<span class="icon">${icons[name] || ''}</span>`;
 const err = (error) => esc(error?.message || error || 'Something went wrong.');
 const friendlyJoinError = (error) => {
   const message = String(error?.message || error || '');
-  if (/not found|already started/i.test(message)) return 'We could not find an open room with that PIN. Check the four digits and make sure the host is still in the lobby.';
+  if (/finishing/i.test(message)) return 'That game is on its final reveal and is no longer accepting new players.';
+  if (/not found|already started/i.test(message)) return 'We could not find an active game with that PIN. Check the four digits and try again.';
   if (/already in this game/i.test(message)) return 'That name is already being used in this room. Please choose a different name.';
   if (/fetch|network|offline/i.test(message)) return 'The live game could not be reached. Check your connection and try again.';
   return message || 'The room could not be joined. Please try again.';
+};
+
+const friendlySubmitError = (error) => {
+  const message = String(error?.message || error || '');
+  if (/time.*up|expired/i.test(message)) return "Time's up!";
+  return message || 'Your answer could not be submitted.';
 };
 
 const normalisePin = (raw = '') => {
@@ -65,6 +79,145 @@ const normalisePin = (raw = '') => {
   const exact = value.match(/(?:^|\D)(\d{4})(?:\D|$)/);
   return (exact?.[1] || value.replace(/\D/g, '')).slice(0, 4);
 };
+
+const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+const webMediaPath = (path = '') => path.startsWith('/1/question-bank/') && /\.png(?:\?.*)?$/i.test(path)
+  ? path.replace(/\.png(?=\?|$)/i, '.webp')
+  : path;
+
+async function decodeImage(path, priority = 'high') {
+  if (!path) return '';
+  if (decodedMedia.has(path)) return decodedMedia.get(path);
+  if (mediaLoads.has(path)) return mediaLoads.get(path);
+  const load = (async () => {
+    const candidates = [...new Set([webMediaPath(path), path])];
+    for (const candidate of candidates) {
+      try {
+        const image = new Image();
+        image.decoding = 'async';
+        image.fetchPriority = priority;
+        image.src = candidate;
+        if (!image.complete) await new Promise((resolve, reject) => {
+          image.addEventListener('load', resolve, { once: true });
+          image.addEventListener('error', reject, { once: true });
+        });
+        await image.decode?.().catch(() => {});
+        decodedMedia.set(path, candidate);
+        return candidate;
+      } catch { /* Try the original PNG when an optimized copy is unavailable. */ }
+    }
+    throw new Error('Question artwork could not be prepared. Check the connection and try again.');
+  })();
+  mediaLoads.set(path, load);
+  try { return await load; } finally { mediaLoads.delete(path); }
+}
+
+async function prepareQuestionMedia(question) {
+  if (!question) return;
+  await Promise.all([
+    decodeImage(question.question_image_path),
+    decodeImage(question.answer_image_path, 'low')
+  ]);
+}
+
+function updateHowVideoProgress(progress) {
+  howVideoProgress = progress;
+  howVideoProgressListeners.forEach((listener) => listener(progress));
+}
+
+async function bufferHowVideo() {
+  if (howVideoBlobUrl) return howVideoBlobUrl;
+  if (howVideoLoad) return howVideoLoad;
+  howVideoLoad = (async () => {
+    const response = await fetch(howVideoUrl, { cache: 'force-cache' });
+    if (!response.ok) throw new Error('The How It Works video could not be loaded.');
+    const total = Number(response.headers.get('content-length')) || 0;
+    if (!response.body?.getReader) {
+      const blob = await response.blob();
+      updateHowVideoProgress(1);
+      howVideoBlobUrl = URL.createObjectURL(blob);
+      return howVideoBlobUrl;
+    }
+    const reader = response.body.getReader();
+    const chunks = [];
+    let received = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      received += value.byteLength;
+      updateHowVideoProgress(total ? Math.min(1, received / total) : 0.5);
+    }
+    howVideoBlobUrl = URL.createObjectURL(new Blob(chunks, { type: 'video/mp4' }));
+    updateHowVideoProgress(1);
+    return howVideoBlobUrl;
+  })();
+  try { return await howVideoLoad; } catch (error) { howVideoLoad = null; throw error; }
+}
+
+async function playHowVideo() {
+  const overlay = document.querySelector('#how-overlay');
+  const video = overlay?.querySelector('video');
+  if (!overlay || !video) return;
+  const progress = overlay.querySelector('[data-video-progress]');
+  const progressLabel = overlay.querySelector('[data-video-progress-label]');
+  const syncProgress = (value) => {
+    if (progress) progress.style.setProperty('--progress', `${Math.round(value * 100)}%`);
+    if (progressLabel) progressLabel.textContent = value >= 1 ? 'Ready' : `Loading ${Math.round(value * 100)}%`;
+  };
+  syncProgress(howVideoProgress);
+  howVideoProgressListeners.add(syncProgress);
+  const message = overlay.querySelector('[data-video-message]');
+  if (message) message.textContent = 'Preparing the complete video';
+  let cancelled = false;
+  let requestClose;
+  const closePromise = new Promise((resolve) => { requestClose = resolve; });
+  const closeButton = overlay.querySelector('[data-close-how]');
+  const close = () => { cancelled = true; requestClose(); };
+  closeButton?.addEventListener('click', close);
+  overlay.hidden = false;
+  overlay.setAttribute('aria-hidden', 'false');
+  requestAnimationFrame(() => overlay.classList.add('open'));
+  overlay.requestFullscreen?.().catch(() => {});
+  try {
+    const source = await Promise.race([bufferHowVideo(), closePromise.then(() => '')]);
+    if (!source || cancelled) return;
+    if (video.src !== source) {
+      video.src = source;
+      video.load();
+    }
+    if (video.readyState < 3) await Promise.race([
+      new Promise((resolve) => video.addEventListener('canplay', resolve, { once: true })),
+      closePromise
+    ]);
+    if (cancelled) return;
+    overlay.classList.add('ready');
+    video.currentTime = 0;
+    try {
+      await video.play();
+    } catch {
+      video.controls = true;
+      if (message) message.textContent = 'Video ready — press play';
+    }
+    await Promise.race([
+      new Promise((resolve) => video.addEventListener('ended', resolve, { once: true })),
+      closePromise
+    ]);
+  } catch (error) {
+    if (message) message.textContent = error.message;
+    await sleep(1800);
+  } finally {
+    video.pause();
+    video.controls = false;
+    overlay.classList.remove('open', 'ready');
+    overlay.setAttribute('aria-hidden', 'true');
+    await sleep(320);
+    overlay.hidden = true;
+    if (document.fullscreenElement === overlay) document.exitFullscreen?.().catch(() => {});
+    howVideoProgressListeners.delete(syncProgress);
+    closeButton?.removeEventListener('click', close);
+  }
+}
 
 async function copyText(value) {
   try {
@@ -132,6 +285,11 @@ function hostPage() {
   let stop = () => {};
   let ticker;
   let noticeTimer;
+  let roundTransition = null;
+  let deadlineRefreshRound = '';
+  let knownPlayerIds = null;
+  const arrivalUntil = new Map();
+  const mediaReadyQuestions = new Set();
 
   const flash = (message) => {
     notice = message;
@@ -145,6 +303,16 @@ function hostPage() {
     try {
       const next = await rpc('host_game_snapshot', { p_game_id: creds.id, p_host_token: creds.token });
       const changed = JSON.stringify(next) !== JSON.stringify(snapshot);
+      const nextPlayerIds = new Set((next?.players || []).map((player) => player.id));
+      if (knownPlayerIds) {
+        (next?.players || []).forEach((player) => {
+          if (!knownPlayerIds.has(player.id)) {
+            arrivalUntil.set(player.id, Date.now() + 3000);
+            setTimeout(() => { arrivalUntil.delete(player.id); render(); }, 3050);
+          }
+        });
+      }
+      knownPlayerIds = nextPlayerIds;
       snapshot = next;
       if (!snapshot?.game) {
         localStorage.removeItem(HOST);
@@ -153,6 +321,21 @@ function hostPage() {
       }
       error = '';
       if (changed) render();
+      if (snapshot?.question && !mediaReadyQuestions.has(snapshot.question.id)) {
+        prepareQuestionMedia(snapshot.question).then(() => {
+          mediaReadyQuestions.add(snapshot.question.id);
+          render();
+        }).catch((caught) => {
+          error = caught.message;
+          render();
+        });
+      }
+      if (next?.next_question && !mediaReadyQuestions.has(next.next_question.id)) {
+        prepareQuestionMedia(next.next_question).then(() => {
+          mediaReadyQuestions.add(next.next_question.id);
+        }).catch(() => {});
+      }
+      if (snapshot?.game?.phase === 'lobby') bufferHowVideo().catch(() => {});
     } catch (caught) {
       if (error !== caught.message) {
         error = caught.message;
@@ -198,6 +381,49 @@ function hostPage() {
     render();
   }
 
+  async function stageAndStartRound(action = null) {
+    if (busy) return;
+    busy = true;
+    error = '';
+    roundTransition = { mode: 'loading', count: null };
+    render();
+    try {
+      if (action === 'start' || action === 'next') {
+        const rpcName = action === 'start' ? 'host_start_game' : 'host_next_round';
+        await rpc(rpcName, { p_game_id: creds.id, p_host_token: creds.token });
+        await refresh();
+      }
+      if (!snapshot?.game || snapshot.game.phase === 'finished') return;
+      const question = snapshot.question;
+      const mediaPromise = prepareQuestionMedia(question).then(() => mediaReadyQuestions.add(question.id));
+      const passIntroKey = `wmc-pass-intro:${creds.id}`;
+      if (question?.percentage === 60 && !sessionStorage.getItem(passIntroKey)) {
+        sessionStorage.setItem(passIntroKey, 'shown');
+        roundTransition = { mode: 'pass', count: null };
+        render();
+        await Promise.all([mediaPromise, sleep(1500)]);
+        await playHowVideo();
+      } else {
+        await mediaPromise;
+      }
+      for (const count of [3, 2, 1]) {
+        roundTransition = { mode: 'countdown', count };
+        render();
+        await sleep(850);
+      }
+      await rpc('host_start_timer', { p_game_id: creds.id, p_host_token: creds.token });
+      roundTransition = null;
+      deadlineRefreshRound = '';
+      await refresh();
+    } catch (caught) {
+      error = caught.message;
+      roundTransition = null;
+    } finally {
+      busy = false;
+      render();
+    }
+  }
+
   async function leave() {
     const ending = creds;
     busy = true;
@@ -216,19 +442,23 @@ function hostPage() {
     }
   }
 
-  const playerList = (players) => {
+  const playerList = (players, currentRound = 0) => {
     if (!players.length) return `
       <div class="empty-state">
         <span class="empty-orbit"><i></i></span>
         <strong>Waiting for players</strong>
         <small>Names will appear here as people join.</small>
       </div>`;
-    return players.map((player, index) => `
-      <div class="player-chip ${player.has_locked_answer ? 'submitted' : ''} ${player.is_alive ? '' : 'out'}" style="--delay:${index * 45}ms">
+    return players.map((player, index) => {
+      const waiting = Number(player.eligible_from_round || 0) > Number(currentRound);
+      const arriving = Number(arrivalUntil.get(player.id) || 0) > Date.now();
+      return `
+      <div class="player-chip ${player.has_locked_answer ? 'submitted' : ''} ${player.is_alive ? '' : 'out'} ${arriving ? 'arriving' : ''}" style="--delay:${index * 45}ms">
         <span class="player-avatar">${esc(player.name.slice(0, 1).toUpperCase())}</span>
         <span class="player-name">${esc(player.name)}</span>
-        <span class="player-state">${player.is_alive ? (player.has_locked_answer ? `${icon('check')} Locked` : 'Ready') : 'Spectating'}</span>
-      </div>`).join('');
+        <span class="player-state">${waiting ? 'Next round' : player.is_alive ? (player.has_locked_answer ? `${icon('check')} Locked` : 'Ready') : 'Spectating'}</span>
+      </div>`;
+    }).join('');
   };
 
   const lobbyStage = (game, players) => {
@@ -251,50 +481,58 @@ function hostPage() {
             <div><strong>Scan to join</strong><small>Camera opens the player screen</small></div>
           </div>
           <button class="link-command" type="button" data-copy-link="${esc(joinUrl)}">
-            ${icon('link')}<span><strong>Copy player link</strong><small>${esc(joinUrl)}</small></span><span class="copy-label">Copy</span>
+            ${icon('link')}<strong>Copy player link</strong><span class="copy-label">Copy</span>
           </button>
           <a class="text-link" href="${esc(joinUrl)}" target="_blank" rel="noopener">Open a player join screen ${icon('arrow')}</a>
         </div>
         <div class="control-dock lobby-controls">
           <button class="btn ghost" type="button" data-how>${icon('film')} How it works</button>
-          <button class="btn primary wide" data-action="start" ${players.length && !busy ? '' : 'disabled'}>Show first question ${icon('arrow')}</button>
+          <button class="btn primary wide" data-start-round="start" ${players.length && !busy ? '' : 'disabled'}>Start Game ${icon('arrow')}</button>
           <button class="btn danger icon-only" type="button" data-leave aria-label="End session">${icon('power')}</button>
         </div>
       </div>`;
   };
 
   const questionStage = (game, question, players) => {
-    const alive = players.filter((player) => player.is_alive);
+    const alive = players.filter((player) => player.is_alive && Number(player.eligible_from_round || 0) <= Number(game.current_round));
     const submitted = alive.filter((player) => player.has_locked_answer).length;
     const timerRunning = game.phase === 'question' && Boolean(game.ends_at);
     const seconds = timerRunning ? Math.max(0, Math.ceil((new Date(game.ends_at) - Date.now()) / 1000)) : game.timer_seconds;
-    const displayImage = game.phase === 'revealed'
+    const revealSeconds = game.phase === 'locked' && game.reveal_at
+      ? Math.max(0, Math.ceil((new Date(game.reveal_at) - Date.now()) / 1000))
+      : 0;
+    const originalImage = game.phase === 'revealed'
       ? (question?.answer_image_path || question?.question_image_path)
       : question?.question_image_path;
+    const displayImage = decodedMedia.get(originalImage) || '';
     const phaseName = game.phase === 'revealed' ? 'Answer reveal' : game.phase === 'locked' ? 'Answers locked' : timerRunning ? 'Timer live' : 'Question ready';
     const primaryAction = game.phase === 'question' && !timerRunning
-      ? `<button class="btn primary wide" data-action="timer">${icon('play')} Start ${game.timer_seconds}-second timer</button>`
-      : game.phase === 'locked'
-        ? `<button class="btn primary wide" data-action="reveal">${icon('sparkle')} Reveal answer</button>`
-        : game.phase === 'revealed'
-          ? `<button class="btn primary wide" data-action="next">Next question ${icon('arrow')}</button>`
+      ? `<button class="btn primary wide" data-start-round="resume" ${mediaReadyQuestions.has(question?.id) && !busy ? '' : 'disabled'}>${icon('play')} ${mediaReadyQuestions.has(question?.id) ? 'Start question' : 'Preparing question…'}</button>`
+      : game.phase === 'revealed'
+          ? `<button class="btn primary wide" data-start-round="next">Next question ${icon('arrow')}</button>`
           : '';
     return `
       <div class="question-stage view-enter ${game.phase === 'revealed' ? 'is-reveal' : ''}">
         <div class="question-meta">
           <div class="round-ident">
-            <span class="percentage-medallion">${question?.percentage || '–'}<small>%</small></span>
+            <span class="percentage-medallion"><span><strong>${question?.percentage || '–'}</strong><small>%</small></span></span>
             <div><span class="broadcast-kicker"><i></i>${phaseName}</span><h1>The ${question?.percentage || '–'}% question</h1></div>
           </div>
           <div class="locked-stat">${icon('users')}<strong>${submitted}/${alive.length}</strong><span>locked in</span></div>
           <div class="timer-ring ${seconds <= 5 && timerRunning ? 'low' : ''} ${timerRunning ? 'running' : ''}" data-timer style="--timer-progress:${timerRunning ? (seconds / game.timer_seconds) * 360 : 360}deg">
-            <span>${timerRunning ? seconds : game.phase === 'question' ? 'Ready' : icon('lock')}</span>
-            <small>${timerRunning ? 'seconds' : game.phase === 'revealed' ? 'revealed' : ''}</small>
+            <span>${timerRunning ? seconds : game.phase === 'locked' ? revealSeconds : game.phase === 'question' ? 'Ready' : icon('lock')}</span>
+            <small>${timerRunning ? 'seconds' : game.phase === 'locked' ? 'to reveal' : game.phase === 'revealed' ? 'revealed' : ''}</small>
           </div>
         </div>
         <div class="question-frame ${game.phase === 'revealed' ? 'answer-frame' : ''}">
           <div class="frame-glow"></div>
-          ${displayImage ? `<img src="${esc(displayImage)}" alt="${game.phase === 'revealed' ? 'Answer' : 'Question'} slide">` : `<div class="question-copy">${esc(question?.question_text || 'Question image')}</div>`}
+          ${game.phase === 'locked' ? `
+            ${displayImage ? `<img class="time-up-backdrop" src="${esc(displayImage)}" alt="">` : ''}
+            <div class="time-up-burst"><span>Answers locked</span><strong>Time's up!</strong><small>Answer revealing in <b data-reveal-countdown>${revealSeconds}</b></small></div>`
+            : game.phase === 'question' && !timerRunning ? `
+              <div class="question-ready-card"><span class="media-spinner"><i></i></span><strong>${mediaReadyQuestions.has(question?.id) ? 'Question ready' : 'Preparing question'}</strong><small>${mediaReadyQuestions.has(question?.id) ? 'Press Start question when everyone is ready.' : 'Loading the complete artwork before it appears.'}</small></div>`
+            : displayImage ? `<img src="${esc(displayImage)}" alt="${game.phase === 'revealed' ? 'Answer' : 'Question'} slide" data-question-image title="Double-click for image fullscreen">`
+            : `<div class="question-copy">${esc(question?.question_text || 'Preparing question artwork…')}</div>`}
           ${game.phase === 'revealed' ? '<span class="reveal-ribbon">Answer</span>' : ''}
         </div>
         ${game.phase === 'revealed' && !question?.answer_image_path ? `<div class="answer-reveal"><span>Correct answer</span><strong>${esc(question?.answer_text)}</strong></div>` : ''}
@@ -302,10 +540,34 @@ function hostPage() {
           <div class="phase-caption"><span>Round ${Number(game.current_round) + 1} of ${LEVELS.length}</span><small>${timerRunning ? 'Submissions are open' : game.phase === 'question' ? 'Players can see answer controls after the timer starts' : 'Host controls the pace'}</small></div>
           <div class="dock-actions">
             ${primaryAction}
-            ${game.phase === 'question' ? `<button class="btn ghost" data-action="lock">${icon('lock')} Lock answers</button>` : ''}
             <button class="btn danger icon-only" type="button" data-leave aria-label="End session">${icon('power')}</button>
           </div>
         </div>
+      </div>`;
+  };
+
+  const roundTransitionScreen = (question) => {
+    if (!roundTransition) return '';
+    if (roundTransition.mode === 'pass') return `
+      <div class="round-transition pass-intro" role="status">
+        <div class="transition-rings" aria-hidden="true"><i></i><i></i><i></i></div>
+        <span class="broadcast-kicker"><i></i> New from the 60% question</span>
+        <strong>The pass is now in play.</strong>
+        <small>How It Works is about to begin.</small>
+      </div>`;
+    if (roundTransition.mode === 'countdown') return `
+      <div class="round-transition countdown-intro" role="status">
+        <span class="transition-percentage"><strong>${question?.percentage || '–'}</strong><small>%</small></span>
+        <span class="broadcast-kicker"><i></i> Question fully loaded</span>
+        <strong class="countdown-number">${roundTransition.count}</strong>
+        <small>Get ready</small>
+      </div>`;
+    return `
+      <div class="round-transition media-preflight" role="status">
+        <span class="media-spinner large"><i></i></span>
+        <span class="broadcast-kicker"><i></i> Preparing the next question</span>
+        <strong>Loading the complete artwork.</strong>
+        <small>Nothing appears until every pixel is ready.</small>
       </div>`;
   };
 
@@ -324,7 +586,7 @@ function hostPage() {
           <section class="launch-art">
             <div class="poster-halo"></div>
             <img src="${gameLogo}" alt="WMC The 1% Club">
-            <div class="launch-art-copy"><span>A live gameshow experience</span><strong>One question. One percent.<br>One community.</strong></div>
+            <div class="launch-art-copy"><span>A live gameshow experience</span></div>
           </section>
           <section class="launch-console">
             <span class="broadcast-kicker"><i></i> Host control</span>
@@ -349,7 +611,6 @@ function hostPage() {
           <span class="broadcast-kicker"><i></i> Game complete</span>
           <h1>${alive.length ? 'Still standing' : 'That was The 1% Club'}</h1>
           <p class="finalists">${alive.length ? alive.map((player) => esc(player.name)).join(' · ') : 'Thanks for playing'}</p>
-          <p>One question. One percent. One community.</p>
           <button class="btn primary" data-leave>Start another game ${icon('arrow')}</button>
         </div>`;
     } else {
@@ -372,17 +633,20 @@ function hostPage() {
           ${creds ? `<aside class="studio-panel players-panel">
             <div class="players-head"><div><span class="section-label">Live room</span><h2>Players</h2></div><span class="player-count">${players.length}</span></div>
             ${game ? `<button class="sidebar-pin" type="button" data-copy-pin="${game.pin}"><span>PIN</span><strong>${game.pin}</strong>${icon('copy')}</button>` : ''}
-            <div class="player-list">${playerList(players)}</div>
+            <div class="player-list">${playerList(players, game?.current_round || 0)}</div>
             <div class="players-foot"><span><i class="online-dot"></i>${alive.length} still playing</span><small>${players.length - alive.length ? `${players.length - alive.length} spectating` : 'Nobody eliminated'}</small></div>
           </aside>` : ''}
         </main>
+        ${roundTransitionScreen(question)}
       </div>`;
 
     app.querySelector('#create-game')?.addEventListener('submit', (event) => { event.preventDefault(); create(event.currentTarget); });
     app.querySelector('[data-fullscreen]')?.addEventListener('click', () => document.documentElement.requestFullscreen?.());
     app.querySelector('[data-leave]')?.addEventListener('click', leave);
     app.querySelectorAll('[data-action]').forEach((button) => button.addEventListener('click', () => act(button.dataset.action)));
-    app.querySelector('[data-how]')?.addEventListener('click', () => document.querySelector('#how-dialog')?.showModal());
+    app.querySelectorAll('[data-start-round]').forEach((button) => button.addEventListener('click', () => stageAndStartRound(button.dataset.startRound)));
+    app.querySelector('[data-how]')?.addEventListener('click', playHowVideo);
+    app.querySelector('[data-question-image]')?.addEventListener('dblclick', (event) => event.currentTarget.requestFullscreen?.());
     app.querySelectorAll('[data-copy-pin]').forEach((button) => button.addEventListener('click', async () => {
       const copied = await copyText(button.dataset.copyPin);
       flash(copied ? `PIN ${button.dataset.copyPin} copied` : `PIN: ${button.dataset.copyPin}`);
@@ -406,9 +670,27 @@ function hostPage() {
         timer.classList.toggle('low', left <= 5);
         const value = timer.querySelector('span');
         if (value) value.textContent = left;
+        if (left === 0 && deadlineRefreshRound !== snapshot?.round?.id) {
+          deadlineRefreshRound = snapshot?.round?.id || '';
+          refresh();
+        }
       };
       tick();
       ticker = setInterval(tick, 250);
+    } else if (game?.phase === 'locked' && game.reveal_at) {
+      const tickReveal = () => {
+        const left = Math.max(0, Math.ceil((new Date(game.reveal_at) - Date.now()) / 1000));
+        const timer = app.querySelector('[data-timer] > span');
+        const caption = app.querySelector('[data-reveal-countdown]');
+        if (timer) timer.textContent = left;
+        if (caption) caption.textContent = left;
+        if (left === 0 && deadlineRefreshRound !== `reveal:${snapshot?.round?.id}`) {
+          deadlineRefreshRound = `reveal:${snapshot?.round?.id || ''}`;
+          refresh();
+        }
+      };
+      tickReveal();
+      ticker = setInterval(tickReveal, 250);
     }
   }
 
@@ -428,6 +710,7 @@ function playerPage() {
   let selected = '';
   let stop = () => {};
   let ticker;
+  let localTimeUpRound = '';
   const suppliedPin = normalisePin(new URLSearchParams(location.search).get('pin') || '');
   let joinDraft = { pin: suppliedPin, name: '' };
 
@@ -436,7 +719,10 @@ function playerPage() {
     try {
       const next = await rpc('player_snapshot', { p_player_id: creds.id, p_player_token: creds.token });
       const changed = JSON.stringify(next) !== JSON.stringify(snapshot);
-      if (next?.round?.id !== snapshot?.round?.id) selected = '';
+      if (next?.round?.id !== snapshot?.round?.id) {
+        selected = '';
+        localTimeUpRound = '';
+      }
       snapshot = next;
       if (!snapshot?.player) {
         sessionStorage.removeItem(PLAYER);
@@ -489,19 +775,28 @@ function playerPage() {
       });
       await refresh();
     } catch (caught) {
-      error = caught.message;
+      error = friendlySubmitError(caught);
     }
     busy = false;
     render();
   }
 
-  function leave() {
-    stop();
-    sessionStorage.removeItem(PLAYER);
-    creds = null;
-    snapshot = null;
-    selected = '';
+  async function leave() {
+    if (!creds || busy) return;
+    busy = true;
     error = '';
+    render();
+    try {
+      await rpc('player_leave_game', { p_player_id: creds.id, p_player_token: creds.token });
+      stop();
+      sessionStorage.removeItem(PLAYER);
+      creds = null;
+      snapshot = null;
+      selected = '';
+      localTimeUpRound = '';
+    } catch (caught) {
+      error = caught.message;
+    }
     busy = false;
     render();
   }
@@ -519,6 +814,8 @@ function playerPage() {
     const game = snapshot?.game;
     const question = snapshot?.question;
     const submission = snapshot?.submission;
+    const waitingForRound = player && game && Number(player.eligible_from_round || 0) > Number(game.current_round || 0);
+    const locallyExpired = localTimeUpRound && localTimeUpRound === snapshot?.round?.id;
     document.body.dataset.state = player && !player.is_alive ? 'spectator' : game?.phase || (creds ? 'connecting' : 'join');
     let body;
 
@@ -562,22 +859,32 @@ function playerPage() {
           <p>Your name is now on the host screen. Keep this page open and wait for the first question.</p>
           <div class="lobby-confirmation">${icon('check')} Connected to room ${esc(game.pin)}</div>
         </div>`;
+    } else if (waitingForRound) {
+      body = `
+        <div class="player-state-card welcome-card midgame-wait view-enter">
+          <div class="waiting-orbit"><span>${esc(player.name.slice(0, 1).toUpperCase())}</span><i></i><i></i></div>
+          <span class="broadcast-kicker"><i></i> Joined live</span>
+          <h1>You are in.</h1>
+          <p>This question was already underway, so you will enter safely at the start of the next round.</p>
+          <div class="lobby-confirmation">${icon('check')} Connected · next round</div>
+        </div>`;
     } else if (game.phase === 'question' && !game.ends_at && !player.has_locked_answer) {
       body = `
         <div class="player-state-card ready-card view-enter">
-          <span class="percentage-orb">${question.percentage}<small>%</small></span>
+          <span class="percentage-orb"><span><strong>${question.percentage}</strong><small>%</small></span></span>
           <span class="broadcast-kicker"><i></i> Question on the main screen</span>
           <h1>Read it first.</h1>
           <p>Your answer controls will open when the host starts the timer.</p>
+          ${question.percentage === 60 ? '<div class="pass-unlocked"><span class="pass-token">P</span><strong>Your pass is now available</strong></div>' : ''}
           <div class="waiting-bar"><i></i><span>Waiting for host</span></div>
         </div>`;
-    } else if (game.phase === 'question' && !player.has_locked_answer) {
+    } else if (game.phase === 'question' && !player.has_locked_answer && !locallyExpired) {
       const seconds = Math.max(0, Math.ceil((new Date(game.ends_at) - Date.now()) / 1000));
       body = `
         <div class="answer-card view-enter">
           <div class="answer-heading"><div><span class="broadcast-kicker"><i></i> ${question.percentage}% question</span><h1>Lock in your answer</h1></div><span class="mini-timer ${seconds <= 5 ? 'low' : ''}" data-player-timer>${seconds}</span></div>
           ${error ? `<div class="notice bad">${err(error)}</div>` : ''}
-          <p class="answer-rule">Submission is final. There is no spelling tolerance beyond the accepted answers set by the host.</p>
+          <p class="answer-rule">Submission is final! Answer wisely.</p>
           <form class="stack" id="answer-form">
             ${question.answer_kind === 'choice' ? `
               <div class="choice-grid">${(question.choices || []).map((choice, index) => {
@@ -588,7 +895,7 @@ function playerPage() {
               }).join('')}</div><input type="hidden" name="answer" value="${esc(selected)}" required>`
               : '<label class="field-label answer-input-label">Your answer<input class="field answer-input" name="answer" autocomplete="off" spellcheck="false" placeholder="Type exactly what you mean" required></label>'}
             <button class="btn primary full answer-submit" ${busy ? 'disabled' : ''}>${busy ? '<span class="button-spinner"></span> Locking in…' : `Submit final answer ${icon('arrow')}`}</button>
-            <button class="btn pass-button full" type="button" data-pass ${player.pass_available && question.percentage !== 1 && !busy ? '' : 'disabled'}><span class="pass-token">P</span><span><strong>${player.pass_available ? 'Use my pass' : 'Pass already used'}</strong><small>${question.percentage === 1 ? 'Passes are not available at 1%' : 'Stay in without answering this round'}</small></span></button>
+            ${question.percentage <= 60 ? `<button class="btn pass-button full" type="button" data-pass ${player.pass_available && question.percentage !== 1 && !busy ? '' : 'disabled'}><span class="pass-token">P</span><span><strong>${question.percentage === 1 ? 'Pass unavailable' : player.pass_available ? 'Use my pass' : 'Pass already used'}</strong><small>${question.percentage === 1 ? 'Passes are not available at 1%' : 'Stay in without answering this round'}</small></span></button>` : ''}
           </form>
         </div>`;
       ticker = setInterval(() => {
@@ -597,8 +904,13 @@ function playerPage() {
         const left = Math.max(0, Math.ceil((new Date(game.ends_at) - Date.now()) / 1000));
         timer.textContent = left;
         timer.classList.toggle('low', left <= 5);
+        if (left === 0) {
+          localTimeUpRound = snapshot?.round?.id || '';
+          refresh();
+          render();
+        }
       }, 250);
-    } else if (game.phase === 'question') {
+    } else if (game.phase === 'question' && player.has_locked_answer) {
       body = `
         <div class="player-state-card locked-card view-enter">
           <div class="state-emblem success-emblem">${icon('check')}</div>
@@ -607,8 +919,8 @@ function playerPage() {
           <p>Your submission is final. Watch the host screen for the reveal.</p>
           <div class="lock-seal">${icon('lock')} Encrypted live submission</div>
         </div>`;
-    } else if (game.phase === 'locked') {
-      body = `<div class="player-state-card locked-card view-enter"><div class="state-emblem lock-emblem">${icon('lock')}</div><span class="broadcast-kicker"><i></i> Answers closed</span><h1>Eyes on the host.</h1><p>The answer is about to be revealed.</p></div>`;
+    } else if (game.phase === 'locked' || locallyExpired) {
+      body = `<div class="player-state-card locked-card time-up-player view-enter"><div class="state-emblem lock-emblem">${icon('lock')}</div><span class="broadcast-kicker"><i></i> Answers closed</span><h1>Time's up!</h1><p>Eyes on the host screen. The answer is about to be revealed.</p></div>`;
     } else if (game.phase === 'revealed') {
       const correct = submission?.used_pass || submission?.is_correct;
       body = `
@@ -630,7 +942,7 @@ function playerPage() {
         ${mobileHeader(game, player)}
         ${game && question ? levelRail(question.percentage) : ''}
         <main class="player-main">${body}</main>
-        <footer class="player-footer"><span>WMC · Wycombe Muslim Collective</span><span>${creds ? '<i class="online-dot"></i> Live' : 'One question. One percent. One community.'}</span></footer>
+        <footer class="player-footer"><span>WMC · Wycombe Muslim Collective</span><span>${creds ? '<i class="online-dot"></i> Live' : 'Live gameshow experience'}</span></footer>
       </div>`;
 
     app.querySelector('[data-player-leave]')?.addEventListener('click', leave);
@@ -932,13 +1244,20 @@ if (page === 'admin') adminPage();
 
 if (page === 'host') {
   const loader = document.querySelector('#host-loader');
-  const howDialog = document.querySelector('#how-dialog');
-  howDialog?.querySelector('[data-close-how]')?.addEventListener('click', () => howDialog.close());
-  howDialog?.addEventListener('close', () => {
-    const video = howDialog.querySelector('video');
-    video.pause();
-    video.currentTime = 0;
-  });
+  const loaderImage = loader?.querySelector('img');
   const started = performance.now();
-  window.addEventListener('load', () => setTimeout(() => loader?.classList.add('loaded'), Math.max(0, 1700 - (performance.now() - started))), { once: true });
+  const finishLoader = async () => {
+    try {
+      if (loaderImage && !loaderImage.complete) await new Promise((resolve) => {
+        loaderImage.addEventListener('load', resolve, { once: true });
+        loaderImage.addEventListener('error', resolve, { once: true });
+      });
+      await loaderImage?.decode?.().catch(() => {});
+      loader?.classList.add('image-ready');
+      await sleep(Math.max(450, 1250 - (performance.now() - started)));
+    } finally {
+      loader?.classList.add('loaded');
+    }
+  };
+  finishLoader();
 }

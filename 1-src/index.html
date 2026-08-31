@@ -14,17 +14,22 @@
   <body data-page="host">
     <div class="ambient" aria-hidden="true"></div>
     <div class="host-loader" id="host-loader" aria-label="Loading The 1% Club">
-      <img src="./assets/wmc-loading-screen.png" alt="WMC presents The 1% Club — loading" />
+      <img src="./assets/wmc-loading-screen.webp" width="1920" height="1080" fetchpriority="high" decoding="async" alt="WMC presents The 1% Club — loading" />
       <div class="host-loader-shine" aria-hidden="true"></div>
+      <div class="host-loader-status"><span class="media-spinner"><i></i></span><strong>Preparing the studio</strong></div>
     </div>
     <main id="app"></main>
-    <dialog class="how-dialog" id="how-dialog">
-      <div class="how-dialog-head">
-        <strong>How it works</strong>
-        <button class="btn compact" type="button" data-close-how>Close</button>
+    <div class="how-overlay" id="how-overlay" hidden aria-hidden="true" role="dialog" aria-label="How It Works video">
+      <video playsinline preload="none"></video>
+      <div class="how-video-loader">
+        <span class="media-spinner"><i></i></span>
+        <span class="broadcast-kicker"><i></i> How it works</span>
+        <strong data-video-message>Preparing the complete video</strong>
+        <div class="video-progress" data-video-progress><i></i></div>
+        <small data-video-progress-label>Loading 0%</small>
       </div>
-      <video controls preload="metadata" playsinline src="./media/how-it-works.mp4"></video>
-    </dialog>
+      <button class="how-close" type="button" data-close-how aria-label="Close How It Works video">×</button>
+    </div>
     <script type="module" src="./assets/game.js"></script>
   </body>
 </html>
