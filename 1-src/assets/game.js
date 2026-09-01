@@ -239,12 +239,14 @@ async function playStudioVideo(url, options = {}) {
   document.addEventListener('fullscreenchange', handleFullscreenChange);
   overlay.hidden = false;
   overlay.setAttribute('aria-hidden', 'false');
-  options.beforeOpen?.();
+  const beforeOpen = Promise.resolve(options.beforeOpen?.());
   requestAnimationFrame(() => overlay.classList.add('open'));
   overlay.requestFullscreen?.().catch(() => {});
   try {
     const source = await Promise.race([bufferVideo(url), closePromise.then(() => '')]);
     if (!source || cancelled) return;
+    await Promise.race([beforeOpen, closePromise]);
+    if (cancelled) return;
     if (video.src !== source) {
       video.src = source;
       video.load();
@@ -372,6 +374,7 @@ function hostPage() {
   let musicLibrary = null;
   let musicOpen = false;
   let resumeMusicAfterVideo = false;
+  let musicFadeToken = 0;
   let launchTransition = false;
   let lastHostViewKey = '';
   let operationEpoch = 0;
@@ -407,7 +410,8 @@ function hostPage() {
       musicLibrary = await response.json();
       if (!currentPlaylist()) musicState.playlistId = musicLibrary.playlists?.[0]?.id || 'ambience';
       musicState.trackIndex = Math.min(musicState.trackIndex, Math.max(0, (currentPlaylist()?.tracks?.length || 1) - 1));
-      render();
+      syncMusicLauncher();
+      replaceMusicPanel();
     } catch (caught) {
       console.warn(caught.message);
     }
@@ -441,7 +445,8 @@ function hostPage() {
     } catch {
       error = 'Press play again to start the selected nasheed.';
     }
-    render();
+    syncMusicLauncher();
+    replaceMusicPanel();
   }
 
   function moveMusic(direction = 1) {
@@ -453,21 +458,44 @@ function hostPage() {
     playMusicTrack(next);
   }
 
-  const pauseMusicForVideo = () => {
+  const fadeMusicTo = (target, duration = 700) => {
+    const token = ++musicFadeToken;
+    const start = musicAudio.volume;
+    const destination = Math.max(0, Math.min(1, target));
+    const startedAt = performance.now();
+    return new Promise((resolve) => {
+      const step = (now) => {
+        if (token !== musicFadeToken) return resolve(false);
+        const progress = Math.min(1, (now - startedAt) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        musicAudio.volume = start + (destination - start) * eased;
+        if (progress < 1) requestAnimationFrame(step);
+        else resolve(true);
+      };
+      requestAnimationFrame(step);
+    });
+  };
+  const pauseMusicForVideo = async () => {
     resumeMusicAfterVideo = !musicAudio.paused;
-    if (resumeMusicAfterVideo) musicAudio.pause();
+    if (!resumeMusicAfterVideo) return;
+    const faded = await fadeMusicTo(0, 650);
+    if (faded && resumeMusicAfterVideo) musicAudio.pause();
   };
   const restoreMusicAfterVideo = () => {
-    if (resumeMusicAfterVideo) musicAudio.play().catch(() => {});
+    const shouldResume = resumeMusicAfterVideo;
     resumeMusicAfterVideo = false;
-    render();
+    if (shouldResume) {
+      musicAudio.volume = 0;
+      musicAudio.play().then(() => fadeMusicTo(musicState.volume, 900)).catch(() => {});
+    }
+    syncMusicLauncher();
   };
 
   musicAudio.addEventListener('timeupdate', syncMusicProgress);
   musicAudio.addEventListener('loadedmetadata', syncMusicProgress);
   musicAudio.addEventListener('ended', () => moveMusic(1));
-  musicAudio.addEventListener('play', () => render());
-  musicAudio.addEventListener('pause', () => render());
+  musicAudio.addEventListener('play', () => { syncMusicLauncher(); if (musicOpen) replaceMusicPanel(); });
+  musicAudio.addEventListener('pause', () => { syncMusicLauncher(); if (musicOpen) replaceMusicPanel(); });
 
   const flash = (message) => {
     notice = message;
@@ -735,12 +763,13 @@ function hostPage() {
   };
 
   const musicPanel = () => {
-    if (!musicOpen) return '';
-    if (!musicLibrary) return `<div class="music-scrim" data-music-close><section class="music-panel loading" role="dialog" aria-label="Nasheed player" onclick="event.stopPropagation()"><button class="round-icon-button music-close" data-music-close type="button" aria-label="Close">${icon('x')}</button><span class="media-spinner"><i></i></span><strong>Preparing your nasheed archive</strong><small>Loading all three WMC playlists…</small></section></div>`;
+    const openClass = musicOpen ? 'open' : '';
+    const hidden = musicOpen ? 'false' : 'true';
+    if (!musicLibrary) return `<div class="music-scrim ${openClass}" aria-hidden="${hidden}" data-music-close><section class="music-panel loading" role="dialog" aria-label="Nasheed player" onclick="event.stopPropagation()"><button class="round-icon-button music-close" data-music-close type="button" aria-label="Close">${icon('x')}</button><span class="media-spinner"><i></i></span><strong>Preparing your nasheed archive</strong><small>Loading all three WMC playlists…</small></section></div>`;
     const playlist = currentPlaylist();
     const track = currentTrack();
     const duration = Number(musicAudio.duration) || Number(track?.duration) || 0;
-    return `<div class="music-scrim" data-music-close>
+    return `<div class="music-scrim ${openClass}" aria-hidden="${hidden}" data-music-close>
       <section class="music-panel" role="dialog" aria-label="Nasheed player" onclick="event.stopPropagation()">
         <header class="music-panel-head">
           <div><span class="broadcast-kicker"><i></i> WMC sound</span><h2>Nasheed archive</h2></div>
@@ -770,6 +799,65 @@ function hostPage() {
       </section>
     </div>`;
   };
+
+  function syncMusicLauncher() {
+    const launcher = app.querySelector('[data-music-toggle]');
+    if (!launcher) return;
+    launcher.classList.toggle('playing', !musicAudio.paused);
+    const launcherIcon = launcher.querySelector('.music-launch-icon');
+    if (launcherIcon) launcherIcon.innerHTML = `${icon(musicAudio.paused ? 'music' : 'pause')}<i></i>`;
+    const title = launcher.querySelector('strong');
+    if (title) title.textContent = currentTrack()?.title || (musicLibrary ? 'Choose a track' : 'Loading library…');
+  }
+
+  function setMusicOpen(open) {
+    musicOpen = Boolean(open);
+    const scrim = app.querySelector('.music-scrim');
+    if (!scrim) return;
+    scrim.classList.toggle('open', musicOpen);
+    scrim.setAttribute('aria-hidden', musicOpen ? 'false' : 'true');
+  }
+
+  function replaceMusicPanel() {
+    const current = app.querySelector('.music-scrim');
+    if (!current) return;
+    const template = document.createElement('template');
+    template.innerHTML = musicPanel().trim();
+    current.replaceWith(template.content.firstElementChild);
+    bindMusicPanelControls();
+    syncMusicProgress();
+  }
+
+  function bindMusicPanelControls() {
+    app.querySelectorAll('[data-music-close]').forEach((element) => element.addEventListener('click', (event) => {
+      if (event.currentTarget.classList.contains('music-scrim') && event.target !== event.currentTarget) return;
+      setMusicOpen(false);
+    }));
+    app.querySelectorAll('[data-playlist]').forEach((button) => button.addEventListener('click', () => {
+      musicState.playlistId = button.dataset.playlist;
+      musicState.trackIndex = 0;
+      saveMusic();
+      playMusicTrack(0);
+    }));
+    app.querySelectorAll('[data-track]').forEach((button) => button.addEventListener('click', () => playMusicTrack(Number(button.dataset.track))));
+    app.querySelector('[data-music-play]')?.addEventListener('click', () => musicAudio.paused ? playMusicTrack() : musicAudio.pause());
+    app.querySelector('[data-music-prev]')?.addEventListener('click', () => moveMusic(-1));
+    app.querySelector('[data-music-next]')?.addEventListener('click', () => moveMusic(1));
+    app.querySelector('[data-music-shuffle]')?.addEventListener('click', (event) => {
+      musicState.shuffle = !musicState.shuffle;
+      saveMusic();
+      event.currentTarget.classList.toggle('active', musicState.shuffle);
+    });
+    app.querySelector('[data-music-volume]')?.addEventListener('input', (event) => {
+      musicState.volume = Number(event.target.value);
+      musicAudio.volume = musicState.volume;
+      saveMusic();
+    });
+    app.querySelector('[data-music-progress]')?.addEventListener('input', (event) => {
+      if (Number.isFinite(musicAudio.duration)) musicAudio.currentTime = Number(event.target.value) / 100 * musicAudio.duration;
+      syncMusicProgress();
+    });
+  }
 
   async function openHistory(position) {
     const item = snapshot?.history?.find((entry) => Number(entry.position) === Number(position));
@@ -823,7 +911,7 @@ function hostPage() {
         <div class="lobby-intro">
           <span class="broadcast-kicker"><i></i> Room is open</span>
           <h1>Your room<br><em>is live.</em></h1>
-          <p>Players can join by QR code, link or PIN. Start whenever everyone is in.</p>
+          <p>Players can join by QR code, link or PIN.<br><span>Starts when you're ready.</span></p>
         </div>
         <div class="join-command-centre">
           <button class="pin-command" type="button" data-copy-pin="${game.pin}" aria-label="Copy game PIN ${game.pin}">
@@ -876,7 +964,7 @@ function hostPage() {
     const primaryAction = game.phase === 'question' && !timerRunning && !reading
       ? `<button class="btn primary wide" data-start-round="resume" ${mediaReadyQuestions.has(question?.id) && !busy ? '' : 'disabled'}>${icon('play')} ${mediaReadyQuestions.has(question?.id) ? 'Start question' : 'Preparing question…'}</button>`
       : timerRunning
-        ? `<button class="btn ghost wide" data-action="lock" ${busy ? 'disabled' : ''}>Advance ${icon('arrow')}</button>`
+        ? `<button class="btn primary wide advance-action" data-action="lock" ${busy ? 'disabled' : ''}>Advance ${icon('arrow')}</button>`
       : game.phase === 'revealed'
           ? `<button class="btn primary wide" data-start-round="next">Next question now ${icon('arrow')}</button>`
           : '';
@@ -888,7 +976,7 @@ function hostPage() {
             <div><span class="broadcast-kicker"><i></i>${phaseName}</span><h1>The ${question?.percentage || '–'}% question</h1></div>
           </div>
           <div class="locked-stat">${icon('users')}<strong>${submitted}/${alive.length}</strong><span>locked in</span></div>
-          <div class="timer-ring ${seconds <= 5 && timerRunning ? 'low' : ''} ${timerRunning || reading ? 'running' : ''} ${reading ? 'reading' : ''}" data-timer style="--timer-progress:${timerDeadline ? (seconds / (reading ? 10 : game.timer_seconds)) * 360 : 360}deg">
+          <div class="timer-ring ${seconds <= 5 && timerRunning ? 'low' : ''} ${timerRunning || reading ? 'running' : ''} ${reading ? 'reading' : ''}" data-timer style="--timer-progress:${timerDeadline ? (seconds / (reading ? 15 : game.timer_seconds)) * 360 : 360}deg">
             <span>${timerRunning || reading ? seconds : game.phase === 'locked' ? revealSeconds : game.phase === 'question' ? 'Ready' : icon('lock')}</span>
             <small>${reading ? 'read' : timerRunning ? 'seconds' : game.phase === 'locked' ? 'to reveal' : game.phase === 'revealed' ? 'revealed' : ''}</small>
           </div>
@@ -906,7 +994,7 @@ function hostPage() {
         ${game.phase === 'revealed' && !question?.answer_image_path ? `<div class="answer-reveal"><span>Correct answer</span><strong>${esc(question?.answer_text)}</strong></div>` : ''}
         ${game.phase === 'revealed' ? `<div class="answer-summary ${stats ? '' : 'countdown-only'}">${stats}<div class="auto-advance-card"><div><span>Next question</span><strong>In <b data-auto-countdown>${advanceSeconds}</b> seconds</strong></div><div class="auto-advance-track"><i data-auto-progress style="--auto-progress:${Math.max(0, Math.min(100, advanceSeconds / 20 * 100))}%"></i></div></div></div>` : ''}
         <div class="control-dock question-controls">
-          <div class="phase-caption"><span>${reading ? 'Reading time' : timerRunning ? (submitted === alive.length && alive.length ? 'Everyone has answered' : 'Answers are open') : game.phase === 'question' ? 'Room ready' : game.phase === 'revealed' ? 'Answer revealed' : 'Answers are closed'}</span><small>${reading ? 'Answer controls open automatically after ten seconds.' : timerRunning ? 'Advance whenever everyone has answered.' : game.phase === 'question' ? 'Start when everyone is focused.' : game.phase === 'revealed' ? 'Continue now or allow the countdown.' : 'The answer follows automatically.'}</small></div>
+          <div class="phase-caption"><span>${reading ? 'Reading time' : timerRunning ? (submitted === alive.length && alive.length ? 'Everyone has answered' : 'Answers are open') : game.phase === 'question' ? 'Room ready' : game.phase === 'revealed' ? 'Answer revealed' : 'Answers are closed'}</span><small>${reading ? 'Answer controls open automatically after fifteen seconds.' : timerRunning ? 'Advance whenever everyone has answered.' : game.phase === 'question' ? 'Start when everyone is focused.' : game.phase === 'revealed' ? 'Continue now or allow the countdown.' : 'The answer follows automatically.'}</small></div>
           <div class="dock-actions">
             ${primaryAction}
             <button class="btn danger icon-only" type="button" data-leave aria-label="End session">${icon('power')}</button>
@@ -918,13 +1006,13 @@ function hostPage() {
   const timeUpScreen = (game) => {
     if (game?.phase !== 'locked') return '';
     const revealSeconds = game.reveal_at ? Math.max(0, Math.ceil((new Date(game.reveal_at) - Date.now()) / 1000)) : 0;
-    return `<div class="time-up-screen" role="status"><div class="time-up-rays" aria-hidden="true"></div><span class="broadcast-kicker"><i></i> Answers locked</span><strong>Time's up!</strong><div class="reveal-countdown-line"><span>Answer in</span><b data-reveal-countdown>${revealSeconds}</b></div></div>`;
+    return `<div class="time-up-screen" role="status"><div class="time-up-rays" aria-hidden="true"></div><div class="time-up-lockup"><span class="time-up-flare" aria-hidden="true">${icon('sparkle')}</span><span class="broadcast-kicker"><i></i> Answers locked</span><strong>Time's up!</strong><div class="reveal-countdown-line"><span>Answer in</span><b data-reveal-countdown>${revealSeconds}</b></div></div></div>`;
   };
 
   const launchTransitionScreen = () => launchTransition ? `
     <div class="launch-transition" role="status">
       <div class="launch-sweep" aria-hidden="true"></div>
-      <img src="${gameShowLogo}" alt="WMC Game Show">
+      <div class="launch-logo-crop"><img src="${gameShowLogo}" alt="WMC Game Show"></div>
       <span class="broadcast-kicker"><i></i> Opening your room</span>
       <strong>Going live.</strong>
     </div>` : '';
@@ -940,7 +1028,7 @@ function hostPage() {
       </div>`;
     if (roundTransition.mode === 'countdown') return `
       <div class="round-transition countdown-intro ${roundTransition.extended ? 'extended-countdown' : ''}" role="status">
-        <img class="transition-show-logo" src="${gameShowLogo}" alt="WMC Game Show">
+        <div class="transition-logo-crop"><img class="transition-show-logo" src="${gameShowLogo}" alt="WMC Game Show"></div>
         <span class="transition-percentage"><strong>${question?.percentage || '–'}</strong><small>%</small></span>
         <div class="countdown-copy">
           <span class="broadcast-kicker"><i></i> ${roundTransition.extended ? 'Pass introduced · next question in' : `The ${question?.percentage || '–'}% question`}</span>
@@ -1077,32 +1165,8 @@ function hostPage() {
       render();
     });
     app.querySelector('[data-history-answer]')?.addEventListener('click', () => { reviewShowAnswer = !reviewShowAnswer; render(); });
-    app.querySelector('[data-music-toggle]')?.addEventListener('click', () => { musicOpen = !musicOpen; render(); });
-    app.querySelectorAll('[data-music-close]').forEach((element) => element.addEventListener('click', (event) => {
-      if (event.currentTarget.classList.contains('music-scrim') && event.target !== event.currentTarget) return;
-      musicOpen = false;
-      render();
-    }));
-    app.querySelectorAll('[data-playlist]').forEach((button) => button.addEventListener('click', () => {
-      musicState.playlistId = button.dataset.playlist;
-      musicState.trackIndex = 0;
-      saveMusic();
-      playMusicTrack(0);
-    }));
-    app.querySelectorAll('[data-track]').forEach((button) => button.addEventListener('click', () => playMusicTrack(Number(button.dataset.track))));
-    app.querySelector('[data-music-play]')?.addEventListener('click', () => musicAudio.paused ? playMusicTrack() : musicAudio.pause());
-    app.querySelector('[data-music-prev]')?.addEventListener('click', () => moveMusic(-1));
-    app.querySelector('[data-music-next]')?.addEventListener('click', () => moveMusic(1));
-    app.querySelector('[data-music-shuffle]')?.addEventListener('click', () => { musicState.shuffle = !musicState.shuffle; saveMusic(); render(); });
-    app.querySelector('[data-music-volume]')?.addEventListener('input', (event) => {
-      musicState.volume = Number(event.target.value);
-      musicAudio.volume = musicState.volume;
-      saveMusic();
-    });
-    app.querySelector('[data-music-progress]')?.addEventListener('input', (event) => {
-      if (Number.isFinite(musicAudio.duration)) musicAudio.currentTime = Number(event.target.value) / 100 * musicAudio.duration;
-      syncMusicProgress();
-    });
+    app.querySelector('[data-music-toggle]')?.addEventListener('click', () => setMusicOpen(!musicOpen));
+    bindMusicPanelControls();
     app.querySelectorAll('[data-copy-pin]').forEach((button) => button.addEventListener('click', async () => {
       const copied = await copyText(button.dataset.copyPin);
       flash(copied ? `PIN ${button.dataset.copyPin} copied` : `PIN: ${button.dataset.copyPin}`);
@@ -1429,7 +1493,7 @@ function playerPage() {
           <span class="broadcast-kicker"><i></i> You are in</span>
           <h1>Welcome, ${esc(player.name)}.</h1>
           <p>Your name is now on the host screen. Keep this page open and wait for the first question.</p>
-          <div class="lobby-confirmation">${icon('check')} Connected to room ${esc(game.pin)}</div>
+          <div class="lobby-confirmation">${icon('check')} Connected to Room ${esc(game.pin)}</div>
         </div>`;
     } else if (waitingForRound) {
       body = `
@@ -1463,7 +1527,7 @@ function playerPage() {
           <p class="answer-rule">Submission is final! Answer wisely.</p>
           <form class="stack" id="answer-form">
             ${question.answer_kind === 'choice' ? `
-              <div class="choice-grid" style="--choice-count:${Math.max(1, choices.length)}">${choices.map((choice, index) => {
+              <div class="choice-grid choices-${Math.max(1, choices.length)}" style="--choice-count:${Math.max(1, choices.length)}">${choices.map((choice, index) => {
                 const value = choice.match(/^([A-Z])\b/)?.[1] || String.fromCharCode(65 + index);
                 return `<button type="button" class="choice ${selected === value ? 'selected' : ''}" data-choice="${esc(value)}" aria-label="Answer ${esc(value)}"><span class="choice-letter">${esc(value)}</span>${selected === value ? icon('check') : ''}</button>`;
               }).join('')}</div><input type="hidden" name="answer" value="${esc(selected)}" required>`
@@ -1496,7 +1560,7 @@ function playerPage() {
           <span class="broadcast-kicker"><i></i> Answer secured</span>
           <h1>${submission?.used_pass ? 'Pass used.' : 'You are locked in.'}</h1>
           <p>Your submission is final. Watch the host screen for the reveal.</p>
-          <div class="lock-seal">${icon('lock')} Encrypted live submission</div>
+          <div class="lock-seal">${icon('lock')} Final answer submitted</div>
         </div>`;
     } else if (game.phase === 'locked' || locallyExpired) {
       body = `<div class="player-state-card locked-card time-up-player ${enterClass}"><div class="state-emblem lock-emblem">${icon('lock')}</div><span class="broadcast-kicker"><i></i> Answers closed</span><h1>Time's up!</h1><p>Eyes on the host screen. The answer is about to be revealed.</p></div>`;
@@ -1859,17 +1923,11 @@ if (page === 'admin') adminPage();
 
 if (page === 'host') {
   const loader = document.querySelector('#host-loader');
-  const loaderImage = loader?.querySelector('img');
   const started = performance.now();
   const finishLoader = async () => {
     try {
-      if (loaderImage && !loaderImage.complete) await new Promise((resolve) => {
-        loaderImage.addEventListener('load', resolve, { once: true });
-        loaderImage.addEventListener('error', resolve, { once: true });
-      });
-      await loaderImage?.decode?.().catch(() => {});
-      loader?.classList.add('image-ready');
-      await sleep(Math.max(450, 1250 - (performance.now() - started)));
+      loader?.classList.add('mark-ready');
+      await sleep(Math.max(420, 1050 - (performance.now() - started)));
     } finally {
       loader?.classList.add('loaded');
     }

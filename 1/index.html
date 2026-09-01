@@ -9,15 +9,23 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="icon" href="/1/assets/favicon-BQQZV5Zy.png" />
     <title>Host · WMC The 1% Club</title>
-    <script type="module" crossorigin src="/1/assets/game-CIzcMyBG.js"></script>
-    <link rel="stylesheet" crossorigin href="/1/assets/game-Afv2DRAH.css">
+    <style>
+      html,body{margin:0;min-height:100%;background:#031114;color:#fff}
+      #host-loader{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 36%,rgba(210,169,110,.18),transparent 29%),linear-gradient(145deg,#0a2c32,#010506 72%)}
+      #host-loader .host-loader-card{display:grid;width:min(430px,calc(100% - 46px));justify-items:center;padding:34px;text-align:center}
+      #host-loader .host-loader-mark{display:grid;width:min(240px,58vw);aspect-ratio:1;place-content:center;border-radius:50%;background:radial-gradient(circle at 50% 42%,rgba(210,169,110,.15),rgba(1,10,12,.96) 65%);text-align:center}
+      #host-loader .host-loader-mark span{color:#d2a96e;font:900 clamp(30px,7vw,64px)/.85 Arial,sans-serif;letter-spacing:-.09em}
+      #host-loader .host-loader-mark strong{color:#f1d59d;font:900 clamp(48px,11vw,98px)/.9 Arial,sans-serif;letter-spacing:-.09em}
+    </style>
+    <script type="module" crossorigin src="/1/assets/game-BA7ecj_o.js"></script>
+    <link rel="stylesheet" crossorigin href="/1/assets/game-CbVJ22Uh.css">
   </head>
   <body data-page="host">
     <div class="ambient" aria-hidden="true"></div>
     <div class="host-loader" id="host-loader" aria-label="Loading The 1% Club">
       <div class="host-loader-glow" aria-hidden="true"></div>
       <section class="host-loader-card">
-        <img src="/1/assets/wmc-one-percent-logo-DSn5Umzs.webp" width="1024" height="1024" fetchpriority="high" decoding="async" alt="WMC presents The 1% Club" />
+        <div class="host-loader-mark" aria-label="WMC The 1% Club"><span>WMC</span><strong>1%</strong></div>
         <span>WMC presents</span>
         <strong>Opening The 1% Club</strong>
         <div class="host-loader-track" aria-hidden="true"><i></i></div>
