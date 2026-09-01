@@ -10,7 +10,8 @@ const joinBase = import.meta.env.DEV && import.meta.env.VITE_LAN_URL
   : location.origin;
 const brandLogo = new URL('./wmc-brand-logo.png', import.meta.url).href;
 const gameLogo = new URL('./wmc-one-percent-logo.webp', import.meta.url).href;
-const howVideoUrl = '/1/media/how-it-works.web.mp4';
+const gameShowLogo = new URL('./wmc-game-show-logo.png', import.meta.url).href;
+const howVideoUrl = '/1/media/how-it-works-v2.mp4';
 const passVideoUrl = '/1/media/pass-intro.mp4';
 const musicLibraryUrl = '/1/media/nasheeds/library.json';
 const decodedMedia = new Map();
@@ -83,6 +84,8 @@ const friendlyConnectionError = (error) => {
   if (/fetch|network|offline|load failed/i.test(message)) return 'Connection interrupted. Reconnecting…';
   return message || 'The live game connection was interrupted. Reconnecting…';
 };
+
+const hostViewportSupported = () => window.innerWidth >= 900 && window.innerWidth > window.innerHeight;
 
 const normalisePin = (raw = '') => {
   const value = String(raw).trim();
@@ -192,6 +195,7 @@ async function playStudioVideo(url, options = {}) {
   overlay.setAttribute('aria-label', `${videoName} video`);
   if (message) message.textContent = options.message || 'Preparing the complete video';
   let cancelled = false;
+  let enteredFullscreen = false;
   let requestClose;
   const closePromise = new Promise((resolve) => { requestClose = resolve; });
   const closeButton = overlay.querySelector('[data-close-how]');
@@ -204,6 +208,10 @@ async function playStudioVideo(url, options = {}) {
       event.stopPropagation();
       if (video.paused) video.play().catch(() => {});
       else video.pause();
+    } else if (event.code === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      close();
     } else if (event.code === 'ArrowRight') {
       event.preventDefault();
       event.stopPropagation();
@@ -216,14 +224,19 @@ async function playStudioVideo(url, options = {}) {
   };
   const blockVideoKeyUp = (event) => {
     if (overlay.hidden || !overlay.classList.contains('open')) return;
-    if (['Space', 'ArrowRight', 'ArrowLeft'].includes(event.code)) {
+    if (['Space', 'Escape', 'ArrowRight', 'ArrowLeft'].includes(event.code)) {
       event.preventDefault();
       event.stopPropagation();
     }
   };
+  const handleFullscreenChange = () => {
+    if (document.fullscreenElement === overlay) enteredFullscreen = true;
+    else if (enteredFullscreen && overlay.classList.contains('open')) close();
+  };
   closeButton?.addEventListener('click', close);
   document.addEventListener('keydown', handleVideoKeys, true);
   document.addEventListener('keyup', blockVideoKeyUp, true);
+  document.addEventListener('fullscreenchange', handleFullscreenChange);
   overlay.hidden = false;
   overlay.setAttribute('aria-hidden', 'false');
   options.beforeOpen?.();
@@ -269,6 +282,7 @@ async function playStudioVideo(url, options = {}) {
     closeButton?.removeEventListener('click', close);
     document.removeEventListener('keydown', handleVideoKeys, true);
     document.removeEventListener('keyup', blockVideoKeyUp, true);
+    document.removeEventListener('fullscreenchange', handleFullscreenChange);
     options.afterClose?.();
   }
 }
@@ -604,6 +618,7 @@ function hostPage() {
       if (!question?.id) throw new Error('The next question could not be prepared. Please try again.');
       const mediaPromise = prepareQuestionMedia(question).then(() => mediaReadyQuestions.add(question.id));
       const passIntroKey = `wmc-pass-intro:${active.id}`;
+      let countdownLength = 5;
       if (question?.percentage === 60 && !sessionStorage.getItem(passIntroKey)) {
         sessionStorage.setItem(passIntroKey, 'shown');
         roundTransition = { mode: 'pass', count: null };
@@ -615,14 +630,15 @@ function hostPage() {
           beforeOpen: pauseMusicForVideo,
           afterClose: restoreMusicAfterVideo
         });
+        countdownLength = 15;
       } else {
         await mediaPromise;
       }
       if (epoch !== operationEpoch || creds?.id !== active.id) return;
-      for (const count of [3, 2, 1]) {
-        roundTransition = { mode: 'countdown', count };
+      for (let count = countdownLength; count >= 1; count -= 1) {
+        roundTransition = { mode: 'countdown', count, extended: countdownLength === 15 };
         render();
-        await sleep(850);
+        await sleep(1000);
         if (epoch !== operationEpoch || creds?.id !== active.id) return;
       }
       await rpc('host_start_timer', { p_game_id: active.id, p_host_token: active.token });
@@ -777,11 +793,12 @@ function hostPage() {
 
   const roundStats = (item) => {
     if (!item || !Number.isFinite(Number(item.eligible_count))) return '';
-    return `<div class="round-results" aria-label="Question results">
+    const passInPlay = Number(item.percentage) <= 60;
+    return `<div class="round-results ${passInPlay ? 'has-pass' : ''}" aria-label="Question results">
       <span class="correct"><small>Correct</small><strong>${Number(item.correct_count) || 0}</strong></span>
       <span class="incorrect"><small>Incorrect</small><strong>${Number(item.incorrect_count) || 0}</strong></span>
       <span><small>No answer</small><strong>${Number(item.no_answer_count) || 0}</strong></span>
-      <span class="passed"><small>Passes</small><strong>${Number(item.pass_count) || 0}</strong></span>
+      ${passInPlay ? `<span class="passed"><small>Passes</small><strong>${Number(item.pass_count) || 0}</strong></span>` : ''}
     </div>`;
   };
 
@@ -835,7 +852,9 @@ function hostPage() {
     const alive = players.filter((player) => player.is_alive && Number(player.eligible_from_round || 0) <= Number(game.current_round));
     const submitted = alive.filter((player) => player.has_locked_answer).length;
     const timerRunning = game.phase === 'question' && Boolean(game.ends_at);
-    const seconds = timerRunning ? Math.max(0, Math.ceil((new Date(game.ends_at) - Date.now()) / 1000)) : game.timer_seconds;
+    const reading = game.phase === 'question' && !game.ends_at && Boolean(game.read_ends_at);
+    const timerDeadline = timerRunning ? game.ends_at : reading ? game.read_ends_at : null;
+    const seconds = timerDeadline ? Math.max(0, Math.ceil((new Date(timerDeadline) - Date.now()) / 1000)) : game.timer_seconds;
     const revealSeconds = game.phase === 'locked' && game.reveal_at
       ? Math.max(0, Math.ceil((new Date(game.reveal_at) - Date.now()) / 1000))
       : 0;
@@ -849,15 +868,15 @@ function hostPage() {
     const displayImage = decodedMedia.get(originalImage) || '';
     const historyItem = history.find((item) => Number(item.position) === Number(round?.position ?? game.current_round));
     const stats = roundStats(historyItem);
-    const animateQuestion = Boolean(timerRunning && displayImage && question?.id && !animatedQuestionFrames.has(question.id));
+    const animateQuestion = Boolean((timerRunning || reading) && displayImage && question?.id && !animatedQuestionFrames.has(question.id));
     const animateAnswer = Boolean(game.phase === 'revealed' && displayImage && question?.id && !animatedAnswerFrames.has(question.id));
     if (animateQuestion) animatedQuestionFrames.add(question.id);
     if (animateAnswer) animatedAnswerFrames.add(question.id);
-    const phaseName = game.phase === 'revealed' ? 'Answer reveal' : game.phase === 'locked' ? 'Answers locked' : timerRunning ? 'Live question' : 'Question ready';
-    const primaryAction = game.phase === 'question' && !timerRunning
+    const phaseName = game.phase === 'revealed' ? 'Answer reveal' : game.phase === 'locked' ? 'Answers locked' : reading ? 'Reading time' : timerRunning ? 'Answers open' : 'Question ready';
+    const primaryAction = game.phase === 'question' && !timerRunning && !reading
       ? `<button class="btn primary wide" data-start-round="resume" ${mediaReadyQuestions.has(question?.id) && !busy ? '' : 'disabled'}>${icon('play')} ${mediaReadyQuestions.has(question?.id) ? 'Start question' : 'Preparing question…'}</button>`
       : timerRunning
-        ? `<button class="btn ghost wide" data-action="lock" ${busy ? 'disabled' : ''}>${icon('lock')} End timer now</button>`
+        ? `<button class="btn ghost wide" data-action="lock" ${busy ? 'disabled' : ''}>Advance ${icon('arrow')}</button>`
       : game.phase === 'revealed'
           ? `<button class="btn primary wide" data-start-round="next">Next question now ${icon('arrow')}</button>`
           : '';
@@ -869,15 +888,15 @@ function hostPage() {
             <div><span class="broadcast-kicker"><i></i>${phaseName}</span><h1>The ${question?.percentage || '–'}% question</h1></div>
           </div>
           <div class="locked-stat">${icon('users')}<strong>${submitted}/${alive.length}</strong><span>locked in</span></div>
-          <div class="timer-ring ${seconds <= 5 && timerRunning ? 'low' : ''} ${timerRunning ? 'running' : ''}" data-timer style="--timer-progress:${timerRunning ? (seconds / game.timer_seconds) * 360 : 360}deg">
-            <span>${timerRunning ? seconds : game.phase === 'locked' ? revealSeconds : game.phase === 'question' ? 'Ready' : icon('lock')}</span>
-            <small>${timerRunning ? 'seconds' : game.phase === 'locked' ? 'to reveal' : game.phase === 'revealed' ? 'revealed' : ''}</small>
+          <div class="timer-ring ${seconds <= 5 && timerRunning ? 'low' : ''} ${timerRunning || reading ? 'running' : ''} ${reading ? 'reading' : ''}" data-timer style="--timer-progress:${timerDeadline ? (seconds / (reading ? 10 : game.timer_seconds)) * 360 : 360}deg">
+            <span>${timerRunning || reading ? seconds : game.phase === 'locked' ? revealSeconds : game.phase === 'question' ? 'Ready' : icon('lock')}</span>
+            <small>${reading ? 'read' : timerRunning ? 'seconds' : game.phase === 'locked' ? 'to reveal' : game.phase === 'revealed' ? 'revealed' : ''}</small>
           </div>
         </div>
         <div class="question-frame ${game.phase === 'revealed' ? `answer-frame ${animateAnswer ? 'animate-answer' : ''}` : ''} ${displayImage ? 'has-slide' : ''}">
           <div class="frame-glow"></div>
           ${game.phase === 'locked' ? '<div class="question-ready-card"><strong>Answers are locked</strong></div>'
-            : game.phase === 'question' && !timerRunning ? `
+            : game.phase === 'question' && !timerRunning && !reading ? `
               <div class="question-ready-card"><span class="media-spinner"><i></i></span><strong>${mediaReadyQuestions.has(question?.id) ? 'Question ready' : 'Preparing question'}</strong><small>${mediaReadyQuestions.has(question?.id) ? 'Start when everyone is focused.' : 'One moment.'}</small></div>`
             : game.phase === 'revealed' && question?.answer_image_path && !displayImage ? '<div class="question-ready-card"><span class="media-spinner"><i></i></span><strong>Preparing the answer reveal</strong><small>The complete answer slide will appear together.</small></div>'
             : displayImage ? `${animateQuestion ? '<div class="question-unveil" aria-hidden="true"><i></i><i></i></div>' : ''}<img src="${esc(displayImage)}" alt="${game.phase === 'revealed' ? 'Answer' : 'Question'} slide" data-question-image title="Double-click for image fullscreen">`
@@ -887,7 +906,7 @@ function hostPage() {
         ${game.phase === 'revealed' && !question?.answer_image_path ? `<div class="answer-reveal"><span>Correct answer</span><strong>${esc(question?.answer_text)}</strong></div>` : ''}
         ${game.phase === 'revealed' ? `<div class="answer-summary ${stats ? '' : 'countdown-only'}">${stats}<div class="auto-advance-card"><div><span>Next question</span><strong>In <b data-auto-countdown>${advanceSeconds}</b> seconds</strong></div><div class="auto-advance-track"><i data-auto-progress style="--auto-progress:${Math.max(0, Math.min(100, advanceSeconds / 20 * 100))}%"></i></div></div></div>` : ''}
         <div class="control-dock question-controls">
-          <div class="phase-caption"><span>${timerRunning ? (submitted === alive.length && alive.length ? 'Everyone has answered' : 'Answers are open') : game.phase === 'question' ? 'Room ready' : game.phase === 'revealed' ? 'Answer revealed' : 'Answers are closed'}</span><small>${timerRunning ? 'End the timer whenever the room is ready.' : game.phase === 'question' ? 'Start when everyone is focused.' : game.phase === 'revealed' ? 'Continue now or allow the countdown.' : 'The answer follows automatically.'}</small></div>
+          <div class="phase-caption"><span>${reading ? 'Reading time' : timerRunning ? (submitted === alive.length && alive.length ? 'Everyone has answered' : 'Answers are open') : game.phase === 'question' ? 'Room ready' : game.phase === 'revealed' ? 'Answer revealed' : 'Answers are closed'}</span><small>${reading ? 'Answer controls open automatically after ten seconds.' : timerRunning ? 'Advance whenever everyone has answered.' : game.phase === 'question' ? 'Start when everyone is focused.' : game.phase === 'revealed' ? 'Continue now or allow the countdown.' : 'The answer follows automatically.'}</small></div>
           <div class="dock-actions">
             ${primaryAction}
             <button class="btn danger icon-only" type="button" data-leave aria-label="End session">${icon('power')}</button>
@@ -905,7 +924,7 @@ function hostPage() {
   const launchTransitionScreen = () => launchTransition ? `
     <div class="launch-transition" role="status">
       <div class="launch-sweep" aria-hidden="true"></div>
-      <img src="${gameLogo}" alt="">
+      <img src="${gameShowLogo}" alt="WMC Game Show">
       <span class="broadcast-kicker"><i></i> Opening your room</span>
       <strong>Going live.</strong>
     </div>` : '';
@@ -920,14 +939,18 @@ function hostPage() {
         <small>The pass introduction is ready.</small>
       </div>`;
     if (roundTransition.mode === 'countdown') return `
-      <div class="round-transition countdown-intro" role="status">
+      <div class="round-transition countdown-intro ${roundTransition.extended ? 'extended-countdown' : ''}" role="status">
+        <img class="transition-show-logo" src="${gameShowLogo}" alt="WMC Game Show">
         <span class="transition-percentage"><strong>${question?.percentage || '–'}</strong><small>%</small></span>
-        <span class="broadcast-kicker"><i></i> The ${question?.percentage || '–'}% question</span>
-        <strong class="countdown-number">${roundTransition.count}</strong>
-        <small>Eyes on the screen</small>
+        <div class="countdown-copy">
+          <span class="broadcast-kicker"><i></i> ${roundTransition.extended ? 'Pass introduced · next question in' : `The ${question?.percentage || '–'}% question`}</span>
+          <strong class="countdown-number">${roundTransition.count}</strong>
+          <small>${roundTransition.extended ? 'The pass is now available' : 'Eyes on the screen'}</small>
+        </div>
       </div>`;
     return `
       <div class="round-transition media-preflight" role="status">
+        <img class="transition-show-logo compact" src="${gameShowLogo}" alt="WMC Game Show">
         <span class="media-spinner large"><i></i></span>
         <span class="broadcast-kicker"><i></i> Next question</span>
         <strong>Preparing the screen.</strong>
@@ -937,6 +960,22 @@ function hostPage() {
 
   function render() {
     clearInterval(ticker);
+    if (!hostViewportSupported()) {
+      document.body.dataset.state = 'host-device-gate';
+      app.innerHTML = `
+        ${atmosphere()}
+        <main class="host-device-gate">
+          ${brand('device-gate-brand')}
+          <section class="device-gate-card">
+            <img src="${gameShowLogo}" alt="WMC Game Show">
+            <span class="broadcast-kicker"><i></i> Host display</span>
+            <h1>Open the host on a larger landscape screen.</h1>
+            <p>The live control room is designed for a computer, Mac or large tablet in landscape. Players can still join from this device.</p>
+            <a class="btn primary" href="/1/join/">Open the player screen ${icon('arrow')}</a>
+          </section>
+        </main>`;
+      return;
+    }
     const game = snapshot?.game;
     const question = snapshot?.question;
     const players = snapshot?.players || [];
@@ -962,8 +1001,8 @@ function hostPage() {
           </section>
           <section class="launch-console">
             <span class="broadcast-kicker"><i></i> WMC live gameshow</span>
-            <h1>Ready when<br>you are.</h1>
-            <p>Set the timer, open the room and invite your players.</p>
+            <h1>Set up<br>your game.</h1>
+            <p>Choose the question time, open the room and invite everyone by PIN or QR.</p>
             ${!hasSupabase ? '<div class="notice bad">The live database is not configured on this build.</div>' : ''}
             <form class="launch-form" id="create-game">
               <label class="timer-control"><span>Question timer</span><div><input name="timer" type="number" min="5" max="300" value="30" required><small>seconds</small></div></label>
@@ -1078,22 +1117,27 @@ function hostPage() {
       width: 220, margin: 1, color: { dark: '#071719', light: '#fffaf0' }
     }).catch(() => qr.closest('.qr-command')?.remove());
 
-    if (game?.phase === 'question' && game.ends_at) {
+    if (game?.phase === 'question' && (game.ends_at || game.read_ends_at)) {
+      const reading = !game.ends_at && Boolean(game.read_ends_at);
+      const deadline = new Date(reading ? game.read_ends_at : game.ends_at).getTime();
+      const duration = reading ? 10 : game.timer_seconds;
+      const deadlineKey = `${snapshot?.round?.id || ''}:${reading ? 'read' : 'answer'}`;
       const tick = () => {
         const timer = app.querySelector('[data-timer]');
         if (!timer) return;
-        const left = Math.max(0, Math.ceil((new Date(game.ends_at) - Date.now()) / 1000));
-        timer.style.setProperty('--timer-progress', `${(left / game.timer_seconds) * 360}deg`);
-        timer.classList.toggle('low', left <= 5);
+        const remainingMs = Math.max(0, deadline - Date.now());
+        const left = Math.ceil(remainingMs / 1000);
+        timer.style.setProperty('--timer-progress', `${(remainingMs / (duration * 1000)) * 360}deg`);
+        timer.classList.toggle('low', !reading && left <= 5);
         const value = timer.querySelector('span');
         if (value) value.textContent = left;
-        if (left === 0 && deadlineRefreshRound !== snapshot?.round?.id) {
-          deadlineRefreshRound = snapshot?.round?.id || '';
+        if (left === 0 && deadlineRefreshRound !== deadlineKey) {
+          deadlineRefreshRound = deadlineKey;
           refresh();
         }
       };
       tick();
-      ticker = setInterval(tick, 250);
+      ticker = setInterval(tick, 100);
     } else if (game?.phase === 'locked' && game.reveal_at) {
       const tickReveal = () => {
         const left = Math.max(0, Math.ceil((new Date(game.reveal_at) - Date.now()) / 1000));
@@ -1111,23 +1155,26 @@ function hostPage() {
     } else if (game?.phase === 'revealed' && game.advance_at && reviewPosition === null) {
       const tickAdvance = () => {
         const deadline = reviewResumeAt || new Date(game.advance_at).getTime();
-        const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+        const remainingMs = Math.max(0, deadline - Date.now());
+        const left = Math.ceil(remainingMs / 1000);
         const caption = app.querySelector('[data-auto-countdown]');
         const progress = app.querySelector('[data-auto-progress]');
         if (caption) caption.textContent = left;
-        if (progress) progress.style.setProperty('--auto-progress', `${Math.max(0, Math.min(100, left / 20 * 100))}%`);
+        if (progress) progress.style.setProperty('--auto-progress', `${Math.max(0, Math.min(100, remainingMs / 20000 * 100))}%`);
         if (left === 0 && deadlineRefreshRound !== `advance:${snapshot?.round?.id}`) {
           deadlineRefreshRound = `advance:${snapshot?.round?.id || ''}`;
           stageAndStartRound('next');
         }
       };
       tickAdvance();
-      ticker = setInterval(tickAdvance, 250);
+      ticker = setInterval(tickAdvance, 50);
     }
     syncMusicProgress();
   }
 
   loadMusicLibrary();
+  window.addEventListener('resize', render, { passive: true });
+  window.addEventListener('orientationchange', render, { passive: true });
   if (creds) {
     stop = watch(creds.id, refresh);
     refresh();
@@ -1142,6 +1189,7 @@ function playerPage() {
   let error = '';
   let busy = false;
   let selected = '';
+  let digitSelection = [0, 0, 0];
   let stop = () => {};
   let ticker;
   let localTimeUpRound = '';
@@ -1170,6 +1218,7 @@ function playerPage() {
         creds = null;
         snapshot = null;
         selected = '';
+        digitSelection = [0, 0, 0];
         localTimeUpRound = '';
         joinDraft = { pin: suppliedPin, name: String(next?.player?.name || '').trim() };
         error = '';
@@ -1181,6 +1230,7 @@ function playerPage() {
       const changed = JSON.stringify(next) !== JSON.stringify(snapshot);
       if (next?.round?.id !== snapshot?.round?.id) {
         selected = '';
+        digitSelection = [0, 0, 0];
         localTimeUpRound = '';
       }
       snapshot = next;
@@ -1272,6 +1322,7 @@ function playerPage() {
     creds = null;
     snapshot = null;
     selected = '';
+    digitSelection = [0, 0, 0];
     localTimeUpRound = '';
     busy = false;
     error = '';
@@ -1336,10 +1387,10 @@ function playerPage() {
     } else if (game.phase === 'finished') {
       body = `
         <div class="player-state-card finale-mobile ${enterClass}">
-          ${icon('sparkle')}
+          <img class="finale-mobile-logo" src="${gameShowLogo}" alt="WMC Game Show">
           <span class="broadcast-kicker"><i></i> Game complete</span>
           <h1>${player.is_alive ? 'You made it!' : 'That was The 1% Club.'}</h1>
-          <p>${player.is_alive ? `Congratulations, ${esc(player.name)} — you are still standing.` : `Thanks for playing, ${esc(player.name)}. We hope you enjoyed the game.`}</p>
+          <p class="finale-message"><span>${player.is_alive ? `Congratulations, ${esc(player.name)} — you are still standing.` : `Thanks for playing, ${esc(player.name)}.`}</span><span>May Allah bless your affairs.</span></p>
           <div class="result-status">${player.is_alive ? `${icon('sparkle')} Finalist` : 'Thanks for being part of the show'}</div>
         </div>`;
     } else if (eliminatedThisRound) {
@@ -1390,17 +1441,21 @@ function playerPage() {
           <div class="lobby-confirmation">${icon('check')} Connected · next round</div>
         </div>`;
     } else if (game.phase === 'question' && !game.ends_at && !player.has_locked_answer) {
+      const reading = Boolean(game.read_ends_at);
+      const readSeconds = reading ? Math.max(0, Math.ceil((new Date(game.read_ends_at) - Date.now()) / 1000)) : null;
       body = `
         <div class="player-state-card ready-card ${enterClass}">
           <span class="percentage-orb"><span><strong>${question.percentage}</strong><small>%</small></span></span>
-          <span class="broadcast-kicker"><i></i> Question on the main screen</span>
+          <span class="broadcast-kicker"><i></i> ${reading ? 'Reading time' : 'Question on the main screen'}</span>
           <h1>Read it first.</h1>
-          <p>Your answer controls will open when the host starts the timer.</p>
+          <p>${reading ? 'Take in the whole question. Your answer controls open automatically next.' : 'Your answer controls will open when the host starts the question.'}</p>
           ${question.percentage === 60 ? '<div class="pass-unlocked"><span class="pass-token">P</span><strong>Your pass is now available</strong></div>' : ''}
-          <div class="waiting-bar"><i></i><span>Waiting for host</span></div>
+          ${reading ? `<div class="reading-countdown"><span class="mini-timer reading" data-player-read-timer>${readSeconds}</span><div><strong>Time to read</strong><small>Answers open next</small></div></div>` : '<div class="waiting-bar"><i></i><span>Waiting for host</span></div>'}
         </div>`;
     } else if (game.phase === 'question' && !player.has_locked_answer && !locallyExpired) {
       const seconds = Math.max(0, Math.ceil((new Date(game.ends_at) - Date.now()) / 1000));
+      const digitDial = question.input_mode === 'digits-3';
+      const choices = Array.isArray(question.choices) ? question.choices : [];
       body = `
         <div class="answer-card">
           <div class="answer-heading"><div><span class="broadcast-kicker"><i></i> ${question.percentage}% question</span><h1>Lock in your answer</h1></div><span class="mini-timer ${seconds <= 5 ? 'low' : ''}" data-player-timer>${seconds}</span></div>
@@ -1408,14 +1463,17 @@ function playerPage() {
           <p class="answer-rule">Submission is final! Answer wisely.</p>
           <form class="stack" id="answer-form">
             ${question.answer_kind === 'choice' ? `
-              <div class="choice-grid">${(question.choices || []).map((choice, index) => {
+              <div class="choice-grid" style="--choice-count:${Math.max(1, choices.length)}">${choices.map((choice, index) => {
                 const value = choice.match(/^([A-Z])\b/)?.[1] || String.fromCharCode(65 + index);
-                const label = choice.replace(/^([A-Z])\s*[—:-]\s*/, '');
-                const displayLabel = label === value ? `Option ${value}` : (label || choice);
-                return `<button type="button" class="choice ${selected === value ? 'selected' : ''}" data-choice="${esc(value)}"><span>${esc(value)}</span><strong>${esc(displayLabel)}</strong>${selected === value ? icon('check') : ''}</button>`;
+                return `<button type="button" class="choice ${selected === value ? 'selected' : ''}" data-choice="${esc(value)}" aria-label="Answer ${esc(value)}"><span class="choice-letter">${esc(value)}</span>${selected === value ? icon('check') : ''}</button>`;
               }).join('')}</div><input type="hidden" name="answer" value="${esc(selected)}" required>`
+              : digitDial ? `
+                <div class="digit-answer" aria-label="Choose a three digit answer">
+                  ${digitSelection.map((digit, index) => `<div class="digit-dial" data-digit-index="${index}"><button type="button" data-digit-step="1" aria-label="Increase digit ${index + 1}">⌃</button><span class="digit-previous">${(digit + 9) % 10}</span><strong>${digit}</strong><span class="digit-next">${(digit + 1) % 10}</span><button type="button" data-digit-step="-1" aria-label="Decrease digit ${index + 1}">⌄</button></div>`).join('')}
+                  <input type="hidden" name="answer" value="${digitSelection.join('')}">
+                </div>`
               : '<label class="field-label answer-input-label">Your answer<input class="field answer-input" name="answer" autocomplete="off" spellcheck="false" placeholder="Type exactly what you mean" required></label>'}
-            <button class="btn primary full answer-submit" ${busy ? 'disabled' : ''}>${busy ? '<span class="button-spinner"></span> Locking in…' : `Submit final answer ${icon('arrow')}`}</button>
+            <button class="btn primary full answer-submit" ${busy ? 'disabled' : ''}>${busy ? '<span class="button-spinner"></span> Submitting…' : `Submit ${icon('arrow')}`}</button>
             ${question.percentage <= 60 ? `<button class="btn pass-button full" type="button" data-pass ${player.pass_available && question.percentage !== 1 && !busy ? '' : 'disabled'}><span class="pass-token">P</span><span><strong>${question.percentage === 1 ? 'Pass unavailable' : player.pass_available ? 'Use my pass' : 'Pass already used'}</strong><small>${question.percentage === 1 ? 'Passes are not available at 1%' : 'Stay in without answering this round'}</small></span></button>` : ''}
           </form>
         </div>`;
@@ -1477,13 +1535,41 @@ function playerPage() {
       selected = button.dataset.choice;
       render();
     }));
+    const changeDigit = (index, direction) => {
+      digitSelection[index] = (digitSelection[index] + direction + 10) % 10;
+      render();
+    };
+    app.querySelectorAll('.digit-dial').forEach((dial) => {
+      const index = Number(dial.dataset.digitIndex);
+      dial.querySelectorAll('[data-digit-step]').forEach((button) => button.addEventListener('click', () => changeDigit(index, Number(button.dataset.digitStep))));
+      dial.addEventListener('wheel', (event) => {
+        event.preventDefault();
+        changeDigit(index, event.deltaY < 0 ? 1 : -1);
+      }, { passive: false });
+      let startY = null;
+      dial.addEventListener('pointerdown', (event) => { startY = event.clientY; });
+      dial.addEventListener('pointerup', (event) => {
+        if (startY === null || Math.abs(startY - event.clientY) < 22) return;
+        changeDigit(index, startY > event.clientY ? 1 : -1);
+      });
+    });
     app.querySelector('#answer-form')?.addEventListener('submit', (event) => {
       event.preventDefault();
       const answer = String(new FormData(event.currentTarget).get('answer') || '').trim();
       if (answer) submit(answer);
     });
     app.querySelector('[data-pass]')?.addEventListener('click', () => submit(null, true));
-    if (player && !player.is_alive && game?.ends_at) {
+    if (player?.is_alive && game?.phase === 'question' && game.read_ends_at && !game.ends_at) {
+      const tickRead = () => {
+        const timer = app.querySelector('[data-player-read-timer]');
+        if (!timer) return;
+        const left = Math.max(0, Math.ceil((new Date(game.read_ends_at) - Date.now()) / 1000));
+        timer.textContent = left;
+        if (left === 0) refresh();
+      };
+      tickRead();
+      ticker = setInterval(tickRead, 100);
+    } else if (player && !player.is_alive && game?.ends_at) {
       ticker = setInterval(() => {
         const timer = app.querySelector('[data-spectator-timer]');
         if (!timer) return;
