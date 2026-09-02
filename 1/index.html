@@ -7,29 +7,33 @@
     <meta name="description" content="WMC presents The 1% Club — a live multiplayer gameshow experience." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="image" href="/1/assets/wmc-one-percent-logo-DSn5Umzs.webp" fetchpriority="high" />
     <link rel="icon" href="/1/assets/favicon-BQQZV5Zy.png" />
     <title>Host · WMC The 1% Club</title>
     <style>
       html,body{margin:0;min-height:100%;background:#031114;color:#fff}
-      #host-loader{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 36%,rgba(210,169,110,.18),transparent 29%),linear-gradient(145deg,#0a2c32,#010506 72%)}
-      #host-loader .host-loader-card{display:grid;width:min(430px,calc(100% - 46px));justify-items:center;padding:34px;text-align:center}
-      #host-loader .host-loader-mark{display:grid;width:min(240px,58vw);aspect-ratio:1;place-content:center;border-radius:50%;background:radial-gradient(circle at 50% 42%,rgba(210,169,110,.15),rgba(1,10,12,.96) 65%);text-align:center}
-      #host-loader .host-loader-mark span{color:#d2a96e;font:900 clamp(30px,7vw,64px)/.85 Arial,sans-serif;letter-spacing:-.09em}
-      #host-loader .host-loader-mark strong{color:#f1d59d;font:900 clamp(48px,11vw,98px)/.9 Arial,sans-serif;letter-spacing:-.09em}
+      #host-loader{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at 50% 42%,rgba(210,169,110,.14),transparent 28%),linear-gradient(145deg,#0a2c32,#010506 72%)}
+      #host-loader .host-loader-card{display:grid;width:min(540px,calc(100% - 46px));justify-items:center;padding:34px;text-align:center}
+      #host-loader .host-loader-mark{position:relative;display:grid;width:min(210px,38vw);aspect-ratio:1;place-items:center;border-radius:50%;background:radial-gradient(circle,rgba(210,169,110,.12),rgba(1,10,12,.88) 68%)}
+      #host-loader .host-loader-mark img{position:absolute;inset:0;width:100%;height:100%;border-radius:50%;object-fit:cover;opacity:0}
+      #host-loader.art-ready .host-loader-mark img{opacity:1}
+      #host-loader .host-loader-fallback{color:#f1d59d;font:900 clamp(58px,9vw,94px)/1 Arial,sans-serif;letter-spacing:-.09em}
+      #host-loader.art-ready .host-loader-fallback{opacity:0}
+      #host-loader .host-loader-eyebrow{color:#d2a96e;font:800 10px/1 Arial,sans-serif;letter-spacing:.3em;text-transform:uppercase}
     </style>
-    <script type="module" crossorigin src="/1/assets/game-BA7ecj_o.js"></script>
-    <link rel="stylesheet" crossorigin href="/1/assets/game-CbVJ22Uh.css">
+    <script type="module" crossorigin src="/1/assets/game-D7F13s3Y.js"></script>
+    <link rel="stylesheet" crossorigin href="/1/assets/game-BihfK6fH.css">
   </head>
   <body data-page="host">
     <div class="ambient" aria-hidden="true"></div>
     <div class="host-loader" id="host-loader" aria-label="Loading The 1% Club">
-      <div class="host-loader-glow" aria-hidden="true"></div>
+      <div class="host-loader-glow" aria-hidden="true"><i></i><i></i></div>
       <section class="host-loader-card">
-        <div class="host-loader-mark" aria-label="WMC The 1% Club"><span>WMC</span><strong>1%</strong></div>
-        <span>WMC presents</span>
-        <strong>Opening The 1% Club</strong>
+        <span class="host-loader-eyebrow">WMC presents</span>
+        <div class="host-loader-mark" aria-label="WMC The 1% Club"><span class="host-loader-fallback" aria-hidden="true">1%</span><img src="/1/assets/wmc-one-percent-logo-DSn5Umzs.webp" alt="WMC The 1% Club"></div>
+        <strong>The 1% Club</strong>
         <div class="host-loader-track" aria-hidden="true"><i></i></div>
-        <small>Preparing the studio</small>
+        <small>Preparing the live studio</small>
       </section>
     </div>
     <main id="app"></main>

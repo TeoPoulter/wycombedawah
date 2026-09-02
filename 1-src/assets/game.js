@@ -293,6 +293,66 @@ const playHowVideo = (options = {}) => playStudioVideo(howVideoUrl, {
   kicker: 'How it works', message: 'Preparing the complete video', ...options
 });
 
+let slideFocusOverlay = null;
+let slideFocusNative = false;
+
+const fullscreenElement = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+
+function removeSlideFocus() {
+  if (!slideFocusOverlay) return;
+  slideFocusOverlay.remove();
+  slideFocusOverlay = null;
+  slideFocusNative = false;
+  document.removeEventListener('fullscreenchange', handleSlideFullscreenChange);
+  document.removeEventListener('webkitfullscreenchange', handleSlideFullscreenChange);
+}
+
+function handleSlideFullscreenChange() {
+  if (slideFocusOverlay && slideFocusNative && fullscreenElement() !== slideFocusOverlay) removeSlideFocus();
+}
+
+async function closeSlideFocus() {
+  const overlay = slideFocusOverlay;
+  if (!overlay) return;
+  const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+  if (fullscreenElement() === overlay && exitFullscreen) {
+    try { await exitFullscreen.call(document); } catch { /* The fixed overlay still closes safely. */ }
+  }
+  if (slideFocusOverlay !== overlay) return;
+  overlay.classList.remove('open');
+  await sleep(180);
+  if (slideFocusOverlay === overlay) removeSlideFocus();
+}
+
+async function openSlideFocus(image) {
+  if (!image?.src) return;
+  if (slideFocusOverlay) await closeSlideFocus();
+  const overlay = document.createElement('div');
+  overlay.className = 'slide-focus-overlay';
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-label', `${image.alt || 'Question'} fullscreen view`);
+  overlay.innerHTML = `<img src="${esc(image.currentSrc || image.src)}" alt="${esc(image.alt || 'Question slide')}">`;
+  slideFocusOverlay = overlay;
+  document.body.append(overlay);
+  overlay.addEventListener('dblclick', (event) => { event.preventDefault(); closeSlideFocus(); });
+  overlay.addEventListener('dragstart', (event) => event.preventDefault());
+  overlay.addEventListener('keydown', (event) => {
+    if (event.code === 'Escape') { event.preventDefault(); closeSlideFocus(); }
+  });
+  document.addEventListener('fullscreenchange', handleSlideFullscreenChange);
+  document.addEventListener('webkitfullscreenchange', handleSlideFullscreenChange);
+  requestAnimationFrame(() => overlay.classList.add('open'));
+  if (!fullscreenElement()) {
+    const requestFullscreen = overlay.requestFullscreen || overlay.webkitRequestFullscreen;
+    if (requestFullscreen) {
+      try {
+        await requestFullscreen.call(overlay);
+        slideFocusNative = fullscreenElement() === overlay;
+      } catch { /* The image-only fixed overlay is the reliable fallback. */ }
+    }
+  }
+}
+
 async function copyText(value) {
   try {
     await navigator.clipboard.writeText(value);
@@ -1006,7 +1066,7 @@ function hostPage() {
   const timeUpScreen = (game) => {
     if (game?.phase !== 'locked') return '';
     const revealSeconds = game.reveal_at ? Math.max(0, Math.ceil((new Date(game.reveal_at) - Date.now()) / 1000)) : 0;
-    return `<div class="time-up-screen" role="status"><div class="time-up-rays" aria-hidden="true"></div><div class="time-up-lockup"><span class="time-up-flare" aria-hidden="true">${icon('sparkle')}</span><span class="broadcast-kicker"><i></i> Answers locked</span><strong>Time's up!</strong><div class="reveal-countdown-line"><span>Answer in</span><b data-reveal-countdown>${revealSeconds}</b></div></div></div>`;
+    return `<div class="time-up-screen" role="status"><div class="time-up-rays" aria-hidden="true"></div><div class="time-up-lockup"><div class="time-up-emblem" aria-hidden="true"><i></i>${icon('lock')}</div><span class="broadcast-kicker"><i></i> Answers locked</span><strong>Time's up!</strong><small>All answers are now final</small><div class="reveal-countdown-line"><span>Answer reveal in</span><b data-reveal-countdown>${revealSeconds}</b></div></div></div>`;
   };
 
   const launchTransitionScreen = () => launchTransition ? `
@@ -1028,12 +1088,14 @@ function hostPage() {
       </div>`;
     if (roundTransition.mode === 'countdown') return `
       <div class="round-transition countdown-intro ${roundTransition.extended ? 'extended-countdown' : ''}" role="status">
-        <div class="transition-logo-crop"><img class="transition-show-logo" src="${gameShowLogo}" alt="WMC Game Show"></div>
-        <span class="transition-percentage"><strong>${question?.percentage || '–'}</strong><small>%</small></span>
-        <div class="countdown-copy">
-          <span class="broadcast-kicker"><i></i> ${roundTransition.extended ? 'Pass introduced · next question in' : `The ${question?.percentage || '–'}% question`}</span>
-          <strong class="countdown-number">${roundTransition.count}</strong>
-          <small>${roundTransition.extended ? 'The pass is now available' : 'Eyes on the screen'}</small>
+        <div class="countdown-stage">
+          <div class="transition-logo-crop"><img class="transition-show-logo" src="${gameShowLogo}" alt="WMC Game Show"></div>
+          <div class="countdown-heading">
+            <span class="broadcast-kicker"><i></i> ${roundTransition.extended ? 'The pass is now in play' : 'Next question'}</span>
+            <span class="transition-percentage"><strong>${question?.percentage || '–'}</strong><small>%</small></span>
+          </div>
+          <div class="countdown-focus"><i></i><i></i><strong class="countdown-number">${roundTransition.count}</strong></div>
+          <small class="countdown-foot">${roundTransition.extended ? 'The pass is available from this question' : 'Eyes on the screen'}</small>
         </div>
       </div>`;
     return `
@@ -1152,10 +1214,11 @@ function hostPage() {
     app.querySelectorAll('[data-action]').forEach((button) => button.addEventListener('click', () => act(button.dataset.action)));
     app.querySelectorAll('[data-start-round]').forEach((button) => button.addEventListener('click', () => stageAndStartRound(button.dataset.startRound)));
     app.querySelector('[data-how]')?.addEventListener('click', () => playHowVideo({ beforeOpen: pauseMusicForVideo, afterClose: restoreMusicAfterVideo }));
-    app.querySelector('[data-question-image]')?.addEventListener('dblclick', (event) => {
-      if (document.fullscreenElement === event.currentTarget) document.exitFullscreen?.().catch(() => {});
-      else event.currentTarget.requestFullscreen?.().catch(() => {});
-    });
+    app.querySelectorAll('[data-question-image]').forEach((image) => image.addEventListener('dblclick', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      openSlideFocus(event.currentTarget);
+    }));
     app.querySelectorAll('[data-review-position]').forEach((button) => button.addEventListener('click', () => openHistory(button.dataset.reviewPosition)));
     app.querySelector('[data-history-close]')?.addEventListener('click', () => {
       if (snapshot?.game?.phase === 'revealed' && reviewRemainingMs > 0) reviewResumeAt = Date.now() + reviewRemainingMs;
@@ -1926,8 +1989,22 @@ if (page === 'host') {
   const started = performance.now();
   const finishLoader = async () => {
     try {
+      const artwork = loader?.querySelector('.host-loader-mark img');
+      if (artwork) {
+        try {
+          if (!artwork.complete) await Promise.race([
+            new Promise((resolve, reject) => {
+              artwork.addEventListener('load', resolve, { once: true });
+              artwork.addEventListener('error', reject, { once: true });
+            }),
+            sleep(1500)
+          ]);
+          await artwork.decode?.().catch(() => {});
+          if (artwork.naturalWidth) loader?.classList.add('art-ready');
+        } catch { /* The CSS fallback remains visible. */ }
+      }
       loader?.classList.add('mark-ready');
-      await sleep(Math.max(420, 1050 - (performance.now() - started)));
+      await sleep(Math.max(360, 1250 - (performance.now() - started)));
     } finally {
       loader?.classList.add('loaded');
     }
