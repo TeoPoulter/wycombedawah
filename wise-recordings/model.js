@@ -14,6 +14,7 @@ export function parseManifest(data, base) {
 export function selectRecordings(records,{query='',savedOnly=false,saved=[],sort='original'}={}) {
  const q=normalize(query); const filtered=records.filter(r=>(!savedOnly||saved.includes(r.id))&&normalize([r.filename,r.surah||'',r.teacher||'',r.date||'',r.ayahs||''].join(' ')).includes(q));
  if(sort==='name')filtered.sort((a,b)=>a.filename.localeCompare(b.filename,undefined,{numeric:true}));
+ if(sort==='ramadan')filtered.sort((a,b)=>(b.ramadanYear||0)-(a.ramadanYear||0)||(b.ramadanDay||0)-(a.ramadanDay||0));
  if(sort==='newest')filtered.sort((a,b)=>((/^\d{4}-\d{2}-\d{2}$/.test(b.date||'')?Date.parse(b.date):0)||0)-((/^\d{4}-\d{2}-\d{2}$/.test(a.date||'')?Date.parse(a.date):0)||0));
  return filtered;
 }

@@ -1,1 +1,354 @@
-{"version":1,"recordings":[]}
+{
+  "version": 1,
+  "recordings": [
+    {
+      "id": "zubayr-6fb318018e188053",
+      "filename": "Zubayr 1st Ramadan 1445 Surah Baqarah 106 - 141.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.1st.Ramadan.1445.Surah.Baqarah.106.-.141.m4a",
+      "teacher": "Zubayr",
+      "duration": 807.009524,
+      "dateLabel": "1st Ramadan 1445",
+      "ramadanDay": 1,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-6bcd3780306cea5a",
+      "filename": "Zubayr 2nd Ramadan 1445 Surah Baqarah 231 - 252.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.2nd.Ramadan.1445.Surah.Baqarah.231.-.252.m4a",
+      "teacher": "Zubayr",
+      "duration": 797.071383,
+      "dateLabel": "2nd Ramadan 1445",
+      "ramadanDay": 2,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-82a2841208212984",
+      "filename": "Zubayr 3rd Ramadan 1445 Surah Ali ‘Imran 14 - 51.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.3rd.Ramadan.1445.Surah.Ali.Imran.14.-.51.m4a",
+      "teacher": "Zubayr",
+      "duration": 1052.769524,
+      "dateLabel": "3rd Ramadan 1445",
+      "ramadanDay": 3,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-ddefaf64caa748f8",
+      "filename": "Zubayr 4th Ramadan 1445 Surah Ali ‘Imran 176 - 200.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.4th.Ramadan.1445.Surah.Ali.Imran.176.-.200.m4a",
+      "teacher": "Zubayr",
+      "duration": 765.306485,
+      "dateLabel": "4th Ramadan 1445",
+      "ramadanDay": 4,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-0d8b8d79f6b2f322",
+      "filename": "Zubayr 5th Ramadan 1445 Surah An Nisa 87 - 113.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.5th.Ramadan.1445.Surah.An.Nisa.87.-.113.m4a",
+      "teacher": "Zubayr",
+      "duration": 913.914195,
+      "dateLabel": "5th Ramadan 1445",
+      "ramadanDay": 5,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-430752aecdc3467f",
+      "filename": "Zubayr 6th Ramadan 1445 Surah Al Ma’idah 19 - 50.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.6th.Ramadan.1445.Surah.Al.Ma.idah.19.-.50.m4a",
+      "teacher": "Zubayr",
+      "duration": 963.790658,
+      "dateLabel": "6th Ramadan 1445",
+      "ramadanDay": 6,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-0cb7c7115b1c4af6",
+      "filename": "Zubayr 7th Ramadan 1445 Surah Al An’am 36 - 73.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.7th.Ramadan.1445.Surah.Al.An.am.36.-.73.m4a",
+      "teacher": "Zubayr",
+      "duration": 925.845333,
+      "dateLabel": "7th Ramadan 1445",
+      "ramadanDay": 7,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-ff76bc2a0ad73d56",
+      "filename": "Zubayr 8th Ramadan 1445 Surah Al An’am 142 - 165.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.8th.Ramadan.1445.Surah.Al.An.am.142.-.165.m4a",
+      "teacher": "Zubayr",
+      "duration": 728.213333,
+      "dateLabel": "8th Ramadan 1445",
+      "ramadanDay": 8,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-c251b1e1dda283cb",
+      "filename": "Zubayr 8th Ramadan 1445 Surah Al A’raf 1 - 51.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.8th.Ramadan.1445.Surah.Al.A.raf.1.-.51.m4a",
+      "teacher": "Zubayr",
+      "duration": 1051.114667,
+      "dateLabel": "8th Ramadan 1445",
+      "ramadanDay": 8,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-0a4a326cd254c179",
+      "filename": "Zubayr 9th Ramadan 1445 Surah Al A’raf 163 - 206 - Surah Al Anfal 1 - 4.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.9th.Ramadan.1445.Surah.Al.A.raf.163.-.206.-.Surah.Al.Anfal.1.-.4.m4a",
+      "teacher": "Zubayr",
+      "duration": 1061.781333,
+      "dateLabel": "9th Ramadan 1445",
+      "ramadanDay": 9,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-a07e51d197a2f53b",
+      "filename": "Zubayr 10th Ramadan 1445 Surah At Tawbah 34 -  61.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.10th.Ramadan.1445.Surah.At.Tawbah.34.-.61.m4a",
+      "teacher": "Zubayr",
+      "duration": 723.605333,
+      "dateLabel": "10th Ramadan 1445",
+      "ramadanDay": 10,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-9287afb16ef95283",
+      "filename": "Zubayr 11th Ramadan 1445 Surah Yunus 26 - 70.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.11th.Ramadan.1445.Surah.Yunus.26.-.70.m4a",
+      "teacher": "Zubayr",
+      "duration": 931.221333,
+      "dateLabel": "11th Ramadan 1445",
+      "ramadanDay": 11,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-c5a661a6035acf0f",
+      "filename": "Zubayr 12th Ramadan 1445 Surah Hud 84 - 123 - Surah Yusuf 1 - 6.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.12th.Ramadan.1445.Surah.Hud.84.-.123.-.Surah.Yusuf.1.-.6.m4a",
+      "teacher": "Zubayr",
+      "duration": 844.352,
+      "dateLabel": "12th Ramadan 1445",
+      "ramadanDay": 12,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-e13c9569efba9600",
+      "filename": "Zubayr 13th Ramadan 1445 Surah Ar Ra’d 19 - 43 - Surah Ibrahim 1 - 12.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.13th.Ramadan.1445.Surah.Ar.Ra.d.19.-.43.-.Surah.Ibrahim.1.-.12.m4a",
+      "teacher": "Zubayr",
+      "duration": 855.701333,
+      "dateLabel": "13th Ramadan 1445",
+      "ramadanDay": 13,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-282779bbcb821c34",
+      "filename": "Zubayr 16th Ramadan 1445 Surah Taha 1 - 76.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.16th.Ramadan.1445.Surah.Taha.1.-.76.m4a",
+      "teacher": "Zubayr",
+      "duration": 772.928,
+      "dateLabel": "16th Ramadan 1445",
+      "ramadanDay": 16,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-8460cbdad1914adf",
+      "filename": "Zubayr 17th Ramadan 1445 Surah Al Haj 1 - 37.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.17th.Ramadan.1445.Surah.Al.Haj.1.-.37.m4a",
+      "teacher": "Zubayr",
+      "duration": 887.104,
+      "dateLabel": "17th Ramadan 1445",
+      "ramadanDay": 17,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-be515e2bdc6c6921",
+      "filename": "Zubayr 18th Ramadan 1445 Surah An-Nur 19-52.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.18th.Ramadan.1445.Surah.An-Nur.19-52.m4a",
+      "teacher": "Zubayr",
+      "duration": 1050.261769,
+      "dateLabel": "18th Ramadan 1445",
+      "ramadanDay": 18,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-e1e64014fad6c7ad",
+      "filename": "Zubayr 19th Ramadan 1445 Surah Ash-Shu’ara 105- 227.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.19th.Ramadan.1445.Surah.Ash-Shu.ara.105-.227.m4a",
+      "teacher": "Zubayr",
+      "duration": 834.223311,
+      "dateLabel": "19th Ramadan 1445",
+      "ramadanDay": 19,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-cd94a25f1819afe0",
+      "filename": "Zubayr 20th Ramadan 1445 Surah Al-Qasas 51-Surah-Al-Ankabut 13.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.20th.Ramadan.1445.Surah.Al-Qasas.51-Surah-Al-Ankabut.13.m4a",
+      "teacher": "Zubayr",
+      "duration": 888.372245,
+      "dateLabel": "20th Ramadan 1445",
+      "ramadanDay": 20,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-a9c41a9205351f0f",
+      "filename": "Zubayr 24th Ramadan 1445 Surah Ash-Shuraa 1-43.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.24th.Ramadan.1445.Surah.Ash-Shuraa.1-43.m4a",
+      "teacher": "Zubayr",
+      "duration": 835.616508,
+      "dateLabel": "24th Ramadan 1445",
+      "ramadanDay": 24,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-e9fb169b6f69ba9a",
+      "filename": "Zubayr 26th Ramadan 1445 Surah Al-Qamar 1-55-Surah Ar-Rahman 1-78 copy.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.26th.Ramadan.1445.Surah.Al-Qamar.1-55-Surah.Ar-Rahman.1-78.copy.m4a",
+      "teacher": "Zubayr",
+      "duration": 511.465941,
+      "dateLabel": "26th Ramadan 1445",
+      "ramadanDay": 26,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-ef34a60fb0df41ab",
+      "filename": "Zubayr 26th Ramadan 1445 Surah Al-Qamar 1-55-Surah Ar-Rahman 1-78.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.26th.Ramadan.1445.Surah.Al-Qamar.1-55-Surah.Ar-Rahman.1-78.m4a",
+      "teacher": "Zubayr",
+      "duration": 970.292245,
+      "dateLabel": "26th Ramadan 1445",
+      "ramadanDay": 26,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-07137e70e7c98a2c",
+      "filename": "Zubayr 28th Ramadan 1445 Surah Jinn- Surah Muzzamil-Surah Muddaththir.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.28th.Ramadan.1445.Surah.Jinn-.Surah.Muzzamil-Surah.Muddaththir.m4a",
+      "teacher": "Zubayr",
+      "duration": 970.385125,
+      "dateLabel": "28th Ramadan 1445",
+      "ramadanDay": 28,
+      "ramadanYear": 1445
+    },
+    {
+      "id": "zubayr-322d4a12b9b8f493",
+      "filename": "Zubayr Surah Ahzab 1 - 27.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Ahzab.1.-.27.m4a",
+      "teacher": "Zubayr",
+      "duration": 713.450667
+    },
+    {
+      "id": "zubayr-3377cb33f82b1f18",
+      "filename": "Zubayr Surah Ali Imran 121 - 143.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Ali.Imran.121.-.143.m4a",
+      "teacher": "Zubayr",
+      "duration": 415.722667
+    },
+    {
+      "id": "zubayr-e80a53d6c9a8fa3e",
+      "filename": "Zubayr Surah Ankabut 46 - 52 - Surah Isra 78 - 84.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Ankabut.46.-.52.-.Surah.Isra.78.-.84.m4a",
+      "teacher": "Zubayr",
+      "duration": 370.24
+    },
+    {
+      "id": "zubayr-a8e44eabbfca1562",
+      "filename": "Zubayr Surah Ar-Rahman 1-78.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Ar-Rahman.1-78.m4a",
+      "teacher": "Zubayr",
+      "duration": 511.558821
+    },
+    {
+      "id": "zubayr-5e31571f9da20883",
+      "filename": "Zubayr Surah Dhariyat 1 - 51.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Dhariyat.1.-.51.m4a",
+      "teacher": "Zubayr",
+      "duration": 466.581333
+    },
+    {
+      "id": "zubayr-fbba52859e661569",
+      "filename": "Zubayr Surah Fatir 19-45.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Fatir.19-45.m4a",
+      "teacher": "Zubayr",
+      "duration": 636.760816
+    },
+    {
+      "id": "zubayr-68993edcd263a220",
+      "filename": "Zubayr Surah Furqan 21 - 31.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Furqan.21.-.31.m4a",
+      "teacher": "Zubayr",
+      "duration": 251.968
+    },
+    {
+      "id": "zubayr-6f41924fd8c6dfb3",
+      "filename": "Zubayr Surah Ghafir 1 - 16.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Ghafir.1.-.16.m4a",
+      "teacher": "Zubayr",
+      "duration": 350.613333
+    },
+    {
+      "id": "zubayr-1247850cb458016e",
+      "filename": "Zubayr Surah Hadid 16 - 24 - Surah Hashr 1 - 10.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Hadid.16.-.24.-.Surah.Hashr.1.-.10.m4a",
+      "teacher": "Zubayr",
+      "duration": 572.116463
+    },
+    {
+      "id": "zubayr-a8194f3097ed8e17",
+      "filename": "Zubayr Surah Isra 99 - 111 - Surah Kahf 1 - 27.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Isra.99.-.111.-.Surah.Kahf.1.-.27.m4a",
+      "teacher": "Zubayr",
+      "duration": 723.776
+    },
+    {
+      "id": "zubayr-012b616a014fee68",
+      "filename": "Zubayr Surah Jinn.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Jinn.m4a",
+      "teacher": "Zubayr",
+      "duration": 341.031474
+    },
+    {
+      "id": "zubayr-c04298441a826dbe",
+      "filename": "Zubayr Surah Kahf 27 - 82.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Kahf.27.-.82.m4a",
+      "teacher": "Zubayr",
+      "duration": 861.333333
+    },
+    {
+      "id": "zubayr-cdab1b5cfea8650c",
+      "filename": "Zubayr Surah Nisa 26 - 28 - Surah Tawbah 117 - 119.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Nisa.26.-.28.-.Surah.Tawbah.117.-.119.m4a",
+      "teacher": "Zubayr",
+      "duration": 225.856
+    },
+    {
+      "id": "zubayr-b8b2c0884f795d69",
+      "filename": "Zubayr Surah Nuh - Surah Qiyamah 1 - 40.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Nuh.-.Surah.Qiyamah.1.-.40.m4a",
+      "teacher": "Zubayr",
+      "duration": 490.133333
+    },
+    {
+      "id": "zubayr-71edf31d58573369",
+      "filename": "Zubayr Surah Nuh.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Nuh.m4a",
+      "teacher": "Zubayr",
+      "duration": 260.672
+    },
+    {
+      "id": "zubayr-4c221b9a0a02d9df",
+      "filename": "Zubayr Surah Tawbah 38 - 59 (Ibn Katheer).m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Tawbah.38.-.59.Ibn.Katheer.m4a",
+      "teacher": "Zubayr",
+      "duration": 621.205333
+    },
+    {
+      "id": "zubayr-a8fbe9135138364e",
+      "filename": "Zubayr Surah Tur 1 - 28.m4a",
+      "url": "https://github.com/TeoPoulter/wycombedawah/releases/download/wise-recordings-audio/Zubayr.Surah.Tur.1.-.28.m4a",
+      "teacher": "Zubayr",
+      "duration": 256.917333
+    }
+  ]
+}
