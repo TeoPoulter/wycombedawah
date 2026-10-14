@@ -1,4 +1,4 @@
-import {clock,bounded,parseManifest,selectRecordings,restoreState} from './model.js';
+import {clock,bounded,parseManifest,selectRecordings,restoreState} from './model.js?v=dark-20261014-v2';
 const $=s=>document.querySelector(s), audio=$('#audio'), key='wycombe-wise-listening-v1';
 const paths={play:'<path d="m8 5 11 7-11 7Z" fill="currentColor" stroke="none"/>',pause:'<path d="M7 5h4v14H7zm6 0h4v14h-4z" fill="currentColor" stroke="none"/>',previous:'<path d="M6 5v14m12-14L8 12l10 7Z"/>',next:'<path d="M18 5v14M6 5l10 7-10 7Z"/>',back:'<path d="M7 5a8 8 0 1 1-3 9M7 5v5H2"/>',forward:'<path d="M17 5a8 8 0 1 0 3 9m-3-9v5h5"/>',heart:'<path d="M20.8 5.6a5.1 5.1 0 0 0-7.2 0L12 7.2l-1.6-1.6a5.1 5.1 0 0 0-7.2 7.2L12 21l8.8-8.2a5.1 5.1 0 0 0 0-7.2Z"/>',book:'<path d="M12 6c-4-3-9-2-9-2v15s5-1 9 2c4-3 9-2 9-2V4s-5-1-9 2Zm0 0v15"/>'};
 const icon=(name,filled=false)=>`<svg viewBox="0 0 24 24" fill="${filled?'currentColor':'none'}" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]}</svg>`;
