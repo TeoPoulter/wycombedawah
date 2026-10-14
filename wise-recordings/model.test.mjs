@@ -1,0 +1,9 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {parseManifest,selectRecordings,restoreState,bounded,clock} from './model.js';
+const original='Zubayr 3rd Ramadan 1445 Surah Ali ‘Imran 14 - 51.m4a';
+const input={version:1,recordings:[{id:'one',filename:original,url:'./media/one.m4a',duration:540},{id:'two',filename:'Zubayr Surah Ar-Rahman 1-78.m4a',url:'https://example.com/two.m4a',date:'2024-04-05'}]};
+test('retains exact Unicode filenames and resolves media paths',()=>{const r=parseManifest(input,'https://wycombedawah.com/wise-recordings/');assert.equal(r[0].filename,original);assert.equal(r[0].url,'https://wycombedawah.com/wise-recordings/media/one.m4a');});
+test('rejects duplicate IDs and unsafe media URLs',()=>{assert.throws(()=>parseManifest({...input,recordings:[input.recordings[0],input.recordings[0]]},'https://wycombedawah.com/'));assert.throws(()=>parseManifest({version:1,recordings:[{id:'a',filename:'a',url:'javascript:alert(1)'}]},'https://wycombedawah.com/'));});
+test('search and saved views operate on filenames without changing the original order',()=>{const r=parseManifest(input,'https://wycombedawah.com/');assert.equal(selectRecordings(r,{query:'IMRAN'})[0].filename,original);assert.deepEqual(selectRecordings(r,{savedOnly:true,saved:['two']}).map(x=>x.id),['two']);assert.deepEqual(selectRecordings(r,{sort:'newest'}).map(x=>x.id),['two','one']);assert.equal(r[0].id,'one');});
+test('progress restores valid positions and bounded settings',()=>{const s=restoreState({positions:{one:47,two:-2,three:Infinity},saved:['one','one',3],speed:500});assert.deepEqual(s.positions,{one:47});assert.deepEqual(s.saved,['one']);assert.equal(s.speed,1);assert.equal(bounded(-10,500),0);assert.equal(bounded(800,500),500);assert.equal(clock(3661),'1:01:01');});
