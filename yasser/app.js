@@ -1,5 +1,5 @@
 import {Queue} from './queue.mjs';
-import {selectedPool,selectionLabel} from './selection.mjs?v=20261018-portal-v4';
+import {selectedPool,selectionLabel} from './selection.mjs?v=20261018-portal-v5';
 const chosenAjza=new Set();
 const $=id=>document.getElementById(id);
 let data,queue,player,ready=false,apiPromise,selected,failures=0,playing=false,dragging=false,loadTimer;
@@ -7,7 +7,7 @@ const time=n=>`${Math.floor((n||0)/60)}:${String(Math.floor((n||0)%60)).padStart
 const status=message=>$('status').textContent=message;
 const icon=name=>`<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-${name}"/></svg>`;
 const splash=$('splash');splash.hidden=false;setTimeout(()=>splash.hidden=true,1700);
-function heading(personal=false){document.body.classList.toggle('playlist',personal);$('arabic-name').hidden=personal;$('page-title').innerHTML=personal?'Theo’s playlist<span>.</span>':'Yasser Archives<span>.</span>';$('brand-name').innerHTML=personal?'THEO’S<span class="word">PLAYLIST</span>':'YASSER<span class="word">ARCHIVES</span>';document.title=personal?'Theo’s playlist':'Yasser Archives'}
+function heading(personal=false){document.body.classList.toggle('playlist',personal);$('arabic-name').hidden=personal;$('page-title').innerHTML=personal?'Teo’s playlist<span>.</span>':'Yasser Archives<span>.</span>';$('brand-name').innerHTML=personal?'TEO’S<span class="word">PLAYLIST</span>':'YASSER<span class="word">ARCHIVES</span>';document.title=personal?'Teo’s playlist':'Yasser Archives'}
 function showChooser(){if(ready)player.pauseVideo();$('chooser').hidden=false;$('listening').hidden=true;document.body.classList.remove('active');heading();$('select-all').focus({preventScroll:true})}
 $('home').onclick=showChooser;$('change-selection').onclick=showChooser;
 
@@ -34,7 +34,7 @@ function animateSeek(now){if(ready&&!dragging){if(now-lastSample>=400){sample();
 requestAnimationFrame(animateSeek);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)sample()});
 controls();
-fetch('catalog.json?v=20261018-portal-v4').then(r=>{if(!r.ok)throw Error('Could not load the archive. Please refresh to try again.');return r.json()}).then(c=>{
+fetch('catalog.json?v=20261018-portal-v5').then(r=>{if(!r.ok)throw Error('Could not load the archive. Please refresh to try again.');return r.json()}).then(c=>{
  data=c;
  for(const j of c.juz){
   const b=document.createElement('button');b.className='juz';b.type='button';b.dataset.juz=j.number;
@@ -46,8 +46,8 @@ fetch('catalog.json?v=20261018-portal-v4').then(r=>{if(!r.ok)throw Error('Could 
  $('select-all').onclick=()=>{c.juz.forEach(j=>chosenAjza.add(j.number));updateSelection()};
  $('clear-selection').onclick=()=>{chosenAjza.clear();updateSelection()};
  $('play-selection').onclick=()=>{const ids=selectedPool(data,chosenAjza);if(ids.length)choose(ids,selectionLabel(chosenAjza))};
- $('random').disabled=false;$('playlist-count').textContent='Theo’s playlist';
- $('random').onclick=()=>choose(c.playlist.ids,'Theo’s playlist',true);
+ $('random').disabled=false;$('playlist-count').textContent='Teo’s playlist';
+ $('random').onclick=()=>choose(c.playlist.ids,'Teo’s playlist',true);
  updateSelection();
 }).catch(e=>{$('load-error').hidden=false;$('load-error').textContent=e.message});
 function updateSelection(){
