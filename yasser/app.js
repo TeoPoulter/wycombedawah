@@ -1,39 +1,58 @@
 import {Queue} from './queue.mjs';
-import {selectedPool,selectionLabel} from './selection.mjs?v=20261018-classic-multi-v3';
+import {selectedPool,selectionLabel} from './selection.mjs?v=20261018-portal-v4';
 const chosenAjza=new Set();
 const $=id=>document.getElementById(id);
 let data,queue,player,ready=false,apiPromise,selected,failures=0,playing=false,dragging=false,loadTimer;
 const time=n=>`${Math.floor((n||0)/60)}:${String(Math.floor((n||0)%60)).padStart(2,'0')}`;
 const status=message=>$('status').textContent=message;
+const icon=name=>`<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-${name}"/></svg>`;
+const splash=$('splash');splash.hidden=false;setTimeout(()=>splash.hidden=true,1700);
+function heading(personal=false){document.body.classList.toggle('playlist',personal);$('arabic-name').hidden=personal;$('page-title').innerHTML=personal?'Theo’s playlist<span>.</span>':'Yasser Archives<span>.</span>';$('brand-name').innerHTML=personal?'THEO’S<span class="word">PLAYLIST</span>':'YASSER<span class="word">ARCHIVES</span>';document.title=personal?'Theo’s playlist':'Yasser Archives'}
+function showChooser(){if(ready)player.pauseVideo();$('chooser').hidden=false;$('listening').hidden=true;document.body.classList.remove('active');heading();$('select-all').focus({preventScroll:true})}
+$('home').onclick=showChooser;$('change-selection').onclick=showChooser;
+
 function api(){if(window.YT?.Player)return Promise.resolve();if(apiPromise)return apiPromise;apiPromise=new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('YouTube did not respond. Open the recording on YouTube, or try again.')),15000);window.onYouTubeIframeAPIReady=()=>{clearTimeout(timer);resolve()};const script=document.createElement('script');script.src='https://www.youtube.com/iframe_api';script.onerror=()=>{clearTimeout(timer);reject(Error('YouTube could not load. Check your connection and try again.'))};document.head.append(script)}).catch(e=>{apiPromise=null;throw e});return apiPromise}
-function controls(){const enabled=ready&&Boolean(selected);for(const id of ['play','back','forward','next'])$(id).disabled=!enabled;$('previous').disabled=!enabled||queue.index<=0;$('seek').disabled=!enabled;$('play').textContent=playing?'Ⅱ':'▶';$('play').setAttribute('aria-label',playing?'Pause recording':'Play recording')}
-function track(id){if(!id){status('No more recordings are available in this selection. Choose another juz.');return}selected=id;const v=data.videos[id];$('recording-year').textContent=v.prayer?.hijriYear?`${v.prayer.hijriYear} AH`:'YOUTUBE';$('track-title').textContent=v.title;$('channel').textContent=v.channel;$('watch').href=`https://www.youtube.com/watch?v=${id}`;$('duration').textContent=time(v.duration);$('elapsed').textContent='0:00';$('seek').value=0;playing=false;controls();status('Loading recording…');clearTimeout(loadTimer);loadTimer=setTimeout(()=>status('Tap Play in the video if playback has not started. You can also open it on YouTube.'),16000);if(ready)player.loadVideoById(id)}
-async function choose(ids,label){queue=new Queue(ids);failures=0;$('repeat').querySelector('span').textContent='Repeat all';$('selection-label').textContent=label;$('choose-title').textContent=`Change selection · ${label}`;$('chooser').open=false;$('listening').hidden=false;document.body.classList.add('active');track(queue.next());$('listening').scrollIntoView({block:'start',behavior:'instant'});try{await api();if(ready){controls();return}if(player){return}const iframe=document.createElement('iframe');iframe.id='player';iframe.title='YouTube recitation player';iframe.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';iframe.allowFullscreen=true;iframe.referrerPolicy='strict-origin-when-cross-origin';iframe.src=`https://www.youtube-nocookie.com/embed/${selected}?enablejsapi=1&playsinline=1&controls=1&rel=0&origin=${encodeURIComponent(location.origin)}`;$('player').replaceWith(iframe);player=new YT.Player(iframe,{events:{onReady:()=>{ready=true;player.loadVideoById(selected);controls()},onStateChange:e=>{playing=e.data===1;controls();if(e.data===1){failures=0;clearTimeout(loadTimer);status('Playing')}if(e.data===2)status('Paused');if(e.data===3)status('Buffering…');if(e.data===0){if(queue.repeat==='one'){player.seekTo(0,true);player.playVideo()}else{const id=queue.next(false);if(id)track(id);else status('Selection complete. Tap Next to begin again.')}}},onAutoplayBlocked:()=>{clearTimeout(loadTimer);status('Tap Play to start the video. Your browser paused autoplay.');playing=false;controls()},onError:e=>{clearTimeout(loadTimer);playing=false;controls();if([100,101,150].includes(e.data)&&failures<5){queue.reject(selected);failures++;const id=queue.next();if(id){track(id);status('That video is unavailable here. Trying another…');return}}status(e.data===153?'YouTube could not verify this player. Use Open on YouTube.':'This video cannot play here. Try Next, or open it on YouTube.')}}})}catch(e){status(e.message);controls()}}
+function controls(){const enabled=ready&&Boolean(selected);for(const id of ['play','back','forward','next'])$(id).disabled=!enabled;$('previous').disabled=!enabled||queue.index<=0;$('seek').disabled=!enabled;$('play').innerHTML=icon(playing?'pause':'play');$('play').setAttribute('aria-label',playing?'Pause recording':'Play recording')}
+function track(id){if(!id){status('No more recordings are available in this selection. Choose another juz.');return}selected=id;clock=0;clockAt=performance.now();lastSample=clockAt+600;length=data.videos[id].duration||0;const v=data.videos[id];$('recording-year').textContent=v.prayer?.hijriYear?`${v.prayer.hijriYear} AH`:'YOUTUBE';$('track-title').textContent=v.title;$('channel').textContent=v.channel;$('watch').href=`https://www.youtube.com/watch?v=${id}`;$('duration').textContent=time(v.duration);$('elapsed').textContent='0:00';$('seek').max=length||100;paintSeek(0);playing=false;controls();status('');clearTimeout(loadTimer);loadTimer=setTimeout(()=>status(''),16000);if(ready)player.loadVideoById(id)}
+async function choose(ids,label,personal=false){heading(personal);queue=new Queue(ids);failures=0;$('repeat').setAttribute('aria-pressed','false');$('selection-label').textContent=label;$('chooser').hidden=true;$('listening').hidden=false;document.body.classList.add('active');track(queue.next());$('change-selection').focus({preventScroll:true});try{await api();if(ready){controls();return}if(player){return}const iframe=document.createElement('iframe');iframe.id='player';iframe.title='YouTube recitation player';iframe.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';iframe.allowFullscreen=true;iframe.referrerPolicy='strict-origin-when-cross-origin';iframe.src=`https://www.youtube-nocookie.com/embed/${selected}?enablejsapi=1&playsinline=1&controls=1&rel=0&origin=${encodeURIComponent(location.origin)}`;$('player').replaceWith(iframe);player=new YT.Player(iframe,{events:{onReady:()=>{ready=true;player.loadVideoById(selected);controls()},onStateChange:e=>{playing=e.data===1;controls();if(e.data===1){failures=0;clearTimeout(loadTimer);status('')}if(e.data===2)status('');if(e.data===3)status('');if(e.data===0){if(queue.repeat==='one'){player.seekTo(0,true);player.playVideo()}else{const id=queue.next(false);if(id)track(id);else status('Selection complete. Tap Next to begin again.')}}},onAutoplayBlocked:()=>{clearTimeout(loadTimer);status('');playing=false;controls()},onError:e=>{clearTimeout(loadTimer);playing=false;controls();if([100,101,150].includes(e.data)&&failures<5){queue.reject(selected);failures++;const id=queue.next();if(id){track(id);status('That video is unavailable here. Trying another…');return}}status(e.data===153?'YouTube could not verify this player. Use Open on YouTube.':'This video cannot play here. Try Next, or open it on YouTube.')}}})}catch(e){status(e.message);controls()}}
 $('play').onclick=()=>{if(!ready)return;if(playing)player.pauseVideo();else player.playVideo()};$('next').onclick=()=>{failures=0;track(queue.next())};$('previous').onclick=()=>track(queue.previous());
 for(const [id,delta] of [['back',-10],['forward',10]])$(id).onclick=()=>{if(ready)player.seekTo(Math.max(0,Math.min(player.getDuration(),player.getCurrentTime()+delta)),true)};
-$('repeat').onclick=()=>{queue.repeat=({all:'one',one:'off',off:'all'})[queue.repeat];$('repeat').querySelector('span').textContent=`Repeat ${queue.repeat}`};
-$('seek').addEventListener('input',()=>{dragging=true;$('elapsed').textContent=time(Number($('seek').value))});$('seek').addEventListener('change',()=>{if(ready)player.seekTo(Number($('seek').value),true);dragging=false});
-setInterval(()=>{if(!ready||dragging)return;const duration=player.getDuration(),current=player.getCurrentTime();if(duration>0){$('seek').max=duration;$('seek').value=current;$('elapsed').textContent=time(current);$('duration').textContent=time(duration)}},500);
+$('repeat').onclick=()=>{if(!queue)return;queue.repeat=queue.repeat==='one'?'all':'one';$('repeat').setAttribute('aria-pressed',String(queue.repeat==='one'))};
+// Sample the iframe clock, then interpolate between samples for a fluid seek bar.
+let clock=0,clockAt=performance.now(),length=0,lastSample=0;
+function paintSeek(current){$('seek').value=current;$('seek').style.setProperty('--progress',`${length?Math.min(100,current/length*100):0}%`);$('elapsed').textContent=time(current);$('seek').setAttribute('aria-valuetext',`${time(current)} of ${time(length)}`)}
+function sample(){if(!ready)return;const n=player.getDuration();if(n>0){length=n;$('seek').max=n;$('duration').textContent=time(n)}clock=player.getCurrentTime()||0;clockAt=performance.now()}
+function commitSeek(){if(!dragging)return;const n=Number($('seek').value);dragging=false;if(ready){player.seekTo(n,true);clock=n;clockAt=performance.now();lastSample=clockAt+500}}
+$('seek').addEventListener('pointerdown',()=>dragging=true);
+$('seek').addEventListener('input',()=>{dragging=true;paintSeek(Number($('seek').value))});
+$('seek').addEventListener('change',commitSeek);
+$('seek').addEventListener('pointerup',commitSeek);
+$('seek').addEventListener('pointercancel',()=>{dragging=false;sample()});
+$('seek').addEventListener('blur',commitSeek);
+$('seek').addEventListener('keydown',event=>{const moves={ArrowRight:5,ArrowUp:5,ArrowLeft:-5,ArrowDown:-5};if(!(event.key in moves)&&!['Home','End'].includes(event.key))return;event.preventDefault();dragging=true;paintSeek(event.key==='Home'?0:event.key==='End'?length:Math.max(0,Math.min(length,Number($('seek').value)+moves[event.key])));commitSeek()});
+function animateSeek(now){if(ready&&!dragging){if(now-lastSample>=400){sample();lastSample=now}paintSeek(Math.min(length,clock+(playing?(now-clockAt)/1000:0)))}requestAnimationFrame(animateSeek)}
+requestAnimationFrame(animateSeek);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)sample()});
 controls();
-fetch('catalog.json?v=20261018-classic-multi-v3').then(r=>{if(!r.ok)throw Error('Could not load the archive. Please refresh to try again.');return r.json()}).then(c=>{
+fetch('catalog.json?v=20261018-portal-v4').then(r=>{if(!r.ok)throw Error('Could not load the archive. Please refresh to try again.');return r.json()}).then(c=>{
  data=c;
  for(const j of c.juz){
   const b=document.createElement('button');b.className='juz';b.type='button';b.dataset.juz=j.number;
   b.setAttribute('aria-label',`Juz ${j.number}, ${j.ids.length} recordings`);b.setAttribute('aria-pressed','false');
-  b.innerHTML=`<small>JUZ</small><strong>${j.number}</strong><small class="count">${j.ids.length} recordings</small><span class="selection-check" aria-hidden="true">✓</span>`;
+  b.innerHTML=`<small>JUZ</small><strong>${j.number}</strong><small class="count">${j.ids.length} recordings</small><span class="selection-check" aria-hidden="true">${icon('check')}</span>`;
   b.onclick=()=>{chosenAjza.has(j.number)?chosenAjza.delete(j.number):chosenAjza.add(j.number);updateSelection()};
   $('juz-grid').append(b);
  }
  $('select-all').onclick=()=>{c.juz.forEach(j=>chosenAjza.add(j.number));updateSelection()};
  $('clear-selection').onclick=()=>{chosenAjza.clear();updateSelection()};
  $('play-selection').onclick=()=>{const ids=selectedPool(data,chosenAjza);if(ids.length)choose(ids,selectionLabel(chosenAjza))};
- $('random').disabled=false;$('playlist-count').textContent=`${c.playlist.ids.length} videos · From your playlist`;
- $('random').onclick=()=>choose(c.playlist.ids,'Your playlist');
+ $('random').disabled=false;$('playlist-count').textContent='Theo’s playlist';
+ $('random').onclick=()=>choose(c.playlist.ids,'Theo’s playlist',true);
  updateSelection();
 }).catch(e=>{$('load-error').hidden=false;$('load-error').textContent=e.message});
 function updateSelection(){
  document.querySelectorAll('.juz').forEach(b=>b.setAttribute('aria-pressed',String(chosenAjza.has(Number(b.dataset.juz)))));
- const ids=selectedPool(data,chosenAjza);$('selected-count').textContent=`${chosenAjza.size} selected`;
- $('play-selection').disabled=!ids.length;$('selection-total').textContent=ids.length?`${ids.length} recordings`:'Choose ajza';
+ const ids=selectedPool(data,chosenAjza);$('selected-count').textContent=chosenAjza.size?`${chosenAjza.size} selected`:'Choose your ajza';
+ $('play-selection').disabled=!ids.length;$('selection-action').classList.toggle('visible',Boolean(ids.length));$('selection-action').inert=!ids.length;$('selection-action').setAttribute('aria-hidden',String(!ids.length));$('selection-total').textContent=ids.length?`${ids.length} recordings`:'Choose ajza';
  $('clear-selection').disabled=!chosenAjza.size;$('select-all').disabled=chosenAjza.size===data.juz.length;
 }
