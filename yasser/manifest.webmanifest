@@ -1,0 +1,24 @@
+{
+  "id": "/yasser/",
+  "name": "Yasser Archives",
+  "short_name": "Yasser Archives",
+  "start_url": "/yasser/",
+  "scope": "/yasser/",
+  "display": "standalone",
+  "background_color": "#0f1829",
+  "theme_color": "#0f1829",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
