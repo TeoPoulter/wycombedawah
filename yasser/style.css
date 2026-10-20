@@ -30,3 +30,6 @@
 @media(orientation:landscape) and (max-height:500px){.video{height:auto;aspect-ratio:16/9}}
 
 #recording-year:empty{display:none}#watch{width:44px;justify-content:center;border-radius:50%;border:1px solid var(--line)}
+
+.playback-recovery{border:1px solid #6ec1d633;background:#152136;border-radius:14px;padding:14px;margin-top:10px}.playback-recovery p{font-size:12px;line-height:1.5;color:#c5d3e3;margin:0 0 8px}.playback-recovery>div{display:flex;gap:8px;flex-wrap:wrap}.playback-recovery button,.playback-recovery a{min-height:44px;display:flex;align-items:center;padding:0 12px;border-radius:10px;font-size:11px;color:var(--aqua);background:#6ec1d60d}.playback-recovery button:first-child{background:var(--aqua);color:var(--bg)}.has-player-error .seek,.has-player-error .transport{display:none}.has-player-error .player-console{flex-shrink:0}@media(max-width:600px){.playback-recovery{padding:10px}.playback-recovery>div{gap:4px}.playback-recovery button,.playback-recovery a{padding:0 8px;font-size:10px}}
+.has-player-error .player-bottom{display:none}@media(max-height:650px){.has-player-error .now p{display:none}.playback-recovery p{font-size:11px;line-height:1.4}}

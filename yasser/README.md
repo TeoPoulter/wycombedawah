@@ -8,3 +8,9 @@ Responsive checks covered 320×568 and 375×812 phone sizes, 768×1024, 1024×76
 ### Opening and Home Screen refinement
 
 The opening now uses a large two-line Inter wordmark, Arabic typography, illuminated emblem, animated geometric rings and a circular reveal inspired by Study in Madinah. It can be skipped and is omitted for reduced-motion users. Apple touch icon and standalone web manifest use the archive emblem. Space toggles playback and left/right arrows seek ten seconds when the archive page has keyboard focus; editable fields are excluded. The seek slider retains accessible keyboard control. Personal playlist headings use Teo’s Playlist. Undated recordings no longer show a redundant YouTube label.
+
+### Playback recovery (20 October 2026)
+
+The player now uses the standard youtube.com embed instead of the privacy-enhanced host. YouTube may still require verification: a Safari sign-in does not guarantee that an embedded or installed web app shares that session. Provider restrictions (101/150) now preserve the selected recording and show Retry, Next recording, and an exact-video external link; only a confirmed missing video (100) triggers bounded automatic skips. Retry rebuilds the iframe without resetting the shuffle queue and retains the playback position. A stalled load also exposes recovery actions. No credentials, browser privacy settings or YouTube verification checks are modified.
+
+Validation: embed URL/error-policy regression tests, full catalogue checks, and browser playback plus a simulated provider connection failure followed by successful retry of the same recording. The user's Safari bot-verification session cannot be reproduced or cleared by these tests.

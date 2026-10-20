@@ -1,8 +1,9 @@
+import {embedUrl,watchUrl,playbackError} from './embed.mjs?v=20261020-playback-v7';
 import {Queue} from './queue.mjs';
-import {selectedPool,selectionLabel} from './selection.mjs?v=20261018-ihsan-v6';
+import {selectedPool,selectionLabel} from './selection.mjs?v=20261020-playback-v7';
 const chosenAjza=new Set();
 const $=id=>document.getElementById(id);
-let data,queue,player,ready=false,apiPromise,selected,failures=0,playing=false,dragging=false,loadTimer;
+let data,queue,player,ready=false,apiPromise,selected,failures=0,playing=false,dragging=false,loadTimer,mountGeneration=0;
 const time=n=>`${Math.floor((n||0)/60)}:${String(Math.floor((n||0)%60)).padStart(2,'0')}`;
 const status=message=>$('status').textContent=message;
 const icon=name=>`<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-${name}"/></svg>`;
@@ -18,9 +19,37 @@ function showChooser(){if(ready)player.pauseVideo();$('chooser').hidden=false;$(
 $('home').onclick=showChooser;$('change-selection').onclick=showChooser;
 
 function api(){if(window.YT?.Player)return Promise.resolve();if(apiPromise)return apiPromise;apiPromise=new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('YouTube did not respond. Open the recording on YouTube, or try again.')),15000);window.onYouTubeIframeAPIReady=()=>{clearTimeout(timer);resolve()};const script=document.createElement('script');script.src='https://www.youtube.com/iframe_api';script.onerror=()=>{clearTimeout(timer);reject(Error('YouTube could not load. Check your connection and try again.'))};document.head.append(script)}).catch(e=>{apiPromise=null;throw e});return apiPromise}
+function clearRecovery(){document.body.classList.remove('has-player-error');$('playback-recovery').hidden=true;status('')}
+function recover(message){playing=false;clearTimeout(loadTimer);controls();$('recovery-message').textContent=message;$('open-recording').href=watchUrl(selected,clock);$('playback-recovery').hidden=false;document.body.classList.add('has-player-error');status('')}
+function armLoadTimer(){clearTimeout(loadTimer);loadTimer=setTimeout(()=>{if(!playing&&!$('listening').hidden)recover('Playback has not started. Retry, or open this recording on YouTube.')},18000)}
 function controls(){const enabled=ready&&Boolean(selected);for(const id of ['play','back','forward','next'])$(id).disabled=!enabled;$('previous').disabled=!enabled||queue.index<=0;$('seek').disabled=!enabled;$('play').innerHTML=icon(playing?'pause':'play');$('play').setAttribute('aria-label',playing?'Pause recording':'Play recording')}
-function track(id){if(!id){status('No more recordings are available in this selection. Choose another juz.');return}selected=id;clock=0;clockAt=performance.now();lastSample=clockAt+600;length=data.videos[id].duration||0;const v=data.videos[id];$('recording-year').textContent=v.prayer?.hijriYear?`${v.prayer.hijriYear} AH`:'';$('track-title').textContent=v.title;$('channel').textContent=v.channel;$('watch').href=`https://www.youtube.com/watch?v=${id}`;$('duration').textContent=time(v.duration);$('elapsed').textContent='0:00';$('seek').max=length||100;paintSeek(0);playing=false;controls();status('');clearTimeout(loadTimer);loadTimer=setTimeout(()=>status(''),16000);if(ready)player.loadVideoById(id)}
-async function choose(ids,label,personal=false){heading(personal);queue=new Queue(ids);failures=0;$('repeat').setAttribute('aria-pressed','false');$('selection-label').textContent=label;$('chooser').hidden=true;$('listening').hidden=false;document.body.classList.add('active');track(queue.next());$('change-selection').focus({preventScroll:true});try{await api();if(ready){controls();return}if(player){return}const iframe=document.createElement('iframe');iframe.id='player';iframe.title='YouTube recitation player';iframe.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';iframe.allowFullscreen=true;iframe.referrerPolicy='strict-origin-when-cross-origin';iframe.src=`https://www.youtube-nocookie.com/embed/${selected}?enablejsapi=1&playsinline=1&controls=0&disablekb=1&rel=0&origin=${encodeURIComponent(location.origin)}`;$('player').replaceWith(iframe);player=new YT.Player(iframe,{events:{onReady:()=>{ready=true;player.loadVideoById(selected);controls()},onStateChange:e=>{playing=e.data===1;controls();if(e.data===1){failures=0;clearTimeout(loadTimer);status('')}if(e.data===2)status('');if(e.data===3)status('');if(e.data===0){if(queue.repeat==='one'){player.seekTo(0,true);player.playVideo()}else{const id=queue.next(false);if(id)track(id);else status('Selection complete. Tap Next to begin again.')}}},onAutoplayBlocked:()=>{clearTimeout(loadTimer);status('');playing=false;controls()},onError:e=>{clearTimeout(loadTimer);playing=false;controls();if([100,101,150].includes(e.data)&&failures<5){queue.reject(selected);failures++;const id=queue.next();if(id){track(id);status('That video is unavailable here. Trying another…');return}}status(e.data===153?'YouTube could not verify this player. Use Open on YouTube.':'This video cannot play here. Try Next, or open it on YouTube.')}}})}catch(e){status(e.message);controls()}}
+function track(id){if(!id){status('No more recordings are available in this selection. Choose another juz.');return}clearRecovery();selected=id;clock=0;clockAt=performance.now();lastSample=clockAt+600;length=data.videos[id].duration||0;const v=data.videos[id];$('recording-year').textContent=v.prayer?.hijriYear?`${v.prayer.hijriYear} AH`:'';$('track-title').textContent=v.title;$('channel').textContent=v.channel;$('watch').href=watchUrl(id);$('open-recording').href=watchUrl(id);$('duration').textContent=time(v.duration);$('elapsed').textContent='0:00';$('seek').max=length||100;paintSeek(0);playing=false;controls();status('');armLoadTimer();if(ready)player.loadVideoById(id)}
+async function mountPlayer(startSeconds=0){
+ const generation=++mountGeneration;ready=false;playing=false;controls();
+ if(player){player.destroy();player=null}
+ if(!$('player')){const slot=document.createElement('div');slot.id='player';document.querySelector('.video').replaceChildren(slot)}
+ await api();if(generation!==mountGeneration)return;
+ const iframe=document.createElement('iframe');iframe.id='player';iframe.title='YouTube recitation player';iframe.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';iframe.allowFullscreen=true;iframe.referrerPolicy='strict-origin-when-cross-origin';iframe.src=embedUrl(selected,location.origin,startSeconds);$('player').replaceWith(iframe);
+ player=new YT.Player(iframe,{events:{
+  onReady:event=>{if(generation!==mountGeneration)return;ready=true;event.target.loadVideoById(selected,startSeconds);controls();if($('listening').hidden)event.target.pauseVideo()},
+  onStateChange:event=>{if(generation!==mountGeneration)return;playing=event.data===1;controls();
+   if(playing){failures=0;clearTimeout(loadTimer);clearRecovery()}
+   if(event.data===2)clearTimeout(loadTimer);
+   if(event.data===0){if(queue.repeat==='one'){player.seekTo(0,true);player.playVideo()}else{const id=queue.next(false);if(id)track(id)}}
+  },
+  onAutoplayBlocked:()=>{if(generation!==mountGeneration)return;clearTimeout(loadTimer);playing=false;controls()},
+  onError:event=>{if(generation!==mountGeneration)return;clearTimeout(loadTimer);playing=false;controls();const result=playbackError(event.data,failures);
+   if(result.advance){queue.reject(selected);failures++;const id=queue.next();if(id){track(id);return}}
+   recover(result.message);
+  }
+ }});
+}
+async function choose(ids,label,personal=false){
+ heading(personal);queue=new Queue(ids);failures=0;$('repeat').setAttribute('aria-pressed','false');$('selection-label').textContent=label;$('chooser').hidden=true;$('listening').hidden=false;document.body.classList.add('active');track(queue.next());$('change-selection').focus({preventScroll:true});
+ try{if(!player)await mountPlayer()}catch(error){recover(error.message)}
+}
+$('retry-playback').onclick=async()=>{if(!selected)return;const position=clock;clearRecovery();armLoadTimer();try{await mountPlayer(position)}catch(error){recover(error.message)}};
+$('recovery-next').onclick=()=>{failures=0;const id=queue.next();if(id){track(id);if(!player)mountPlayer().catch(error=>recover(error.message))}};
 $('play').onclick=()=>{if(!ready)return;if(playing)player.pauseVideo();else player.playVideo()};$('next').onclick=()=>{failures=0;track(queue.next())};$('previous').onclick=()=>track(queue.previous());
 for(const [id,delta] of [['back',-10],['forward',10]])$(id).onclick=()=>{if(ready)player.seekTo(Math.max(0,Math.min(player.getDuration(),player.getCurrentTime()+delta)),true)};
 document.addEventListener('keydown',event=>{
@@ -43,11 +72,11 @@ $('seek').addEventListener('pointerup',commitSeek);
 $('seek').addEventListener('pointercancel',()=>{dragging=false;sample()});
 $('seek').addEventListener('blur',commitSeek);
 $('seek').addEventListener('keydown',event=>{const moves={ArrowRight:10,ArrowUp:10,ArrowLeft:-10,ArrowDown:-10};if(!(event.key in moves)&&!['Home','End'].includes(event.key))return;event.preventDefault();dragging=true;paintSeek(event.key==='Home'?0:event.key==='End'?length:Math.max(0,Math.min(length,Number($('seek').value)+moves[event.key])));commitSeek()});
-function animateSeek(now){if(ready&&!dragging){if(now-lastSample>=400){sample();lastSample=now}paintSeek(Math.min(length,clock+(playing?(now-clockAt)/1000:0)))}requestAnimationFrame(animateSeek)}
+function animateSeek(now){if(ready&&!dragging&&!document.body.classList.contains('has-player-error')){if(now-lastSample>=400){sample();lastSample=now}paintSeek(Math.min(length,clock+(playing?(now-clockAt)/1000:0)))}requestAnimationFrame(animateSeek)}
 requestAnimationFrame(animateSeek);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)sample()});
 controls();
-fetch('catalog.json?v=20261018-ihsan-v6').then(r=>{if(!r.ok)throw Error('Could not load the archive. Please refresh to try again.');return r.json()}).then(c=>{
+fetch('catalog.json?v=20261020-playback-v7').then(r=>{if(!r.ok)throw Error('Could not load the archive. Please refresh to try again.');return r.json()}).then(c=>{
  data=c;
  for(const j of c.juz){
   const b=document.createElement('button');b.className='juz';b.type='button';b.dataset.juz=j.number;

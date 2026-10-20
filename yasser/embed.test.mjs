@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {embedUrl,watchUrl,playbackError} from './embed.mjs';
+const embed=new URL(embedUrl('example1234','https://wycombedawah.com',23.7));
+assert.equal(embed.origin,'https://www.youtube.com');
+assert.equal(embed.pathname,'/embed/example1234');
+assert.equal(embed.searchParams.get('origin'),'https://wycombedawah.com');
+assert.equal(embed.searchParams.get('start'),'23');
+assert.equal(embed.searchParams.get('enablejsapi'),'1');
+const watch=new URL(watchUrl('example1234',23.7));
+assert.equal(watch.pathname,'/watch');assert.equal(watch.searchParams.get('v'),'example1234');assert.equal(watch.searchParams.get('t'),'23');
+for(const code of [2,5,101,150,153])assert.equal(playbackError(code).advance,false,`Do not discard selected recording for provider restriction ${code}`);
+assert.equal(playbackError(100).advance,true);assert.equal(playbackError(100,5).advance,false);
+console.log('PASS: standard embed, exact-recording fallback, resume position, bounded unavailable-video skips and no queue churn for account/embed restrictions');
