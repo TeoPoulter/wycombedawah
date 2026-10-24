@@ -1,0 +1,11 @@
+# Additional salah recordings, Juz20–30 — 24 October 2026
+
+Research uses 92 Arabic YouTube metadata searches (`yt-dlp --flat-playlist`, 80 results each), including each whole chapter within Juz20–30 plus explicit classic-year searches for 1426–1436 AH. Searches returned 3,602 distinct video IDs before admission. The raw observed publisher metadata and search strings are retained in `agent-20-30/search-*.json`; no audio/video media was downloaded.
+
+Admission requires the publisher title to identify Yasser Al-Dosari and a chapter lying wholly within the indexed Juz, plus an explicit prayer context in the title or observed publisher description: Fajr, Isha, Maghrib, salah, qiyam, tarawih, tahajjud, a Ramadan recording year, or explicit Masjid Ad-Dakhil provenance. Merely finding a video with a Dakhil query is never treated as Dakhil evidence. Studio/mushaf, compilation and imitation labels are excluded. Al-Fajr and Al-Qiyamah chapter names do not themselves count as prayer evidence.
+
+Recordings naming unresolved split-chapter companions (An-Naml, Al-Ankabut, Al-Ahzab, Yasin, Az-Zumar, Fussilat, Adh-Dhariyat) are conservatively excluded from this batch; other research agents handle exact split-chapter evidence. Named whole-surah combinations crossing ajza are excluded. Near-identical whole-surah reposts are conservatively removed when the same chapter/year has similar duration and no distinct prayer date, comparing both existing catalogue evidence and this batch. This is metadata deduplication, not an audio fingerprint claim. Distinct clips/excerpts are not a claim of distinct prayer performances.
+
+Hijri years come only from the observed publisher title or directly relevant description, never the search query or upload date. Conflicting title/description years are rejected. Entries without an unambiguous recording year remain undated and must consume the same quota as recent recordings. No inclusion is a claim to have listened to the complete recording verse by verse. Official archive corroboration is linked via `evidenceUrl` where a YouTube ID matches the shared yaldosry.com index.
+
+The output is `juz-20-30-dakhil.json`. It is a candidate admission file; the owner applies the global/per-Juz 30% recent-or-undated cap at integration. The personal playlist is unchanged.

@@ -1,52 +1,68 @@
-# Yasser Archives — prayer recording curation, 18 October 2026
+# Yasser Archives — full Mushaf expansion, 24 October 2026
 
-The Juz collections were rebuilt from Arabic YouTube searches for individual salah recitations. Studio mushaf recordings, whole-Juz compilations, imitators, obvious identical reposts and unrelated clips were rejected. Substantially different excerpts of one prayer may remain; counts are distinct video clips, not claims of unique prayer performances.
+3,523 active sourced recordings across Juz1–30, with at least50 in every Juz. 1,253 are original publisher audio streams and 2,270 are YouTube videos. 1,041 have explicit recording-date evidence within AH1426–1436. At least158 active titles or venue fields explicitly identify Masjid Ad-Dakhil; an old year alone is never treated as proof of venue. These are recordings by Yasser Al-Dosari, not another reciter named Ad-Dakhil.
 
-| Juz | Clips |
-| --- | ---: |
-| 20 | 56 |
-| 21 | 107 |
-| 22 | 78 |
-| 23 | 65 |
-| 24 | 61 |
-| 25 | 93 |
-| 26 | 87 |
-| 27 | 88 |
-| 28 | 77 |
-| 29 | 79 |
-| 30 | 86 |
+| Juz | Recordings | Original audio |
+|---|---:|---:|
+| 1 | 70 | 35 |
+| 2 | 64 | 45 |
+| 3 | 143 | 92 |
+| 4 | 150 | 96 |
+| 5 | 73 | 54 |
+| 6 | 63 | 29 |
+| 7 | 107 | 57 |
+| 8 | 77 | 55 |
+| 9 | 89 | 56 |
+| 10 | 61 | 36 |
+| 11 | 134 | 84 |
+| 12 | 90 | 44 |
+| 13 | 164 | 125 |
+| 14 | 165 | 96 |
+| 15 | 120 | 75 |
+| 16 | 112 | 68 |
+| 17 | 156 | 96 |
+| 18 | 95 | 58 |
+| 19 | 88 | 52 |
+| 20 | 61 | 0 |
+| 21 | 148 | 0 |
+| 22 | 110 | 0 |
+| 23 | 74 | 0 |
+| 24 | 68 | 0 |
+| 25 | 145 | 0 |
+| 26 | 110 | 0 |
+| 27 | 132 | 0 |
+| 28 | 124 | 0 |
+| 29 | 195 | 0 |
+| 30 | 335 | 0 |
 
-877 active curated Juz selections. The original supplied playlist remains a separate, unchanged Randomize pool of 157 distinct available videos from 161 entries (3 deleted, 1 duplicate): https://www.youtube.com/playlist?list=PLL6--64EqjIS0igVCak_YmaZntIc6G18H . It may contain other reciters; no new videos were silently inserted into the supplied playlist.
+## Sources and admission
 
-## Evidence and classification
+Arabic research covers chapter names, prayer types, quoted passages and recording years. Primary archive: https://yaldosry.com/ . Individual prayer/taraweeh pages supply original media URLs; some also verify the matching YouTube iframe. Each `prayer-sources.json` item preserves publisher title, source URL, query, admission evidence, recording-date evidence and active/held status. Candidate snapshots and bounded methodology notes are in `research/expansion/`; raw search/HTML caches are excluded from publication.
 
-`prayer-sources.json` preserves every selected video ID, observed publisher title/channel/duration, Arabic search query and admission evidence. Original titles remain unchanged there. Display-name normalization preserves original wording in `sourceTitle` in the catalog. Each public source URL is https://www.youtube.com/watch?v= followed by its ID.
+Original publisher audio is streamed directly from the archive's linked HTTPS MP3 hosts. Media is neither downloaded nor rehosted. `duration:null` means unknown until the native audio player reports metadata. Audio uses the same transport controls as video. Archive thumbnail video IDs are not accepted as proof of a unique prayer; where a detail-page iframe verifies an alternate delivery, original audio is preferred. Exact repeated media URLs are excluded. Researchers removed obvious identical-title, dated-performance and recognised repost duplicates. Counts are distinct sourced clips, not a guarantee of unique performances; unrecognised excerpts of the same prayer may remain.
 
-Chapter containment follows canonical verse mappings from https://api.quran.com/api/v4/juzs . Whole chapters lying inside a Juz can be classified from an explicit chapter label. Cross-boundary chapters such as An-Naml, Al-Ankabut and Fussilat require an explicit in-Juz verse range. Some generic prayer titles were corroborated using Arabic captions containing the actual passage.
+Studio mushaf recordings, whole-Juz compilations, imitators and uncertain chapter assignments are excluded. Metadata admission does not imply every complete recording was listened to verse by verse. Third-party sources can later disappear or restrict playback.
 
-Some recordings are continuous prayers with a principal passage in the indexed Juz and a brief companion passage in another Juz. They are indexed by the principal passage, preserving the complete prayer. Their companion chapters and exact ranges are recorded in `companionRanges` without treating the entire prayer as exclusive to its indexed Juz. These are single prayers, not compilations. As with other salah recordings, Al-Fatihah may be present.
+## Juz evidence
 
-Primary prayer archive corroboration includes https://yaldosry.com/prayers/4062 (Qasas1–28,Isha4-11-1434), https://yaldosry.com/prayers/4061 (Qasas29–50,Isha5-11-1434), https://yaldosry.com/prayers/4060 (Qasas71–88,Isha7-11-1434), https://yaldosry.com/prayers/4057 (Ankabut1–25,Isha10-11-1434), and https://yaldosry.com/prayers/4648 (Qasas14–28,Fajr14-1-1445).
+Canonical boundaries: https://api.quran.com/api/v4/juzs , retained as `juz-map.json`. A chapter wholly inside one Juz may be classified from its explicit publisher label. Split chapters require an explicitly documented range or a verified Quran verse anchor from the publisher's quoted passage/opening/ending label. Quote matching uses https://api.alquran.cloud/v1/quran/quran-simple . Anchor evidence is stored separately from complete verse ranges; an unknown passage endpoint is never invented.
 
-Admission is based on public source metadata, archive evidence and captions where available. It is not a claim that every full recording was listened to and audited verse by verse. Availability and embed permissions may change after this snapshot.
+Collections associate a complete recording with a documented passage in that Juz. A single continuous prayer may also contain companion verses or continue beyond that Juz; association does not claim exclusivity. Al-Fatihah does not inflate Juz1. Every source ID has one principal Juz assignment.
 
-## Player and validation
+## Date policy and personal playlist
 
-Videos stream in the visible native YouTube player; no media is downloaded or rehosted. Implementation follows https://developers.google.com/youtube/iframe_api_reference . Native controls and attribution stay visible. Autoplay depends on the browser; unavailable or embedding-disabled videos receive bounded retries and a direct YouTube fallback.
+Every Juz permits at most30% combined confirmed AH1446+ and undated/ambiguous recordings. All combinations therefore obey the same composition cap. A random handful can still contain more recent clips. Explicit publisher recording dates take precedence; upload dates and query terms are not recording-date evidence. The recent-year floor includes AH1448 and future years.
 
-Run `node yasser/test.mjs` from the repository root. Checks enforce >=50 unique IDs per Juz, prayer provenance, primary range containment, documented companion passages, absence of compilation labels, complete source references, preserved playlist count and shuffle/history/repeat behavior. Browser checks cover responsive layout and representative playback; they do not certify every embedding policy.
+Teo’s Playlist remains the original separate pool of157 distinct available videos, unchanged, including its other reciters: https://www.youtube.com/playlist?list=PLL6--64EqjIS0igVCak_YmaZntIc6G18H . This curation quota does not filter that playlist.
 
-Representative YouTube playback succeeded from all eleven Juz collections and Randomize. Phone layout at 375×812 had no horizontal overflow; removed notes/footer were absent.
+## Save/resume and validation
 
+Local storage remembers draft ajza, active selection, current recording, playback position, shuffle history/bag, repeat state and chooser/player view. Refresh restores the recording paused at the saved position; Play resumes it. Progress saves every4seconds plus seek, pause, page hide and visibility changes. This is per browser/device, with no account or cloud sync. Denied/corrupt storage is handled without breaking playback.
 
-## Older recordings and multi-select update
+Run `node yasser/test.mjs`, `node yasser/embed.test.mjs`, and `node --test yasser/session.test.mjs yasser/audio-player.test.mjs yasser/app.test.mjs`. Checks cover all30 minimum counts, source evidence, canonical range/anchor placement, unique principal IDs, all465 single/pair combinations plus2000 seeded selection subsets, quota invariants, preserved playlist, queue behaviour, provider switching and paused timestamp restoration. Disjoint IDs and per-Juz quotas mathematically imply the cap for every union.
 
-Added 99 further Salah recordings dated 1426–1436 AH, interpreted from the user's 1426–1336 typo. Date evidence is preserved per source; recording dates are never inferred from the Arabic search query or upload date. There are now 179 dated recordings from this preferred era across the active collections.
+All1,253 active original audio URLs returned HTTP200 with audio/mpeg on24October2026, using HEAD requests (no media downloads). This verifies source reachability, not complete decode/playback on every device.
 
-The Juz cards now toggle independently. Play selected starts a deduplicated union of the chosen ajza; Select all and Clear operate on that draft selection. Editing it does not interrupt the current prayer until Play selected is pressed. Personal-playlist Randomize remains separate and unchanged.
+Controller tests use DOM/provider fakes; they are not browser or physical iPad playback tests. This expansion has no fresh browser-session visual or end-to-end playback certification. YouTube's Safari bot/sign-in challenge remains provider-controlled; original audio does not require a YouTube session. Browser privacy settings are not modified.
 
-Every active Juz is capped at 30% for confirmed 1446–1447 AH recordings **plus undated or ambiguous-year recordings conservatively sharing that same quota**. Therefore every combination of ajza also obeys the cap. This is a collection-composition limit, not a guarantee about the first few random draws. One undated recording is retained in the source audit with `active:false` rather than counted as an older clip. The original user playlist is outside this curation policy.
-
-`hijriYear` is displayed only when supported by source evidence. Explicit Gregorian 2025 dates are conservatively recognized as AH 1446–1447 without inventing a precise Hijri year; boundary dates and missing dates remain uncertain. Arabic and Persian numerals are normalized for the audit. All 2047 nonempty combinations are checked in `test.mjs` for membership, uniqueness and quota compliance.
-
-To merge new dated research and reapply the quota: `node yasser/scripts/merge-curation.mjs <research-json> ...`. The importer preserves source provenance and original playlist membership. Canonical chapter lengths for companion passages come from the complete Quran.com Juz mappings in `chapter-lengths.json`.
+Rebuild from the baseline plus candidate arrays using `node yasser/scripts/merge-curation.mjs <candidate-json> ...`. The importer validates provenance and passage proof, removes verified alternate deliveries, applies the quota and refuses to publish if any Juz has fewer than50 recordings.

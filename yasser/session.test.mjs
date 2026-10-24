@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {Queue} from './queue.mjs';
+import {readSession,saveSession,queueFromSession,SESSION_KEY} from './session.mjs';
+const storage={value:null,getItem(){return this.value},setItem(key,value){assert.equal(key,SESSION_KEY);this.value=value}};
+const catalog={juz:[{number:1,ids:['a','b','c']},{number:30,ids:['d']}],playlist:{ids:['p','q']},videos:Object.fromEntries(['a','b','c','d','p','q'].map(id=>[id,{duration:200}]))};
+const queue=new Queue(['a','b','c'],()=>.4);queue.next();queue.next();queue.previous();queue.repeat='one';
+assert(saveSession(storage,{draft:new Set([1,30]),view:'player',mode:'juz',ajza:[1],queue,position:84.75}));
+let saved=readSession(storage,catalog);assert.deepEqual(saved.draft,[1,30]);assert.equal(saved.playback.position,84.75);assert.equal(saved.playback.currentId,queue.current);assert.equal(saved.playback.repeat,'one');
+const restored=queueFromSession(['a','b','c'],saved.playback,()=>.4);assert.equal(restored.current,queue.current);assert.equal(restored.next(),queue.next());assert.equal(restored.previous(),queue.previous());
+const raw=JSON.parse(storage.value);raw.playback.position=Infinity;raw.draft=[-1,1,1,'2',30,31];raw.playback.bag.push('removed');storage.value=JSON.stringify(raw);saved=readSession(storage,catalog);assert.deepEqual(saved.draft,[1,30]);assert.equal(saved.playback.position,0);assert(!saved.playback.bag.includes('removed'));
+raw.playback.position=999;storage.value=JSON.stringify(raw);assert.equal(readSession(storage,catalog).playback.position,199.75);
+raw.playback.currentId='removed';storage.value=JSON.stringify(raw);assert.equal(readSession(storage,catalog).playback,null);
+storage.value='{broken';assert.equal(readSession(storage,catalog),null);
+const denied={getItem(){throw Error('denied')},setItem(){throw Error('quota')}};assert.equal(readSession(denied,catalog),null);assert.equal(saveSession(denied,{draft:new Set(),view:'chooser'}),false);
+const personal=new Queue(['p','q']);personal.next();saveSession(storage,{draft:new Set([1]),view:'player',mode:'playlist',ajza:[],queue:personal,position:44});assert.equal(readSession(storage,catalog).playback.mode,'playlist');
+console.log('PASS: draft and active selection kept separate, timestamp/loop/history round-trip, future queue preserved, stale catalogue filtering, corrupt/denied storage, position limits and personal-playlist resume');

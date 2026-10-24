@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {audioPlayer} from './audio-player.mjs';
+const listeners=new Map(),states=[];let errors=0;
+const audio={src:'',readyState:0,currentTime:0,duration:180,loads:0,plays:0,pauses:0,addEventListener(k,v){listeners.set(k,v)},removeEventListener(k){listeners.delete(k)},removeAttribute(){this.src=''},load(){this.loads++},play(){this.plays++;return Promise.resolve()},pause(){this.pauses++}};
+const player=audioPlayer(audio,()=>({mediaUrl:'https://publisher.example/recitation.mp3'}),state=>states.push(state),()=>errors++);
+player.cueVideoById('audio-prayers-1',73);assert.equal(audio.plays,0);assert.equal(player.getCurrentTime(),73);
+audio.readyState=1;listeners.get('loadedmetadata')();assert.equal(audio.currentTime,73);assert.equal(audio.plays,0);
+player.playVideo();assert.equal(audio.plays,1);listeners.get('playing')();assert.deepEqual(states,[1]);
+player.seekTo(91);assert.equal(audio.currentTime,91);assert.equal(player.getDuration(),180);listeners.get('ended')();assert.equal(states.at(-1),0);
+player.loadVideoById('audio-prayers-2');assert.equal(audio.plays,2);listeners.get('error')();assert.equal(errors,1);
+player.destroy();assert.equal(listeners.size,0);assert.equal(audio.src,'');assert.equal(audio.pauses,1);
+console.log('PASS: original-audio adapter, paused timestamp restoration, custom transport, completion/errors and provider-switch cleanup');

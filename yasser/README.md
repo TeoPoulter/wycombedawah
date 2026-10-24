@@ -1,3 +1,18 @@
+# Yasser Archives
+
+Live: https://wycombedawah.com/yasser/
+
+## Full Mushaf update — 24 October 2026
+
+- Juz1–30 with 3,523 sourced recordings; every Juz has at least50.
+- 1,253 original audio streams alongside YouTube, using the existing controls.
+- Multi-select and random playback retained; no new filters. Teo’s Playlist remains157 videos.
+- Selected ajza and listening position persist locally. Refresh restores paused; press Play to continue. Storage is per browser/device and may be unavailable in private/restricted modes.
+- Thirty-card chooser adapts to compact screens. No navigation or other Wycombe Dawah pages changed.
+- AH1446+ and undated sources together remain at most30% in every Juz and selection union.
+
+See `RESEARCH.md` for counts, source methodology, classification limits and test commands. New controller/audio/session tests pass; no fresh physical-iPad or browser layout QA is claimed. YouTube may still show its provider-controlled Safari verification challenge. Original audio sources do not depend on YouTube authentication.
+
 
 ### Full-screen portal (18 October 2026)
 

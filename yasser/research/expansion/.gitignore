@@ -1,0 +1,5 @@
+# Raw metadata/HTML research caches stay local; the consolidated source audit is published.
+*
+!.gitignore
+!juz-*.json
+!*-notes.md
