@@ -94,7 +94,7 @@ function syncPlayback(){
  if(!musicLibrary)return;const button=app.querySelector('[data-music-play]');if(!button)return;
  button.setAttribute('aria-label',musicAudio.paused?'Play':'Pause');button.innerHTML=icon(musicAudio.paused?'play':'pause');
  app.classList.toggle('is-playing',!musicAudio.paused);
- app.querySelector('.now-playing-copy small').textContent=`${musicAudio.paused?'Ready to play':'Now playing'} · ${currentPlaylist().title}`;
+ app.querySelector('.now-playing-copy small').textContent=`${musicAudio.paused?'':'Now playing · '}${currentPlaylist().title}`;
  app.querySelectorAll('.track-number').forEach((el,i)=>{el.innerHTML=i===musicState.trackIndex&&!musicAudio.paused?'<span class="equalizer" aria-hidden="true"><i></i><i></i><i></i></span>':String(i+1).padStart(2,'0')});
  if('mediaSession' in navigator)navigator.mediaSession.playbackState=musicAudio.paused?'paused':'playing';
 }
@@ -112,7 +112,7 @@ return `<div class="music-scrim ${openClass}" aria-hidden="${hidden}" data-music
         </div>
         <div class="now-playing">
           <img src="${esc(playlist?.cover || '')}" alt="${esc(playlist?.title || '')} cover">
-          <div class="now-playing-copy"><small>${musicAudio.paused ? 'Ready to play' : 'Now playing'} · ${esc(playlist?.title || '')}</small><strong>${esc(trackText(track).title)}</strong>${trackText(track).artist?`<div class="track-artist">${esc(trackText(track).artist)}</div>`:''}<span>${esc(playlist?.description || '')}</span></div>
+          <div class="now-playing-copy"><small>${musicAudio.paused ? '' : 'Now playing · '}${esc(playlist?.title || '')}</small><strong>${esc(trackText(track).title)}</strong>${trackText(track).artist?`<div class="track-artist">${esc(trackText(track).artist)}</div>`:''}<span>${esc(playlist?.description || '')}</span></div>
           <div class="transport-controls">
             <button type="button" data-music-shuffle class="${musicState.shuffle ? 'active' : ''}" aria-label="Shuffle">${icon('shuffle')}</button>
             <button type="button" data-music-prev aria-label="Previous track">${icon('previous')}</button>
