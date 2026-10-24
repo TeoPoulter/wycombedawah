@@ -1,8 +1,8 @@
-import {embedUrl,watchUrl,playbackError} from './embed.mjs?v=20261024-full-mushaf-v8';
+import {embedUrl,watchUrl,playbackError} from './embed.mjs?v=20261024-full-mushaf-v9';
 import {Queue} from './queue.mjs';
-import {selectedPool,selectionLabel} from './selection.mjs?v=20261024-full-mushaf-v8';
-import {readSession,saveSession,queueFromSession} from './session.mjs?v=20261024-full-mushaf-v8';
-import {audioPlayer} from './audio-player.mjs?v=20261024-full-mushaf-v8';
+import {selectedPool,selectionLabel} from './selection.mjs?v=20261024-full-mushaf-v9';
+import {readSession,saveSession,queueFromSession} from './session.mjs?v=20261024-full-mushaf-v9';
+import {audioPlayer} from './audio-player.mjs?v=20261024-full-mushaf-v9';
 const $=id=>document.getElementById(id),chosenAjza=new Set();
 let data,queue,player,provider,selected,ready=false,playing=false,apiPromise,failures=0,generation=0,loadTimer;
 let clock=0,clockAt=performance.now(),length=0,lastSample=0,dragging=false,waitingToResume=false;
@@ -180,7 +180,7 @@ requestAnimationFrame(animateSeek);
 setInterval(()=>{if(view==='player'){sample();persist()}},4000);
 document.addEventListener('visibilitychange',()=>{sample();persist()});window.addEventListener('pagehide',()=>{sample();persist()});
 controls();
-fetch('catalog.json?v=20261024-full-mushaf-v8').then(response=>{
+fetch('catalog.json?v=20261024-full-mushaf-v9').then(response=>{
  if(!response.ok)throw Error('Could not load the archive. Please refresh to try again.');return response.json();
 }).then(catalog=>{
  data=catalog;const session=readSession(storage(),data);

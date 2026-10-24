@@ -1,3 +1,5 @@
+> Update, 24 October 2026: removed 168 newly added AH1445/1446 recordings at the user's request. Current total: 3,355, with at least60 per Juz. The original expansion statistics below describe the pre-removal snapshot. Exclusions persist through future imports; the personal playlist is unchanged. Removal uses explicit recording years, not measured recitation tempo.
+
 # Yasser Archives
 
 Live: https://wycombedawah.com/yasser/

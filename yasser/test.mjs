@@ -30,7 +30,7 @@ for(const juz of catalog.juz){
 }
 const audit=read('./prayer-sources.json');
 assert.equal(audit.videos.filter(entry=>entry.active!==false).length,assigned.size);
-for(const entry of audit.videos){assert.equal(assigned.has(entry.id),entry.active!==false);assert(entry.query&&entry.evidence);if(entry.provider==='audio')assert(/^https:\/\/(?:www\.)?yaldosry\.com\//.test(entry.sourceUrl));else assert.equal(entry.sourceUrl,`https://www.youtube.com/watch?v=${entry.id}`)}
+for(const entry of audit.videos){assert.equal(assigned.has(entry.id),entry.active!==false);if(entry.excludedByUser)assert(!assigned.has(entry.id));assert(entry.query&&entry.evidence);if(entry.provider==='audio')assert(/^https:\/\/(?:www\.)?yaldosry\.com\//.test(entry.sourceUrl));else assert.equal(entry.sourceUrl,`https://www.youtube.com/watch?v=${entry.id}`)}
 assert.equal(catalog.playlist.ids.length,157);assert.equal(new Set(catalog.playlist.ids).size,157);for(const id of catalog.playlist.ids)assert(catalog.videos[id]);
 for(let trial=0;trial<100;trial++){const queue=new Queue(['a','b','c','d']);const first=Array.from({length:4},()=>queue.next());assert.equal(new Set(first).size,4);const fifth=queue.next();assert.notEqual(fifth,first.at(-1));assert.equal(queue.previous(),first.at(-1));assert.equal(queue.next(),fifth)}
 const queue=new Queue(['a','b','c'],()=>.3);queue.repeat='off';const first=queue.next(),second=queue.next();queue.next();assert.equal(queue.next(false),null);assert(queue.next());queue.reject(first);queue.reject(second);for(let i=0;i<10;i++)assert(![first,second].includes(queue.next()));queue.reject(queue.current);assert.equal(queue.next(),null);

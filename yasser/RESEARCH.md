@@ -1,3 +1,5 @@
+> Update, 24 October 2026: removed 168 newly added AH1445/1446 recordings at the user's request. Current total: 3,355, with at least60 per Juz. The original expansion statistics below describe the pre-removal snapshot. Exclusions persist through future imports; the personal playlist is unchanged. Removal uses explicit recording years, not measured recitation tempo.
+
 # Yasser Archives — full Mushaf expansion, 24 October 2026
 
 3,523 active sourced recordings across Juz1–30, with at least50 in every Juz. 1,253 are original publisher audio streams and 2,270 are YouTube videos. 1,041 have explicit recording-date evidence within AH1426–1436. At least158 active titles or venue fields explicitly identify Masjid Ad-Dakhil; an old year alone is never treated as proof of venue. These are recordings by Yasser Al-Dosari, not another reciter named Ad-Dakhil.

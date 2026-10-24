@@ -31,6 +31,7 @@ const corrections={
 const sourceKey=entry=>{const match=(entry.evidenceUrl||entry.sourceUrl||'').match(/yaldosry\.com\/(prayers|taraweeh)\/(\d+)/);return match?`${match[1]}/${match[2]}`:null};
 const officialAudio=new Map([...known.values()].filter(entry=>entry.provider==='audio').map(entry=>[sourceKey(entry),entry.id]));
 const excluded=new Map();
+for(const entry of known.values())if(entry.excludedByUser)excluded.set(entry.id,entry.holdbackReason);
 for(const entry of known.values())if(entry.provider==='audio'){
  for(const id of entry.alternateDeliveryIds||[])if(known.has(id))excluded.set(id,`Verified YouTube delivery of original audio ${entry.id}; ${entry.alternateDeliveryEvidence}`);
 }

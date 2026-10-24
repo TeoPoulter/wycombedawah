@@ -15304,7 +15304,9 @@
         "era": "other",
         "yearEvidence": "Official archive year category explicitly labels AH 1445: https://yaldosry.com/prayers/c/211"
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4680",
@@ -15336,7 +15338,9 @@
         "era": "other",
         "yearEvidence": "Official archive year category explicitly labels AH 1445: https://yaldosry.com/prayers/c/211"
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4744",
@@ -15364,7 +15368,9 @@
         "era": "other",
         "yearEvidence": "Official archive year category explicitly labels AH 1445: https://yaldosry.com/prayers/c/211"
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-3793",
@@ -22345,7 +22351,9 @@
         "era": "other",
         "yearEvidence": "Official archive year category explicitly labels AH 1445: https://yaldosry.com/prayers/c/211"
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4642",
@@ -22377,7 +22385,9 @@
         "era": "other",
         "yearEvidence": "Official archive year category explicitly labels AH 1445: https://yaldosry.com/prayers/c/211"
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4649",
@@ -22409,7 +22419,9 @@
         "era": "other",
         "yearEvidence": "Official archive year category explicitly labels AH 1445: https://yaldosry.com/prayers/c/211"
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4658",
@@ -22441,7 +22453,9 @@
         "era": "other",
         "yearEvidence": "Official archive year category explicitly labels AH 1445: https://yaldosry.com/prayers/c/211"
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4659",
@@ -22473,7 +22487,9 @@
         "era": "other",
         "yearEvidence": "Official archive year category explicitly labels AH 1445: https://yaldosry.com/prayers/c/211"
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4503",
@@ -26006,7 +26022,9 @@
         "era": "other",
         "yearEvidence": "Official archive year category explicitly labels AH 1445: https://yaldosry.com/taraweeh/c/266"
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-taraweeh-3076",
@@ -26039,7 +26057,9 @@
         "era": "other",
         "yearEvidence": "Official archive year category explicitly labels AH 1445: https://yaldosry.com/taraweeh/c/266"
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-taraweeh-3079",
@@ -26068,7 +26088,9 @@
         "era": "other",
         "yearEvidence": "Official archive year category explicitly labels AH 1445: https://yaldosry.com/taraweeh/c/266"
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-taraweeh-2886",
@@ -27709,7 +27731,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "T1Zjvabinp8",
@@ -28551,7 +28575,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "Qm5unSA1mZw",
@@ -28681,7 +28707,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "7P-J702F6m0",
@@ -28941,7 +28969,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "AEU2K4_1m6s",
@@ -31962,7 +31992,8 @@
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title."
       },
       "active": false,
-      "holdbackReason": "Verified YouTube delivery of original audio audio-prayers-4674; YouTube iframe ID verified in the same original official prayer detail page."
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification.",
+      "excludedByUser": true
     },
     {
       "id": "tzNDtJyeWYQ",
@@ -32072,7 +32103,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "KpRbnpWzK6E",
@@ -32226,7 +32259,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "DwedBxVo5gk",
@@ -32993,7 +33028,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "zP8BH6bvOsI",
@@ -34229,7 +34266,9 @@
         "era": "other",
         "yearEvidence": "Recording year explicitly stated in official item title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "title": "(قَالُوا إِنَّ اللَّهَ حَرَّمَهُمَا عَلَى الْكَافِرِينَ) روائع من تهجد الليلة الثامنة والعشرون - من سورة الأعراف",
@@ -34498,7 +34537,9 @@
         "era": "other",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "NyBiN2Nqk28",
@@ -34652,7 +34693,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "O1gO4EXdUdM",
@@ -35741,7 +35784,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "UrOOmJ4uK7Y",
@@ -36494,7 +36539,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "title": "تلاوة بديعة من سورة يونس - مغرب الأربعاء 4-2-1444هـ",
@@ -38023,7 +38070,9 @@
         "era": "other",
         "yearEvidence": "Recording year explicitly stated in official item title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "title": "ليلة تأسر الألباب لخواتيم سورة التوبة ومن سورة يونس - ليلة 14 رمضان 1443هـ",
@@ -39196,7 +39245,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "vunRU_PhkUw",
@@ -39236,7 +39287,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "sBKjkRhiEcU",
@@ -39256,7 +39309,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "KSz3599Js7c",
@@ -39424,7 +39479,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "uIhLT3ZOk7Y",
@@ -39444,7 +39501,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "wuc5_nhQsOM",
@@ -40489,7 +40548,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "JIvax5qnTRE",
@@ -40511,7 +40572,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "WQrTaPFsMkE",
@@ -40618,7 +40681,9 @@
         "era": "other",
         "yearEvidence": "Recording year explicitly stated in official item title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "title": "تلاوة من سورة إبراهيم | فجر الخميس 23-10-1445هـ",
@@ -40641,7 +40706,9 @@
         "era": "other",
         "yearEvidence": "Recording year explicitly stated in official item title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "title": "تلاوة من سورة الرعد | فجر الجمعة 24-10-1445هـ",
@@ -40664,7 +40731,9 @@
         "era": "other",
         "yearEvidence": "Recording year explicitly stated in official item title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "title": "تلاوة من سورة إبراهيم | عشاء الثلاثاء 27-11-1445هـ",
@@ -40687,7 +40756,9 @@
         "era": "other",
         "yearEvidence": "Recording year explicitly stated in official item title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "title": "تلاوة رائعة من سورة إبراهيم - عشاء الإثنين 17-1-1444هـ",
@@ -43056,7 +43127,9 @@
         "era": "other",
         "yearEvidence": "Recording year explicitly stated in official item title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "title": "ترتيل خاشع ومميز لخواتيم سورة الرعد ومن سورة إبراهيم - ليلة 17 رمضان1443هـ",
@@ -44107,7 +44180,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "-a1vtbM857Y",
@@ -44181,7 +44256,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "Ex07HigLdd0",
@@ -44279,7 +44356,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "rhDhgvFV9FY",
@@ -44353,7 +44432,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "_uLuwI8E1Wg",
@@ -47388,7 +47469,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "hzaXS3sY3Tc",
@@ -47428,7 +47511,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "iRLf_X4EwP0",
@@ -47580,7 +47665,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "v898MUFOcHw",
@@ -47786,7 +47873,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "olBv_Kcgw8g",
@@ -47806,7 +47895,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "cX6FVbdDKKM",
@@ -47862,7 +47953,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "4P2Gy43X4xg",
@@ -47882,7 +47975,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "JhKRjDf9Q9I",
@@ -47902,7 +47997,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "HlHWfZd40qI",
@@ -48018,7 +48115,9 @@
         "era": "recent",
         "yearEvidence": "Recording year explicitly stated in publisher title."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "title": "(قُل لَّن يُصِيبَنَا إِلَّا مَا كَتَبَ اللَّهُ لَنَا) ماتيسر من سورتي الأنعام و التوبة - مغرب الخميس 24-7-1441",
@@ -50271,7 +50370,9 @@
         "era": "other",
         "yearEvidence": "Explicit Hijri recording year in publisher title or directly relevant source description/official prayer archive item."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "Eao2Vd_Gj3s",
@@ -50873,7 +50974,9 @@
         "era": "recent",
         "yearEvidence": "Explicit Hijri recording year in publisher title or directly relevant source description/official prayer archive item."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "xGcdXjIZCFA",
@@ -50942,7 +51045,9 @@
         "era": "other",
         "yearEvidence": "Explicit Hijri recording year in publisher title or directly relevant source description/official prayer archive item."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "sVPe1NUib5A",
@@ -52567,7 +52672,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4699",
@@ -52598,7 +52705,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4701",
@@ -52629,7 +52738,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-3831",
@@ -54317,7 +54428,9 @@
         "era": "other",
         "yearEvidence": "Recording year AH1445 explicitly stated in publisher title; Arabic digits normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "sJVfSUgkFxc",
@@ -54537,7 +54650,9 @@
         "era": "other",
         "yearEvidence": "Recording year AH1445 explicitly stated in publisher title; Arabic digits normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "hX4PMyEqmO0",
@@ -55743,7 +55858,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4646",
@@ -55776,7 +55893,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4692",
@@ -55807,7 +55926,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4696",
@@ -55838,7 +55959,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4709",
@@ -55871,7 +55994,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-3996",
@@ -57638,7 +57763,9 @@
         "era": "other",
         "yearEvidence": "Recording year AH1445 explicitly stated in publisher title; Arabic digits normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "v4O3C9Miqe8",
@@ -59217,7 +59344,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4736",
@@ -59248,7 +59377,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4741",
@@ -59279,7 +59410,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4746",
@@ -59310,7 +59443,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-3847",
@@ -60598,7 +60733,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: رمضان 1445هـ التلاوات (28) / الليالي كاملة التلاوات (19). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-taraweeh-2791",
@@ -61511,7 +61648,9 @@
         "era": "other",
         "yearEvidence": "Recording year AH1445 explicitly stated in publisher title; Arabic digits normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "hiDO3dWT5cg",
@@ -61551,7 +61690,9 @@
         "era": "other",
         "yearEvidence": "Recording year AH1445 explicitly stated in publisher title; Arabic digits normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "fjViOvbW0UU",
@@ -61911,7 +62052,9 @@
         "era": "other",
         "yearEvidence": "Recording year AH1445 explicitly stated in publisher title; Arabic digits normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "C7m5raFcG50",
@@ -62887,7 +63030,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4697",
@@ -62918,7 +63063,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-3825",
@@ -65294,7 +65441,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4705",
@@ -65325,7 +65474,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-4731",
@@ -65359,7 +65510,9 @@
         "era": "other",
         "yearEvidence": "Recording category explicitly labelled: عام 1445 التلاوات (113). No upload-date inference."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "audio-prayers-3834",
@@ -66753,7 +66906,9 @@
         "era": "other",
         "yearEvidence": "Recording year AH1445 explicitly stated in publisher title; Arabic digits normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "U5Se2pi5_RQ",
@@ -76189,7 +76344,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "KvPEZKWmBDw",
@@ -76209,7 +76366,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "NvNlzITsK9I",
@@ -76229,7 +76388,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "KJafo-D7zwY",
@@ -76250,7 +76411,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "P2ZntZkVsh0",
@@ -76270,7 +76433,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "Q5Ye4BYoIZM",
@@ -76290,7 +76455,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "L0is3e3151I",
@@ -76311,7 +76478,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "fIzmsrXrBF0",
@@ -76331,7 +76500,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "jXmryoS7us0",
@@ -76351,7 +76522,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "kv7N845tgH4",
@@ -76371,7 +76544,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "5GlqQkEZsmk",
@@ -76391,7 +76566,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "8-VNXLO1dM0",
@@ -76411,7 +76588,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "CATe7hMSPoY",
@@ -76431,7 +76610,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "G0eP-bAOFm8",
@@ -76452,7 +76633,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "HlonPFSTbHg",
@@ -76472,7 +76655,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "OWbiBY-Sgg0",
@@ -76492,7 +76677,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "PDK-e_ZD53c",
@@ -76512,7 +76699,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "UNSvd2L4mXA",
@@ -76532,7 +76721,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "V--5ryB5uv0",
@@ -76552,7 +76743,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "VGY-JE2Ai_c",
@@ -76572,7 +76765,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "ZUmP5loQNOQ",
@@ -76592,7 +76787,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "cpHoUXPv9E0",
@@ -76612,7 +76809,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "qhAJCDr-hIc",
@@ -76632,7 +76831,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "sEBM1Ts_9iw",
@@ -76652,7 +76853,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "sWYdBT0k4zE",
@@ -76672,7 +76875,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "sxiEfLv7jeY",
@@ -76692,7 +76897,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "yb_3XQOVsH4",
@@ -76713,7 +76920,9 @@
         "era": "other",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "40N3GFTFpoo",
@@ -76733,7 +76942,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "hIUaYGckTH8",
@@ -76753,7 +76964,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "yxIio9of1tU",
@@ -76773,7 +76986,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "Hl-tMppptIQ",
@@ -76793,7 +77008,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "T6aEcLWGKjs",
@@ -76813,7 +77030,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "-87sQRwGxeI",
@@ -76833,7 +77052,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "BEwQj9XoMOM",
@@ -76853,7 +77074,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "FAjaVOHR3Os",
@@ -76873,7 +77096,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "ImYGU6e1GNw",
@@ -76893,7 +77118,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "Zj7h-LCdjP0",
@@ -76913,7 +77140,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "lHa_4tg7wjY",
@@ -76933,7 +77162,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "rsl7QkElMok",
@@ -76953,7 +77184,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "sfjKKxOuSiU",
@@ -76973,7 +77206,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "F_W4OajyE4Q",
@@ -76993,7 +77228,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "RzGqukP0wCw",
@@ -77013,7 +77250,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "fy1prLbniPI",
@@ -77033,7 +77272,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "3wgfAtOfaIQ",
@@ -77053,7 +77294,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "9zuV-NlP43Y",
@@ -77073,7 +77316,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher description; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "GnbdBAv_QMQ",
@@ -77093,7 +77338,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "LqEnIvdZuXk",
@@ -77113,7 +77360,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "PPnJ7GW4Pyc",
@@ -77133,7 +77382,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher description; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "QKP9Sv0pHFQ",
@@ -77153,7 +77404,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "T5bya5qE9I0",
@@ -77173,7 +77426,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "V4bEe30mMFQ",
@@ -77193,7 +77448,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "cNyfk1_9coE",
@@ -77213,7 +77470,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "jfCIdZvuyAg",
@@ -77233,7 +77492,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "wo0pwh1XpnE",
@@ -77253,7 +77514,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher description; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "zqDXfTiEWmk",
@@ -77273,7 +77536,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "-gFT4JNV1K4",
@@ -77293,7 +77558,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "5uINftN9Dzg",
@@ -77313,7 +77580,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "74mhDJXVR6M",
@@ -77333,7 +77602,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "8cvmu00-zl8",
@@ -77353,7 +77624,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "AOqv3-5pDMI",
@@ -77373,7 +77646,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "AZK9KznMGMg",
@@ -77393,7 +77668,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "BRIAI_LsaGY",
@@ -77413,7 +77690,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "DmIFW4Ko4ZA",
@@ -77433,7 +77712,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "KibWvD-H-5w",
@@ -77453,7 +77734,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "LalYNVuo7sE",
@@ -77473,7 +77756,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "Nw3EkIwcNkc",
@@ -77493,7 +77778,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "PWkACm57hiQ",
@@ -77513,7 +77800,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "Qgg5U4f_lOE",
@@ -77533,7 +77822,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "SOOrQ07GBL4",
@@ -77553,7 +77844,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "SpwYw4ot2EA",
@@ -77573,7 +77866,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "SrYMD1KDcxM",
@@ -77593,7 +77888,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher description; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "Tq7O-VQQ4jc",
@@ -77613,7 +77910,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "V6KuwzSasDo",
@@ -77633,7 +77932,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "VeN-BiTVmI8",
@@ -77653,7 +77954,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "X2zz7JIjcoA",
@@ -77673,7 +77976,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "X93Ine1OYDg",
@@ -77693,7 +77998,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "YrMHXxN_1SA",
@@ -77713,7 +78020,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "ZH_7Dj83zC4",
@@ -77733,7 +78042,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "ZIHOF5diNLw",
@@ -77753,7 +78064,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "_6rCwZoXLoM",
@@ -77773,7 +78086,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "_JDmzIFo94U",
@@ -77793,7 +78108,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "cKA4ilTd0RY",
@@ -77813,7 +78130,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "hcgOmi4AxKc",
@@ -77833,7 +78152,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "jaS_lYGTOqw",
@@ -77853,7 +78174,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "lCD-xc1_X-w",
@@ -77873,7 +78196,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "srMTlQw12YA",
@@ -77893,7 +78218,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "tTREARvcXQk",
@@ -77913,7 +78240,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "vz5Dk3XaixA",
@@ -77933,7 +78262,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "w24RwM6roAw",
@@ -77953,7 +78284,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "x0qoVRfgiLo",
@@ -77973,7 +78306,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "zc9X4AgRyoE",
@@ -77993,7 +78328,9 @@
         "era": "recent",
         "yearEvidence": "Recording Hijri year explicitly stated in publisher title; Arabic/Persian numerals normalised."
       },
-      "active": true
+      "active": false,
+      "excludedByUser": true,
+      "holdbackReason": "User requested removal of newly added AH1445/1446 recordings; dated-year exclusion, not a measured tempo classification."
     },
     {
       "id": "-bJdLw_Rg54",
