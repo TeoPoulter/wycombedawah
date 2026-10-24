@@ -37,7 +37,9 @@ html,body{background:#0b1113;color:#f5f6f6;font-family:-apple-system,BlinkMacSys
 
 /* Preserve complete artwork, including edge lettering. */
 .playlist-card img,.now-playing>img{object-fit:contain;background:#092127}
-.now-playing>img{aspect-ratio:4/3}
+.now-playing>img{aspect-ratio:3/2}
+
+.track-artist{font:400 15px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#9cabad;letter-spacing:0}.track-row>span:nth-child(2){display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 16px}.row-artist{grid-column:1;font:400 12px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#809396;font-style:normal}.track-row small{grid-column:2;grid-row:1/3;align-self:center}.now-playing-copy strong{-webkit-line-clamp:unset}@media(max-width:700px){.track-artist{font-size:14px}.row-artist{font-size:11px}}
 </style><script type="module">const icons = {
   arrow: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
   check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>',
@@ -97,6 +99,7 @@ function syncPlayback(){
  if('mediaSession' in navigator)navigator.mediaSession.playbackState=musicAudio.paused?'paused':'playing';
 }
 
+function trackText(track){const parts=track.title.split(/ · | - /);return {title:parts[0],artist:parts.slice(1).join(' · ')}}
 function panel(playlist,track,duration,openClass,hidden){
 return `<div class="music-scrim ${openClass}" aria-hidden="${hidden}" data-music-close>
       <section class="music-panel" aria-label="Nasheed player">
@@ -109,7 +112,7 @@ return `<div class="music-scrim ${openClass}" aria-hidden="${hidden}" data-music
         </div>
         <div class="now-playing">
           <img src="${esc(playlist?.cover || '')}" alt="${esc(playlist?.title || '')} cover">
-          <div class="now-playing-copy"><small>${musicAudio.paused ? 'Ready to play' : 'Now playing'} · ${esc(playlist?.title || '')}</small><strong>${esc(track?.title || 'Choose a track')}</strong><span>${esc(playlist?.description || '')}</span></div>
+          <div class="now-playing-copy"><small>${musicAudio.paused ? 'Ready to play' : 'Now playing'} · ${esc(playlist?.title || '')}</small><strong>${esc(trackText(track).title)}</strong>${trackText(track).artist?`<div class="track-artist">${esc(trackText(track).artist)}</div>`:''}<span>${esc(playlist?.description || '')}</span></div>
           <div class="transport-controls">
             <button type="button" data-music-shuffle class="${musicState.shuffle ? 'active' : ''}" aria-label="Shuffle">${icon('shuffle')}</button>
             <button type="button" data-music-prev aria-label="Previous track">${icon('previous')}</button>
@@ -123,7 +126,7 @@ return `<div class="music-scrim ${openClass}" aria-hidden="${hidden}" data-music
           <label>${icon('volume')}<input type="range" min="0" max="1" step="0.01" value="${musicState.volume}" data-music-volume aria-label="Volume"></label>
         </div>
         <div class="track-list" aria-label="${esc(playlist?.title || '')} tracks">
-          ${playlist?.tracks?.map((item, index) => `<button type="button" class="track-row ${index === musicState.trackIndex ? 'active' : ''}" aria-current="${index===musicState.trackIndex}" data-track="${index}"><span class="track-number">${index === musicState.trackIndex && !musicAudio.paused ? icon('music') : String(index + 1).padStart(2, '0')}</span><span><strong>${esc(item.title)}</strong><small>${formatTime(item.duration)}</small></span>${index === musicState.trackIndex ? '<i>Selected</i>' : ''}</button>`).join('') || ''}
+          ${playlist?.tracks?.map((item, index) => `<button type="button" class="track-row ${index === musicState.trackIndex ? 'active' : ''}" aria-current="${index===musicState.trackIndex}" data-track="${index}"><span class="track-number">${index === musicState.trackIndex && !musicAudio.paused ? icon('music') : String(index + 1).padStart(2, '0')}</span><span><strong>${esc(trackText(item).title)}</strong>${trackText(item).artist?`<em class="row-artist">${esc(trackText(item).artist)}</em>`:''}<small>${formatTime(item.duration)}</small></span>${index === musicState.trackIndex ? '<i>Selected</i>' : ''}</button>`).join('') || ''}
         </div>
       </section>
     </div>`;
