@@ -1,8 +1,8 @@
-import {embedUrl,watchUrl,playbackError} from './embed.mjs?v=20261024-full-mushaf-v9';
+import {embedUrl,watchUrl,playbackError} from './embed.mjs?v=20261024-motion-v10';
 import {Queue} from './queue.mjs';
-import {selectedPool,selectionLabel} from './selection.mjs?v=20261024-full-mushaf-v9';
-import {readSession,saveSession,queueFromSession} from './session.mjs?v=20261024-full-mushaf-v9';
-import {audioPlayer} from './audio-player.mjs?v=20261024-full-mushaf-v9';
+import {selectedPool,selectionLabel} from './selection.mjs?v=20261024-motion-v10';
+import {readSession,saveSession,queueFromSession} from './session.mjs?v=20261024-motion-v10';
+import {audioPlayer} from './audio-player.mjs?v=20261024-motion-v10';
 const $=id=>document.getElementById(id),chosenAjza=new Set();
 let data,queue,player,provider,selected,ready=false,playing=false,apiPromise,failures=0,generation=0,loadTimer;
 let clock=0,clockAt=performance.now(),length=0,lastSample=0,dragging=false,waitingToResume=false;
@@ -10,6 +10,20 @@ let view='chooser',mode='juz',playbackAjza=[],storageReady=false;
 const time=n=>`${Math.floor((n||0)/60)}:${String(Math.floor((n||0)%60)).padStart(2,'0')}`;
 const icon=name=>`<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-${name}"/></svg>`;
 const status=message=>$('status').textContent=message;
+// Motion never delays media commands or replaces the live provider element.
+const motionPreference=matchMedia('(prefers-reduced-motion: reduce)'),motions=new Map();
+function reveal(element,distance=10,delay=0){
+ if(!element?.animate||motionPreference.matches)return;
+ motions.get(element)?.cancel();
+ const animation=element.animate([{opacity:0,transform:`translateY(${distance}px)`},{opacity:1,transform:'translateY(0)'}],{duration:360,delay,easing:'cubic-bezier(.22,1,.36,1)',fill:'backwards'});
+ motions.set(element,animation);animation.onfinish=()=>{if(motions.get(element)===animation)motions.delete(element)};
+}
+function revealChooser(){
+ reveal($('chooser'),8);
+ document.querySelectorAll('.juz').forEach((card,index)=>reveal(card,8,Math.min(index*9,180)));
+}
+motionPreference.addEventListener?.('change',()=>{if(motionPreference.matches){for(const animation of motions.values())animation.cancel();motions.clear()}});
+
 const storage=()=>{try{return localStorage}catch{return null}};
 const providerFor=id=>data.videos[id].provider==='audio'?'audio':'youtube';
 function sourceLink(){return providerFor(selected)==='audio'?data.videos[selected].sourceUrl:watchUrl(selected,clock)}
@@ -22,6 +36,7 @@ function closeIntro(){
  document.querySelector('header').inert=false;document.querySelector('main').inert=false;
  if(document.activeElement===$('skip-intro'))$('home').focus({preventScroll:true});
  setTimeout(()=>splash.hidden=true,1000);
+ if(view==='chooser')revealChooser();
 }
 if(introOpen){splash.hidden=false;document.querySelector('header').inert=true;document.querySelector('main').inert=true;setTimeout(closeIntro,2800)}
 $('skip-intro').onclick=closeIntro;splash.addEventListener('click',closeIntro);
@@ -35,6 +50,7 @@ function heading(personal=false){
 function showChooser(){
  if(ready){sample();player.pauseVideo()}clearTimeout(loadTimer);view='chooser';
  $('chooser').hidden=false;$('listening').hidden=true;document.body.classList.remove('active');heading();persist();
+ revealChooser();reveal($('page-title'),-6);
  $('select-all').focus({preventScroll:true});
 }
 $('home').onclick=showChooser;$('change-selection').onclick=showChooser;
@@ -78,6 +94,7 @@ function track(id,start=0,paused=false){
  waitingToResume=paused;length=data.videos[id].duration||0;playing=false;
  const recording=data.videos[id];$('recording-year').textContent=recording.prayer?.hijriYear?`${recording.prayer.hijriYear} AH`:'';
  $('track-title').textContent=recording.title;$('channel').textContent=recording.channel;
+ reveal($('track-title'),6);reveal($('channel'),6,35);
  $('watch').href=sourceLink();$('open-recording').href=sourceLink();$('open-recording').textContent=providerFor(id)==='audio'?'Open original':'Open on YouTube';
  $('duration').textContent=length?time(length):'—:—';$('seek').max=length||Math.max(100,clock);paintSeek(clock);
  clearTimeout(loadTimer);if(!paused)armLoadTimer();
@@ -138,7 +155,7 @@ function choose(ids,label,personal=false,saved=null){
  $('repeat').setAttribute('aria-pressed',String(queue.repeat==='one'));$('selection-label').textContent=label;
  $('chooser').hidden=true;$('listening').hidden=false;document.body.classList.add('active');
  track(saved?saved.currentId:queue.next(),saved?saved.position:0,Boolean(saved));
- if(!saved)$('change-selection').focus({preventScroll:true});
+ if(!saved){reveal($('listening'),12);reveal($('page-title'),-6);$('change-selection').focus({preventScroll:true})}
 }
 $('retry-playback').onclick=()=>{if(selected){clearRecovery();waitingToResume=false;armLoadTimer();mountPlayer(clock,true).catch(error=>recover(error.message))}};
 $('recovery-next').onclick=()=>{failures=0;track(queue.next())};
@@ -180,7 +197,7 @@ requestAnimationFrame(animateSeek);
 setInterval(()=>{if(view==='player'){sample();persist()}},4000);
 document.addEventListener('visibilitychange',()=>{sample();persist()});window.addEventListener('pagehide',()=>{sample();persist()});
 controls();
-fetch('catalog.json?v=20261024-full-mushaf-v9').then(response=>{
+fetch('catalog.json?v=20261024-motion-v10').then(response=>{
  if(!response.ok)throw Error('Could not load the archive. Please refresh to try again.');return response.json();
 }).then(catalog=>{
  data=catalog;const session=readSession(storage(),data);
@@ -195,7 +212,7 @@ fetch('catalog.json?v=20261024-full-mushaf-v9').then(response=>{
  $('clear-selection').onclick=()=>{chosenAjza.clear();updateSelection();persist()};
  $('play-selection').onclick=()=>{const ids=selectedPool(data,chosenAjza);if(ids.length)choose(ids,selectionLabel(chosenAjza))};
  $('random').disabled=false;$('playlist-count').textContent='Teo’s Playlist';$('random').onclick=()=>choose(data.playlist.ids,'Teo’s Playlist',true);
- updateSelection();storageReady=true;
+ updateSelection();storageReady=true;if(!introOpen)revealChooser();
  if(session?.playback){
   const saved=session.playback,ids=saved.mode==='playlist'?data.playlist.ids:selectedPool(data,saved.ajza);
   if(session.view==='player')choose(ids,saved.mode==='playlist'?'Teo’s Playlist':selectionLabel(saved.ajza),saved.mode==='playlist',saved);

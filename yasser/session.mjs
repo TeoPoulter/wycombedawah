@@ -1,5 +1,5 @@
 import {Queue} from './queue.mjs';
-import {selectedPool} from './selection.mjs?v=20261024-full-mushaf-v9';
+import {selectedPool} from './selection.mjs?v=20261024-motion-v10';
 export const SESSION_KEY='yasser-archives:session:v1';
 const numbers=value=>[...new Set((Array.isArray(value)?value:[]).filter(n=>Number.isInteger(n)&&n>=1&&n<=30))].sort((a,b)=>a-b);
 export function readSession(storage,catalog){
