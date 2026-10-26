@@ -1,15 +1,19 @@
-import {readHistory,writeHistory,startVisit,updateVisit,recordingHeading,recordingDetail} from './listening-log.mjs?v=20261026-favourites-v12';
+import {createListeningSync,ADMIN_HISTORY} from './cloud-listening.mjs?v=20261026-cloud-v13';
+import {readHistory,writeHistory,startVisit,updateVisit,recordingHeading,recordingDetail} from './listening-log.mjs?v=20261026-cloud-v13';
 const API='https://yasser-archive-curation.teopoulter.chatgpt.site/api/curation',TOKEN='yasser:admin:v1',CACHE='yasser:excluded:v1';
 const $=id=>document.getElementById(id);
-export function createLibrary({storage,getCatalog,getCurrent,onExclusions,onResume}){
+export function createLibrary({storage,getCatalog,getCurrent,onExclusions,onResume,getSharedState,restoreSharedState,getActivity}){
  if(!$('library-dialog'))return null;
  let history=readHistory(storage()),visit=null,excluded=[],favourites=[],token=null,admin=false,busy=false,tab='history',lastUndo=null,opener=null,revision=0;
  const dialog=$('library-dialog'),list=$('library-list'),message=$('library-message');
  try{const saved=JSON.parse(storage()?.getItem(TOKEN));if(saved?.expires>Date.now())token=saved.token;const cached=JSON.parse(storage()?.getItem(CACHE));if(Array.isArray(cached))excluded=cached.filter(e=>typeof e?.id==='string')}catch{}
  const say=text=>message.textContent=text;
+ const sync=createListeningSync({storage,api,isAdmin:()=>admin,getHistory:()=>history,setHistory:value=>{history=value;saveHistory();render()},getState:getSharedState,restoreState:restoreSharedState,getActivity,onStatus:text=>{if($('library-sync-status'))$('library-sync-status').textContent=text}});
+ function saveHistory(){if(admin){try{storage()?.setItem(ADMIN_HISTORY,JSON.stringify(history))}catch{}}else writeHistory(storage(),history)}
+
  async function api(action,body={}){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),10000);
-  try{const response=await fetch(API,{method:action?'POST':'GET',mode:'cors',cache:'no-store',signal:controller.signal,headers:action?{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})}:{},...(action?{body:JSON.stringify({action,...body})}:{})});const result=await response.json();if(!response.ok){if(response.status===401&&action!=='login'){token=null;admin=false;try{storage()?.removeItem(TOKEN)}catch{}paintAdmin()}throw Error(result.error||'Could not save. Please retry.')}return result}finally{clearTimeout(timer)}
+  try{const response=await fetch(API,{method:action?'POST':'GET',mode:'cors',cache:'no-store',signal:controller.signal,keepalive:action==='sync-listening',headers:action?{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})}:{},...(action?{body:JSON.stringify({action,...body})}:{})});const result=await response.json();if(!response.ok){if(response.status===401&&action!=='login'){token=null;admin=false;sync.disconnect();history=readHistory(storage());visit=null;try{storage()?.removeItem(TOKEN)}catch{}paintAdmin()}throw Error(result.error||'Could not save. Please retry.')}return result}finally{clearTimeout(timer)}
  }
  function paintFavourite(){const saved=favourites.some(e=>e.id===getCurrent()?.id);$('favourite-recording').hidden=!admin;$('favourite-recording').setAttribute('aria-pressed',String(saved));$('favourite-recording').setAttribute('aria-label',saved?'Remove from favourites':'Favourite recording');$('favourite-recording').title=saved?'Remove from favourites':'Favourite recording'}
  function paintAdmin(){paintFavourite();$('favourites-tab').hidden=!admin;$('remove-recording').hidden=!admin;$('removed-tab').hidden=!admin;$('admin-signout').hidden=!admin;$('admin-signin').hidden=admin;$('admin-state').textContent=admin?'Admin':''}
@@ -33,7 +37,7 @@ export function createLibrary({storage,getCatalog,getCurrent,onExclusions,onResu
   }
   if(!list.children.length){const empty=document.createElement('p');empty.className='library-empty';empty.textContent=tab==='history'?'Your listening history will appear here.':tab==='favourites'?'Favourite a recording to keep it here.':'No recordings removed.';list.append(empty)}
  }
- function open(next='history'){opener=document.activeElement;tab=next;say('');if(!dialog.open)dialog.showModal();render();refresh();refreshFavourites();if(tab==='signin')$('admin-password').focus()}
+ function open(next='history'){opener=document.activeElement;tab=next;say('');if(!dialog.open)dialog.showModal();render();refresh();refreshFavourites();sync.refresh();if(tab==='signin')$('admin-password').focus()}
  function close(){dialog.close();opener?.focus?.({preventScroll:true})}
  async function mutate(id,remove){
   if(!admin||busy)return;busy=true;$('remove-recording').disabled=true;say('');
@@ -50,17 +54,19 @@ export function createLibrary({storage,getCatalog,getCurrent,onExclusions,onResu
  $('favourite-recording').onclick=()=>{const id=getCurrent()?.id;if(id)favourite(id)};
  $('favourites-tab').onclick=()=>{tab='favourites';say('');render();refreshFavourites()};
  $('library-open').onclick=()=>open();$('library-close').onclick=close;dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)close()}});dialog.addEventListener('close',()=>opener?.focus?.({preventScroll:true}));
- $('history-tab').onclick=()=>{tab='history';say('');render()};$('removed-tab').onclick=()=>{tab='removed';say('');render()};$('admin-signin').onclick=()=>{tab='signin';say('');render();$('admin-password').focus()};
- $('admin-form').onsubmit=async event=>{event.preventDefault();if(busy)return;busy=true;$('admin-submit').disabled=true;say('');try{const result=await api('login',{password:$('admin-password').value});$('admin-password').value='';token=result.token;admin=true;let remembered=true;try{storage().setItem(TOKEN,JSON.stringify(result))}catch{remembered=false}paintAdmin();await refreshFavourites();tab='history';render();say(remembered?'Signed in on this device.':'Signed in for this visit. This browser blocked saving your sign-in.')}catch(error){say(error.message)}finally{busy=false;$('admin-submit').disabled=false}};
- $('admin-signout').onclick=async()=>{try{await api('logout');token=null;admin=false;favourites=[];storage()?.removeItem(TOKEN);paintAdmin();tab='history';render();say('Signed out.')}catch(error){say(error.message)}};
+ $('history-tab').onclick=()=>{tab='history';say('');render();sync.refresh()};$('removed-tab').onclick=()=>{tab='removed';say('');render()};$('admin-signin').onclick=()=>{tab='signin';say('');render();$('admin-password').focus()};
+ $('admin-form').onsubmit=async event=>{event.preventDefault();if(busy)return;busy=true;$('admin-submit').disabled=true;say('');try{const result=await api('login',{password:$('admin-password').value});$('admin-password').value='';token=result.token;admin=true;let remembered=true;try{storage().setItem(TOKEN,JSON.stringify(result))}catch{remembered=false}paintAdmin();await sync.connect();await refreshFavourites();tab='history';render();say(remembered?'Signed in on this device.':'Signed in for this visit. This browser blocked saving your sign-in.')}catch(error){say(error.message)}finally{busy=false;$('admin-submit').disabled=false}};
+ $('admin-signout').onclick=async()=>{try{await sync.flush();await api('logout');token=null;admin=false;sync.disconnect();history=readHistory(storage());visit=null;favourites=[];storage()?.removeItem(TOKEN);paintAdmin();tab='history';render();say('Signed out.')}catch(error){say(error.message)}};
  $('remove-recording').onclick=()=>{const current=getCurrent();if(current?.id)mutate(current.id,true)};$('undo-removal').onclick=()=>{if(lastUndo)mutate(lastUndo,false)};$('toast-close').onclick=()=>$('library-toast').hidden=true;
  paintAdmin();
  return {
-  async init(){apply();await refresh();if(token)try{await api('session');admin=true;paintAdmin();await refreshFavourites()}catch{}setInterval(()=>{if(!document.hidden){refresh();refreshFavourites()}},45000)},
+  async init(){apply();await refresh();if(token)try{await api('session');admin=true;paintAdmin();await sync.connect();await refreshFavourites()}catch{}setInterval(()=>{if(!document.hidden){refresh();refreshFavourites()}},45000);setInterval(()=>{if(!document.hidden)sync.refresh()},15000)},
+  syncState(){sync.capture()},
+  flush(){return sync.flush()},
   trackChanged(){paintFavourite()},
   newTrack(){visit=null},
-  started(){const current=getCurrent();if(!current)return;if(!visit){history=startVisit(history,current);visit=history[0].key}this.progress(current.position);},
-  progress(position,ended){if(!visit)return;history=updateVisit(history,visit,position,ended);writeHistory(storage(),history)},
+  started(){const current=getCurrent();if(!current)return;if(!visit){history=startVisit(history,current);visit=history[0].key;history[0]=sync.record(history[0]);saveHistory()}this.progress(current.position);},
+  progress(position,ended){if(!visit)return;const old=history.find(e=>e.key===visit);if(!old||old.position===position&&(ended===undefined||old.ended===ended))return;history=updateVisit(history,visit,position,ended).map(e=>e.key===visit?sync.record(e):e);saveHistory()},
   refresh,
  };
 }

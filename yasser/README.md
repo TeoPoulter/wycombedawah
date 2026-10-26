@@ -53,3 +53,11 @@ Validation: catalogue/queue/session/audio/controller tests, new history/exclusio
 ### Admin favourites — 26 October 2026
 
 Signed-in admins can toggle the heart beside the player controls or Favourite/Unfavourite a row in the library. The third Favourites tab offers Play, Unfavourite and Remove/Restore. Favourites are stored in the shared D1 service and read/write endpoints require a valid admin session; anonymous visitors cannot list or edit them. Saving favourites does not change public shuffle weighting. Removed favourites remain saved but cannot play until restored. Lists refresh on opening and during the existing45-second refresh interval. Failed saves leave the previous state intact.
+
+### Cross-device admin listening — 26 October 2026
+
+Admin history, selected ajza, repeat preference, current recording and timestamp now persist in the shared D1 service. Existing device history is merged when signing in; latest200 listening visits are retained. Favourites and exclusions already share that service. Returning devices restore paused at the saved position, unless playback or a new user interaction has already started locally. Background sync merges history without taking over an active player. An idle device does not write unchanged state.
+
+Changed progress is saved locally immediately and queued for sync (normally within a few seconds while listening); the Library footer reports sync/pending status. A private local outbox retries interrupted writes on reconnect/reload. Session headers authorize all history/state reads and writes; public catalogue/exclusion responses contain no admin history. Visits merge by unique key and edit timestamp, so stale retries do not overwrite newer progress; newer backward seeks remain valid. Device clocks should be set automatically. Browser/device-private history remains local for signed-out visitors; admin cache and outbox use separate storage keys. Sign-out switches back to visitor history and revokes that device's token.
+
+Verification: two-client sync/idle/offline/reload unit tests, real SQLite tests of the D1 merge SQL and validation, existing playback tests, and live protected read/no-op-sync endpoint checks. No physical-device/browser visual QA is claimed.

@@ -1,15 +1,15 @@
-import {createLibrary} from './curation.mjs?v=20261026-favourites-v12';
-import {applyExclusions,recordingHeading,recordingDetail} from './listening-log.mjs?v=20261026-favourites-v12';
-import {embedUrl,watchUrl,playbackError} from './embed.mjs?v=20261026-favourites-v12';
+import {createLibrary} from './curation.mjs?v=20261026-cloud-v13';
+import {applyExclusions,recordingHeading,recordingDetail} from './listening-log.mjs?v=20261026-cloud-v13';
+import {embedUrl,watchUrl,playbackError} from './embed.mjs?v=20261026-cloud-v13';
 import {Queue} from './queue.mjs';
-import {selectedPool,selectionLabel} from './selection.mjs?v=20261026-favourites-v12';
-import {readSession,saveSession,queueFromSession} from './session.mjs?v=20261026-favourites-v12';
-import {audioPlayer} from './audio-player.mjs?v=20261026-favourites-v12';
+import {selectedPool,selectionLabel} from './selection.mjs?v=20261026-cloud-v13';
+import {readSession,saveSession,queueFromSession} from './session.mjs?v=20261026-cloud-v13';
+import {audioPlayer} from './audio-player.mjs?v=20261026-cloud-v13';
 const $=id=>document.getElementById(id),chosenAjza=new Set();
 let rawCatalog,library,excludedIds=new Set();
 let data,queue,player,provider,selected,ready=false,playing=false,apiPromise,failures=0,generation=0,loadTimer;
 let clock=0,clockAt=performance.now(),length=0,lastSample=0,dragging=false,waitingToResume=false;
-let view='chooser',mode='juz',playbackAjza=[],storageReady=false;
+let view='chooser',mode='juz',playbackAjza=[],storageReady=false,userActivity=0;
 const time=n=>`${Math.floor((n||0)/60)}:${String(Math.floor((n||0)%60)).padStart(2,'0')}`;
 const icon=name=>`<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-${name}"/></svg>`;
 const status=message=>$('status').textContent=message;
@@ -30,7 +30,9 @@ motionPreference.addEventListener?.('change',()=>{if(motionPreference.matches){f
 const storage=()=>{try{return localStorage}catch{return null}};
 const providerFor=id=>data.videos[id].provider==='audio'?'audio':'youtube';
 function sourceLink(){return providerFor(selected)==='audio'?data.videos[selected].sourceUrl:watchUrl(selected,clock)}
-function persist(){library?.progress(clock);if(storageReady)saveSession(storage(),{draft:chosenAjza,view,mode,ajza:playbackAjza,queue,position:clock})}
+document.addEventListener('pointerdown',()=>userActivity++,true);document.addEventListener('keydown',()=>userActivity++,true);
+function sharedState(){return {version:1,draft:[...chosenAjza].sort((a,b)=>a-b),view,playback:queue?.current?{currentId:queue.current,position:clock,ajza:playbackAjza,mode,repeat:queue.repeat==='one'?'one':'all'}:null}}
+function persist(){library?.progress(clock);if(storageReady)saveSession(storage(),{draft:chosenAjza,view,mode,ajza:playbackAjza,queue,position:clock});if(storageReady)library?.syncState()}
 
 const splash=$('splash');
 let introOpen=!matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -198,13 +200,13 @@ function animateSeek(now){
 }
 requestAnimationFrame(animateSeek);
 setInterval(()=>{if(view==='player'){sample();persist()}},4000);
-document.addEventListener('visibilitychange',()=>{sample();persist()});window.addEventListener('pagehide',()=>{sample();persist()});
+document.addEventListener('visibilitychange',()=>{sample();persist();if(document.hidden)library?.flush()});window.addEventListener('pagehide',()=>{sample();persist();library?.flush()});
 controls();
-fetch('catalog.json?v=20261026-favourites-v12').then(response=>{
+fetch('catalog.json?v=20261026-cloud-v13').then(response=>{
  if(!response.ok)throw Error('Could not load the archive. Please refresh to try again.');return response.json();
 }).then(catalog=>{
  rawCatalog=catalog;data=catalog;
- library=createLibrary({storage,getCatalog:()=>rawCatalog,getCurrent:()=>selected?{id:selected,mode,ajza:playbackAjza,position:clock}:null,
+ library=createLibrary({storage,getCatalog:()=>rawCatalog,getSharedState:sharedState,getActivity:()=>userActivity,restoreSharedState:(value,activity)=>{if(playing||userActivity>activity)return false;const restored=readSession({getItem:()=>JSON.stringify(value)},data);if(!restored)return false;chosenAjza.clear();for(const n of restored.draft)chosenAjza.add(n);updateSelection();if(restored.view==='chooser'){generation++;if(player)player.destroy();player=null;ready=false;playing=false;clearTimeout(loadTimer);controls()}if(restored.playback){const saved=restored.playback,ids=saved.mode==='playlist'?data.playlist.ids:selectedPool(data,saved.ajza);if(restored.view==='player')choose(ids,saved.mode==='playlist'?'Teo’s Playlist':selectionLabel(saved.ajza),saved.mode==='playlist',saved);else{if(ready)player.pauseVideo();queue=queueFromSession(ids,saved);selected=saved.currentId;clock=saved.position;mode=saved.mode;playbackAjza=saved.ajza;view='chooser';$('chooser').hidden=false;$('listening').hidden=true;document.body.classList.remove('active');heading()}}else{if(ready)player.pauseVideo();queue=null;selected=null;clock=0;view='chooser';$('chooser').hidden=false;$('listening').hidden=true;document.body.classList.remove('active');heading();controls()}persist();return true},getCurrent:()=>selected?{id:selected,mode,ajza:playbackAjza,position:clock}:null,
  onExclusions:ids=>{
   const previous=excludedIds;excludedIds=new Set(ids);data=applyExclusions(rawCatalog,ids);
   if(queue){for(const id of previous)if(!excludedIds.has(id))queue.bad.delete(id);for(const id of ids)queue.reject(id);queue.ids=mode==='playlist'?data.playlist.ids:selectedPool(data,playbackAjza);
