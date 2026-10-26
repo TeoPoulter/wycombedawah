@@ -3,7 +3,7 @@
   "playlist": {
     "id": "PLL6--64EqjIS0igVCak_YmaZntIc6G18H",
     "title": "Qur’an",
-    "totalEntries": 161,
+    "totalEntries": 176,
     "ids": [
       "BVdXkF3o6DY",
       "7-Ul-HPuqq0",
@@ -161,8 +161,19 @@
       "IrszuCbV72s",
       "gADj8PE4v5s",
       "HSK5DqBZkWM",
-      "_EvE3izhHR8"
-    ]
+      "_EvE3izhHR8",
+      "9FUCJgpXmD4",
+      "r4371T_DZgY",
+      "WzOV_7FMPPk",
+      "sfs55u3mSnI",
+      "hOGL7zBDQKA",
+      "AaJkgNjkCXk",
+      "f7ai0MyFrAs",
+      "TffgO7YgFl0",
+      "4koGAyGFCLM",
+      "gVZojRUOncE"
+    ],
+    "checked": "2026-10-26"
   },
   "juz": [
     {
@@ -64316,6 +64327,54 @@
         "yearEvidence": "No unambiguous recording year established; included in the recent-year quota conservatively.",
         "classification": "contained-chapter"
       }
+    },
+    "9FUCJgpXmD4": {
+      "id": "9FUCJgpXmD4",
+      "title": "تلاوه رائعه للشيخ ياسر الدوسري(امن يجيب المضطر إذا دعاه)",
+      "channel": "MahMoud SaMi",
+      "duration": 295
+    },
+    "WzOV_7FMPPk": {
+      "id": "WzOV_7FMPPk",
+      "title": "تلاوة بترتيل مؤثر ومنفرد في غاية الإبداع والخشوع سيخلدها التاريخ للقارئ الشيخ د. ياسر الدوسري",
+      "channel": "أندى الأصوات",
+      "duration": 552
+    },
+    "sfs55u3mSnI": {
+      "id": "sfs55u3mSnI",
+      "title": "\"ولأضلنهم ولأمنينهم\"  عشائية عراقية لا تستطيع وصفها من جمالها وابداعها للآسر الشيخ د. ياسر الدوسري",
+      "channel": "أندى الأصوات",
+      "duration": 508
+    },
+    "hOGL7zBDQKA": {
+      "id": "hOGL7zBDQKA",
+      "title": "من أروع ماقد سمعت للشيخ ياسر الدوسري بالعجم ~ لاوآخر التوبة وفواتح يونس",
+      "channel": "الهدى Alhuda",
+      "duration": 441
+    },
+    "AaJkgNjkCXk": {
+      "id": "AaJkgNjkCXk",
+      "title": "\" وسع ربنا كل شيء علما \" تلاوة بياتية حدرية تذكرنا بأجواء الحرم الرائعة للشيخ د. ياسر الدوسري",
+      "channel": "أندى الأصوات",
+      "duration": 365
+    },
+    "f7ai0MyFrAs": {
+      "id": "f7ai0MyFrAs",
+      "title": "﴿كل نفس ذائقة الموت﴾ | فجرية عذبة ورائعة للقارئ الشيخ د. ياسر الدوسري",
+      "channel": "أندى الأصوات",
+      "duration": 365
+    },
+    "TffgO7YgFl0": {
+      "id": "TffgO7YgFl0",
+      "title": "هدوء يلامس القلب | سورة الشورى كاملة من فجرية الحرم المكي | الشیخ د. بندر بليلة",
+      "channel": "صوت الحرم",
+      "duration": 1311
+    },
+    "gVZojRUOncE": {
+      "id": "gVZojRUOncE",
+      "title": "تلاوة خياليه تخشع لها القلوب للشيخ ياسر الدوسري من سورة الواقعة",
+      "channel": "الهدى Alhuda",
+      "duration": 593
     }
   },
   "curation": "full-mushaf-salah-v5",

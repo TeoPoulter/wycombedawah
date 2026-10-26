@@ -1,9 +1,12 @@
-import {embedUrl,watchUrl,playbackError} from './embed.mjs?v=20261024-motion-v10';
+import {createLibrary} from './curation.mjs?v=20261026-curation-v11';
+import {applyExclusions,recordingHeading,recordingDetail} from './listening-log.mjs?v=20261026-curation-v11';
+import {embedUrl,watchUrl,playbackError} from './embed.mjs?v=20261026-curation-v11';
 import {Queue} from './queue.mjs';
-import {selectedPool,selectionLabel} from './selection.mjs?v=20261024-motion-v10';
-import {readSession,saveSession,queueFromSession} from './session.mjs?v=20261024-motion-v10';
-import {audioPlayer} from './audio-player.mjs?v=20261024-motion-v10';
+import {selectedPool,selectionLabel} from './selection.mjs?v=20261026-curation-v11';
+import {readSession,saveSession,queueFromSession} from './session.mjs?v=20261026-curation-v11';
+import {audioPlayer} from './audio-player.mjs?v=20261026-curation-v11';
 const $=id=>document.getElementById(id),chosenAjza=new Set();
+let rawCatalog,library,excludedIds=new Set();
 let data,queue,player,provider,selected,ready=false,playing=false,apiPromise,failures=0,generation=0,loadTimer;
 let clock=0,clockAt=performance.now(),length=0,lastSample=0,dragging=false,waitingToResume=false;
 let view='chooser',mode='juz',playbackAjza=[],storageReady=false;
@@ -27,7 +30,7 @@ motionPreference.addEventListener?.('change',()=>{if(motionPreference.matches){f
 const storage=()=>{try{return localStorage}catch{return null}};
 const providerFor=id=>data.videos[id].provider==='audio'?'audio':'youtube';
 function sourceLink(){return providerFor(selected)==='audio'?data.videos[selected].sourceUrl:watchUrl(selected,clock)}
-function persist(){if(storageReady)saveSession(storage(),{draft:chosenAjza,view,mode,ajza:playbackAjza,queue,position:clock})}
+function persist(){library?.progress(clock);if(storageReady)saveSession(storage(),{draft:chosenAjza,view,mode,ajza:playbackAjza,queue,position:clock})}
 
 const splash=$('splash');
 let introOpen=!matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -90,10 +93,10 @@ function sample(){
 }
 function track(id,start=0,paused=false){
  if(!id){recover('No more recordings are available in this selection. Choose another juz.');return}
- clearRecovery();selected=id;clock=Math.max(0,start);clockAt=performance.now();lastSample=clockAt+600;
+ library?.progress(clock);library?.newTrack();clearRecovery();selected=id;clock=Math.max(0,start);clockAt=performance.now();lastSample=clockAt+600;
  waitingToResume=paused;length=data.videos[id].duration||0;playing=false;
- const recording=data.videos[id];$('recording-year').textContent=recording.prayer?.hijriYear?`${recording.prayer.hijriYear} AH`:'';
- $('track-title').textContent=recording.title;$('channel').textContent=recording.channel;
+ const recording=data.videos[id];if($('recording-heading'))$('recording-heading').textContent=recordingHeading(recording);if($('recording-detail'))$('recording-detail').textContent=recordingDetail(recording);$('recording-year').textContent=recording.prayer?.hijriYear?`${recording.prayer.hijriYear} AH`:'';
+ $('track-title').textContent=recording.sourceTitle||recording.title;$('channel').textContent=recording.channel;
  reveal($('track-title'),6);reveal($('channel'),6,35);
  $('watch').href=sourceLink();$('open-recording').href=sourceLink();$('open-recording').textContent=providerFor(id)==='audio'?'Open original':'Open on YouTube';
  $('duration').textContent=length?time(length):'—:—';$('seek').max=length||Math.max(100,clock);paintSeek(clock);
@@ -105,10 +108,10 @@ function track(id,start=0,paused=false){
 }
 function stateChanged(state,token){
  if(token!==generation)return;playing=state===1;controls();
- if(playing){waitingToResume=false;failures=0;clearTimeout(loadTimer);clearRecovery();sample();persist()}
+ if(playing){library?.started();waitingToResume=false;failures=0;clearTimeout(loadTimer);clearRecovery();sample();persist()}
  if(state===2){clearTimeout(loadTimer);sample();persist()}
- if(state===0){
-  if(queue.repeat==='one'){player.seekTo(0,true);player.playVideo()}
+ if(state===0){sample();library?.progress(clock,true);
+  if(queue.repeat==='one'){library?.newTrack();clock=0;player.seekTo(0,true);player.playVideo()}
   else track(queue.next(false));
  }
 }
@@ -154,7 +157,7 @@ function choose(ids,label,personal=false,saved=null){
  queue=saved?queueFromSession(ids,saved):new Queue(ids);failures=0;view='player';heading(personal);
  $('repeat').setAttribute('aria-pressed',String(queue.repeat==='one'));$('selection-label').textContent=label;
  $('chooser').hidden=true;$('listening').hidden=false;document.body.classList.add('active');
- track(saved?saved.currentId:queue.next(),saved?saved.position:0,Boolean(saved));
+ track(saved?saved.currentId:queue.next(),saved?saved.position:0,Boolean(saved)&&!saved.resumeNow);
  if(!saved){reveal($('listening'),12);reveal($('page-title'),-6);$('change-selection').focus({preventScroll:true})}
 }
 $('retry-playback').onclick=()=>{if(selected){clearRecovery();waitingToResume=false;armLoadTimer();mountPlayer(clock,true).catch(error=>recover(error.message))}};
@@ -170,7 +173,7 @@ function seekTo(position){
 }
 for(const [id,delta] of [['back',-10],['forward',10]])$(id).onclick=()=>seekTo((waitingToResume?clock:player.getCurrentTime())+delta);
 document.addEventListener('keydown',event=>{
- if(event.defaultPrevented||introOpen||!ready||!selected||view!=='player'||event.altKey||event.ctrlKey||event.metaKey||event.shiftKey)return;
+ if($('library-dialog')?.open||event.defaultPrevented||introOpen||!ready||!selected||view!=='player'||event.altKey||event.ctrlKey||event.metaKey||event.shiftKey)return;
  if(event.target.closest('input:not([type="range"]),textarea,select,[contenteditable]:not([contenteditable="false"])'))return;
  if(![' ','ArrowRight','ArrowLeft'].includes(event.key))return;
  event.preventDefault();if(event.repeat)return;
@@ -197,10 +200,22 @@ requestAnimationFrame(animateSeek);
 setInterval(()=>{if(view==='player'){sample();persist()}},4000);
 document.addEventListener('visibilitychange',()=>{sample();persist()});window.addEventListener('pagehide',()=>{sample();persist()});
 controls();
-fetch('catalog.json?v=20261024-motion-v10').then(response=>{
+fetch('catalog.json?v=20261026-curation-v11').then(response=>{
  if(!response.ok)throw Error('Could not load the archive. Please refresh to try again.');return response.json();
 }).then(catalog=>{
- data=catalog;const session=readSession(storage(),data);
+ rawCatalog=catalog;data=catalog;
+ library=createLibrary({storage,getCatalog:()=>rawCatalog,getCurrent:()=>selected?{id:selected,mode,ajza:playbackAjza,position:clock}:null,
+ onExclusions:ids=>{
+  const previous=excludedIds;excludedIds=new Set(ids);data=applyExclusions(rawCatalog,ids);
+  if(queue){for(const id of previous)if(!excludedIds.has(id))queue.bad.delete(id);for(const id of ids)queue.reject(id);queue.ids=mode==='playlist'?data.playlist.ids:selectedPool(data,playbackAjza);
+   if(excludedIds.has(selected)&&view==='player'){if(ready)player.pauseVideo();const next=queue.next();if(next)track(next);else{showChooser();queue=null;selected=null;controls();persist()}}
+  }
+  document.querySelectorAll('.juz').forEach(button=>{const item=data.juz.find(j=>j.number===Number(button.dataset.juz));button.setAttribute('aria-label',`Juz ${item.number}, ${item.ids.length} recordings`);const count=button.querySelector?.('.count');if(count)count.textContent=`${item.ids.length} recordings`});
+  updateSelection();$('random').disabled=!data.playlist.ids.length;
+ },
+ onResume:entry=>{const ids=entry.mode==='playlist'?data.playlist.ids:selectedPool(data,entry.ajza);if(!ids.includes(entry.id))return;chosenAjza.clear();for(const n of entry.ajza||[])chosenAjza.add(n);updateSelection();choose(ids,entry.mode==='playlist'?'Teo’s Playlist':selectionLabel(entry.ajza),entry.mode==='playlist',{...entry,ajza:entry.ajza||[],currentId:entry.id,position:entry.ended?0:entry.position,repeat:'all',history:[entry.id],index:0,bag:ids.filter(id=>id!==entry.id),resumeNow:true})}
+ });
+ library?.init();const session=readSession(storage(),data);
  for(const number of session?.draft||[])chosenAjza.add(number);
  for(const juz of data.juz){
   const button=document.createElement('button');button.className='juz';button.type='button';button.dataset.juz=juz.number;
@@ -211,7 +226,7 @@ fetch('catalog.json?v=20261024-motion-v10').then(response=>{
  $('select-all').onclick=()=>{data.juz.forEach(juz=>chosenAjza.add(juz.number));updateSelection();persist()};
  $('clear-selection').onclick=()=>{chosenAjza.clear();updateSelection();persist()};
  $('play-selection').onclick=()=>{const ids=selectedPool(data,chosenAjza);if(ids.length)choose(ids,selectionLabel(chosenAjza))};
- $('random').disabled=false;$('playlist-count').textContent='Teo’s Playlist';$('random').onclick=()=>choose(data.playlist.ids,'Teo’s Playlist',true);
+ $('random').disabled=!data.playlist.ids.length;$('playlist-count').textContent='Teo’s Playlist';$('random').onclick=()=>choose(data.playlist.ids,'Teo’s Playlist',true);
  updateSelection();storageReady=true;if(!introOpen)revealChooser();
  if(session?.playback){
   const saved=session.playback,ids=saved.mode==='playlist'?data.playlist.ids:selectedPool(data,saved.ajza);

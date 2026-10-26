@@ -35,3 +35,17 @@ Validation: embed URL/error-policy regression tests, full catalogue checks, and 
 ### Motion refinement — 24 October 2026
 
 Finite staggered ajza entrances, chooser/player and title reveals, tactile transport states, smoother selection-action expansion and seek-thumb feedback. Media commands remain synchronous; animations never replace the provider iframe. Web Animations are feature-detected, interrupted reveals are cancelled, and Reduce Motion disables effects including when changed during the session. Existing controller/session/audio/catalogue tests pass. Fresh browser visual QA was unavailable for this update.
+
+### Admin curation and listening library — 26 October 2026
+
+Open **Library → Admin sign in**. Password validation is server-side; the client contains no password. A random revocable bearer session is saved on this browser for90days (unless storage is cleared/blocked). The requested short password is not strong authentication: anyone who knows or guesses it can administer the archive. Login is limited to8 attempts per15-minute window per IP. Sign out revokes that device's session.
+
+Signed-in admins see **Remove recording** in the player and **Remove/Restore** in History/Removed. Successful removal is global, applies to both curated selections and Teo’s Playlist, skips the current recording and offers Undo. Other open players refresh exclusions every45seconds. New loads use the last cached exclusions while fetching current state. Offline writes fail visibly and never pretend to be saved. Admin decisions can intentionally take a Juz below the original minimum; no automatic filler restores unwanted tracks.
+
+Shared curation lives in D1 at https://yasser-archive-curation.teopoulter.chatgpt.site/api/curation . Sites project `appgprj_6adf148c05b481919a3d821ba95e5599`; separate source checkout `../yasser-admin-service` is synced to its Sites repository. Runtime secret name: `ADMIN_PASSWORD`. CORS is restricted to the two Wycombe Dawah origins; every mutation requires a server-validated token. Database stores hashed sessions and recording exclusion IDs, not listening history or plaintext passwords. History stays in local storage, limited to200 listening visits, and starts only on actual provider playback. It retains progress, dates, completion and resume actions. Storage denial is graceful; saved history/sign-in requires available browser storage.
+
+Surah headings derive from verified chapter metadata. Prayer/year detail is displayed only when supported; the publisher's original title remains visible. Playlist entries without passage evidence retain their own titles without invented surah/reciter attribution.
+
+Teo’s original YouTube playlist was refreshed on26October2026:167 distinct available metadata entries from176 entries. All reciters retained. `scripts/refresh-playlist.mjs` safely imports a fresh full yt-dlp metadata snapshot and records `playlist-snapshot.json`; it does not silently filter by reciter, overwrite curated provenance, or assume new playlist clips belong to a Juz. This is a refreshed snapshot, not automatic daily synchronization.
+
+Validation: catalogue/queue/session/audio/controller tests, new history/exclusion/title tests, and live API authorization/removal/restore checks. Browser visual and physical iPad verification remain unavailable in this session.
