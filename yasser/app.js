@@ -1,10 +1,10 @@
-import {createLibrary} from './curation.mjs?v=20261026-curation-v11';
-import {applyExclusions,recordingHeading,recordingDetail} from './listening-log.mjs?v=20261026-curation-v11';
-import {embedUrl,watchUrl,playbackError} from './embed.mjs?v=20261026-curation-v11';
+import {createLibrary} from './curation.mjs?v=20261026-favourites-v12';
+import {applyExclusions,recordingHeading,recordingDetail} from './listening-log.mjs?v=20261026-favourites-v12';
+import {embedUrl,watchUrl,playbackError} from './embed.mjs?v=20261026-favourites-v12';
 import {Queue} from './queue.mjs';
-import {selectedPool,selectionLabel} from './selection.mjs?v=20261026-curation-v11';
-import {readSession,saveSession,queueFromSession} from './session.mjs?v=20261026-curation-v11';
-import {audioPlayer} from './audio-player.mjs?v=20261026-curation-v11';
+import {selectedPool,selectionLabel} from './selection.mjs?v=20261026-favourites-v12';
+import {readSession,saveSession,queueFromSession} from './session.mjs?v=20261026-favourites-v12';
+import {audioPlayer} from './audio-player.mjs?v=20261026-favourites-v12';
 const $=id=>document.getElementById(id),chosenAjza=new Set();
 let rawCatalog,library,excludedIds=new Set();
 let data,queue,player,provider,selected,ready=false,playing=false,apiPromise,failures=0,generation=0,loadTimer;
@@ -95,7 +95,7 @@ function track(id,start=0,paused=false){
  if(!id){recover('No more recordings are available in this selection. Choose another juz.');return}
  library?.progress(clock);library?.newTrack();clearRecovery();selected=id;clock=Math.max(0,start);clockAt=performance.now();lastSample=clockAt+600;
  waitingToResume=paused;length=data.videos[id].duration||0;playing=false;
- const recording=data.videos[id];if($('recording-heading'))$('recording-heading').textContent=recordingHeading(recording);if($('recording-detail'))$('recording-detail').textContent=recordingDetail(recording);$('recording-year').textContent=recording.prayer?.hijriYear?`${recording.prayer.hijriYear} AH`:'';
+ const recording=data.videos[id];library?.trackChanged();if($('recording-heading'))$('recording-heading').textContent=recordingHeading(recording);if($('recording-detail'))$('recording-detail').textContent=recordingDetail(recording);$('recording-year').textContent=recording.prayer?.hijriYear?`${recording.prayer.hijriYear} AH`:'';
  $('track-title').textContent=recording.sourceTitle||recording.title;$('channel').textContent=recording.channel;
  reveal($('track-title'),6);reveal($('channel'),6,35);
  $('watch').href=sourceLink();$('open-recording').href=sourceLink();$('open-recording').textContent=providerFor(id)==='audio'?'Open original':'Open on YouTube';
@@ -200,7 +200,7 @@ requestAnimationFrame(animateSeek);
 setInterval(()=>{if(view==='player'){sample();persist()}},4000);
 document.addEventListener('visibilitychange',()=>{sample();persist()});window.addEventListener('pagehide',()=>{sample();persist()});
 controls();
-fetch('catalog.json?v=20261026-curation-v11').then(response=>{
+fetch('catalog.json?v=20261026-favourites-v12').then(response=>{
  if(!response.ok)throw Error('Could not load the archive. Please refresh to try again.');return response.json();
 }).then(catalog=>{
  rawCatalog=catalog;data=catalog;

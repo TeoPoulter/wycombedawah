@@ -49,3 +49,7 @@ Surah headings derive from verified chapter metadata. Prayer/year detail is disp
 Teo’s original YouTube playlist was refreshed on26October2026:167 distinct available metadata entries from176 entries. All reciters retained. `scripts/refresh-playlist.mjs` safely imports a fresh full yt-dlp metadata snapshot and records `playlist-snapshot.json`; it does not silently filter by reciter, overwrite curated provenance, or assume new playlist clips belong to a Juz. This is a refreshed snapshot, not automatic daily synchronization.
 
 Validation: catalogue/queue/session/audio/controller tests, new history/exclusion/title tests, and live API authorization/removal/restore checks. Browser visual and physical iPad verification remain unavailable in this session.
+
+### Admin favourites — 26 October 2026
+
+Signed-in admins can toggle the heart beside the player controls or Favourite/Unfavourite a row in the library. The third Favourites tab offers Play, Unfavourite and Remove/Restore. Favourites are stored in the shared D1 service and read/write endpoints require a valid admin session; anonymous visitors cannot list or edit them. Saving favourites does not change public shuffle weighting. Removed favourites remain saved but cannot play until restored. Lists refresh on opening and during the existing45-second refresh interval. Failed saves leave the previous state intact.
