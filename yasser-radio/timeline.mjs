@@ -1,0 +1,2 @@
+export function ready(m){return Number.isFinite(Date.parse(m?.epoch))&&m.tracks.length===26&&new Set(m.tracks.map(t=>t.id)).size===26&&m.tracks.every(t=>typeof t.audio==='string'&&t.audio.length&&Number.isFinite(t.seconds)&&t.seconds>0)}
+export function slot(m,utc){let elapsed=(utc-Date.parse(m.epoch))/1000;if(elapsed<0)return null;let pos=elapsed%m.tracks.reduce((n,t)=>n+t.seconds,0);for(const track of m.tracks){if(pos<track.seconds)return {track,pos};pos-=track.seconds}}

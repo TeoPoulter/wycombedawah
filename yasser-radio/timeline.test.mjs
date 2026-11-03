@@ -1,0 +1,3 @@
+import assert from 'node:assert/strict';import fs from 'node:fs';import {slot,ready} from './timeline.mjs';
+const m=JSON.parse(fs.readFileSync(new URL('./station.json',import.meta.url)));assert.equal(m.tracks.length,26);assert.equal(new Set(m.tracks.map(t=>t.id)).size,26);
+m.epoch='2026-11-03T00:00:00Z';m.tracks.forEach((t,i)=>Object.assign(t,{audio:t.id+'.mp3',seconds:i+1.25}));assert(ready(m));const e=Date.parse(m.epoch),total=m.tracks.reduce((n,t)=>n+t.seconds,0);let offset=0;for(const t of m.tracks){for(const lap of [0,1,10000]){let n=e+(total*lap+offset+.125)*1000;assert.deepEqual(slot(m,n),{track:t,pos:.125})}offset+=t.seconds}assert.equal(slot(m,e-1),null);
