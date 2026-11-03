@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "epoch": "2026-11-03T00:00:00Z",
   "tracks": [
     {
@@ -11,7 +11,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 484.855875,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/oxiCG_f5cpI.mp3"
+      "audio": "audio/oxiCG_f5cpI.mp3"
     },
     {
       "id": "gwk3tUdKxL8",
@@ -22,7 +22,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 551.392667,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/gwk3tUdKxL8.mp3"
+      "audio": "audio/gwk3tUdKxL8.mp3"
     },
     {
       "id": "PW_WAjCHLnc",
@@ -33,7 +33,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 907.733333,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/PW_WAjCHLnc.mp3"
+      "audio": "audio/PW_WAjCHLnc.mp3"
     },
     {
       "id": "N7OryVl5Vt4",
@@ -44,7 +44,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 670.336,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/N7OryVl5Vt4.mp3"
+      "audio": "audio/N7OryVl5Vt4.mp3"
     },
     {
       "id": "iS6xCyqo18o",
@@ -55,7 +55,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 472.896,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/iS6xCyqo18o.mp3"
+      "audio": "audio/iS6xCyqo18o.mp3"
     },
     {
       "id": "PI2Tro8hWsE",
@@ -66,7 +66,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 527.139417,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/PI2Tro8hWsE.mp3"
+      "audio": "audio/PI2Tro8hWsE.mp3"
     },
     {
       "id": "2WHOieq3crI",
@@ -77,7 +77,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 519.198188,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/2WHOieq3crI.mp3"
+      "audio": "audio/2WHOieq3crI.mp3"
     },
     {
       "id": "b78QNpQ1to0",
@@ -88,7 +88,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 392.881646,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/b78QNpQ1to0.mp3"
+      "audio": "audio/b78QNpQ1to0.mp3"
     },
     {
       "id": "oW7cUa1IspU",
@@ -99,7 +99,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 647.952979,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/oW7cUa1IspU.mp3"
+      "audio": "audio/oW7cUa1IspU.mp3"
     },
     {
       "id": "4Dtf9rrmZ6E",
@@ -110,7 +110,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 611.683271,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/4Dtf9rrmZ6E.mp3"
+      "audio": "audio/4Dtf9rrmZ6E.mp3"
     },
     {
       "id": "jQGhTfyscrg",
@@ -121,7 +121,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 439.112563,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/jQGhTfyscrg.mp3"
+      "audio": "audio/jQGhTfyscrg.mp3"
     },
     {
       "id": "UZuX2eIqL-k",
@@ -132,7 +132,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 489.216,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/UZuX2eIqL-k.mp3"
+      "audio": "audio/UZuX2eIqL-k.mp3"
     },
     {
       "id": "N2bUSb1DO3s",
@@ -143,7 +143,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 483.797333,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/N2bUSb1DO3s.mp3"
+      "audio": "audio/N2bUSb1DO3s.mp3"
     },
     {
       "id": "ANzQ94_liiE",
@@ -154,7 +154,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 466.488979,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/ANzQ94_liiE.mp3"
+      "audio": "audio/ANzQ94_liiE.mp3"
     },
     {
       "id": "JZAfMfbcucA",
@@ -165,7 +165,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 570.630396,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/JZAfMfbcucA.mp3"
+      "audio": "audio/JZAfMfbcucA.mp3"
     },
     {
       "id": "E6hT4_k8p_k",
@@ -176,7 +176,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 523.586771,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/E6hT4_k8p_k.mp3"
+      "audio": "audio/E6hT4_k8p_k.mp3"
     },
     {
       "id": "6NH6U_knszk",
@@ -187,7 +187,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 571.454708,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/6NH6U_knszk.mp3"
+      "audio": "audio/6NH6U_knszk.mp3"
     },
     {
       "id": "U2Ho_FPX7a8",
@@ -198,7 +198,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 449.770688,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/U2Ho_FPX7a8.mp3"
+      "audio": "audio/U2Ho_FPX7a8.mp3"
     },
     {
       "id": "ElPUedyLAJg",
@@ -209,7 +209,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 409.925083,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/ElPUedyLAJg.mp3"
+      "audio": "audio/ElPUedyLAJg.mp3"
     },
     {
       "id": "r4371T_DZgY",
@@ -220,7 +220,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 603.718833,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/r4371T_DZgY.mp3"
+      "audio": "audio/r4371T_DZgY.mp3"
     },
     {
       "id": "Y1toaUTp610",
@@ -231,7 +231,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 536.618667,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/Y1toaUTp610.mp3"
+      "audio": "audio/Y1toaUTp610.mp3"
     },
     {
       "id": "WzOV_7FMPPk",
@@ -242,7 +242,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 551.509333,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/WzOV_7FMPPk.mp3"
+      "audio": "audio/WzOV_7FMPPk.mp3"
     },
     {
       "id": "sfs55u3mSnI",
@@ -253,7 +253,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 507.425688,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/sfs55u3mSnI.mp3"
+      "audio": "audio/sfs55u3mSnI.mp3"
     },
     {
       "id": "AaJkgNjkCXk",
@@ -264,7 +264,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 364.330667,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/AaJkgNjkCXk.mp3"
+      "audio": "audio/AaJkgNjkCXk.mp3"
     },
     {
       "id": "f7ai0MyFrAs",
@@ -275,7 +275,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 364.791688,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/f7ai0MyFrAs.mp3"
+      "audio": "audio/f7ai0MyFrAs.mp3"
     },
     {
       "id": "gVZojRUOncE",
@@ -286,7 +286,7 @@
       "availability": "OK",
       "licenceNotes": [],
       "seconds": 592.155292,
-      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/gVZojRUOncE.mp3"
+      "audio": "audio/gVZojRUOncE.mp3"
     }
   ]
 }
