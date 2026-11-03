@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "epoch": null,
+  "version": 2,
+  "epoch": "2026-11-03T00:00:00Z",
   "tracks": [
     {
       "id": "oxiCG_f5cpI",
@@ -9,7 +9,9 @@
       "channel": "الهدى Alhuda",
       "sourceSeconds": "485",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 484.855875,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/oxiCG_f5cpI.mp3"
     },
     {
       "id": "gwk3tUdKxL8",
@@ -18,7 +20,9 @@
       "channel": "أندى الأصوات",
       "sourceSeconds": "551",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 551.392667,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/gwk3tUdKxL8.mp3"
     },
     {
       "id": "PW_WAjCHLnc",
@@ -27,7 +31,9 @@
       "channel": "مزامير الفرقان - ياسر الدوسري",
       "sourceSeconds": "908",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 907.733333,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/PW_WAjCHLnc.mp3"
     },
     {
       "id": "N7OryVl5Vt4",
@@ -36,7 +42,9 @@
       "channel": "مزامير الفرقان - ياسر الدوسري",
       "sourceSeconds": "670",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 670.336,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/N7OryVl5Vt4.mp3"
     },
     {
       "id": "iS6xCyqo18o",
@@ -45,7 +53,9 @@
       "channel": "أندى الأصوات",
       "sourceSeconds": "473",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 472.896,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/iS6xCyqo18o.mp3"
     },
     {
       "id": "PI2Tro8hWsE",
@@ -54,7 +64,9 @@
       "channel": "أندى الأصوات",
       "sourceSeconds": "527",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 527.139417,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/PI2Tro8hWsE.mp3"
     },
     {
       "id": "2WHOieq3crI",
@@ -63,7 +75,9 @@
       "channel": "أندى الأصوات",
       "sourceSeconds": "519",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 519.198188,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/2WHOieq3crI.mp3"
     },
     {
       "id": "b78QNpQ1to0",
@@ -72,7 +86,9 @@
       "channel": "الهدى Alhuda",
       "sourceSeconds": "393",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 392.881646,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/b78QNpQ1to0.mp3"
     },
     {
       "id": "oW7cUa1IspU",
@@ -81,7 +97,9 @@
       "channel": "أندى الأصوات",
       "sourceSeconds": "648",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 647.952979,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/oW7cUa1IspU.mp3"
     },
     {
       "id": "4Dtf9rrmZ6E",
@@ -90,7 +108,9 @@
       "channel": "الهدى Alhuda",
       "sourceSeconds": "612",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 611.683271,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/4Dtf9rrmZ6E.mp3"
     },
     {
       "id": "jQGhTfyscrg",
@@ -99,7 +119,9 @@
       "channel": "Munawwar Productions",
       "sourceSeconds": "439",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 439.112563,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/jQGhTfyscrg.mp3"
     },
     {
       "id": "UZuX2eIqL-k",
@@ -108,7 +130,9 @@
       "channel": "DAGG Productions",
       "sourceSeconds": "489",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 489.216,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/UZuX2eIqL-k.mp3"
     },
     {
       "id": "N2bUSb1DO3s",
@@ -117,7 +141,9 @@
       "channel": "مزامير الفرقان - ياسر الدوسري",
       "sourceSeconds": "484",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 483.797333,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/N2bUSb1DO3s.mp3"
     },
     {
       "id": "ANzQ94_liiE",
@@ -126,7 +152,9 @@
       "channel": "الهدى Alhuda",
       "sourceSeconds": "467",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 466.488979,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/ANzQ94_liiE.mp3"
     },
     {
       "id": "JZAfMfbcucA",
@@ -135,7 +163,9 @@
       "channel": "أندى الأصوات",
       "sourceSeconds": "571",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 570.630396,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/JZAfMfbcucA.mp3"
     },
     {
       "id": "E6hT4_k8p_k",
@@ -144,7 +174,9 @@
       "channel": "الهدى Alhuda",
       "sourceSeconds": "524",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 523.586771,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/E6hT4_k8p_k.mp3"
     },
     {
       "id": "6NH6U_knszk",
@@ -153,7 +185,9 @@
       "channel": "أندى الأصوات",
       "sourceSeconds": "572",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 571.454708,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/6NH6U_knszk.mp3"
     },
     {
       "id": "U2Ho_FPX7a8",
@@ -162,7 +196,9 @@
       "channel": "DAGG Productions",
       "sourceSeconds": "450",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 449.770688,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/U2Ho_FPX7a8.mp3"
     },
     {
       "id": "ElPUedyLAJg",
@@ -171,7 +207,9 @@
       "channel": "الهدى Alhuda",
       "sourceSeconds": "410",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 409.925083,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/ElPUedyLAJg.mp3"
     },
     {
       "id": "r4371T_DZgY",
@@ -180,7 +218,9 @@
       "channel": "الهدى Alhuda",
       "sourceSeconds": "604",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 603.718833,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/r4371T_DZgY.mp3"
     },
     {
       "id": "Y1toaUTp610",
@@ -189,7 +229,9 @@
       "channel": "أندى الأصوات",
       "sourceSeconds": "537",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 536.618667,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/Y1toaUTp610.mp3"
     },
     {
       "id": "WzOV_7FMPPk",
@@ -198,7 +240,9 @@
       "channel": "أندى الأصوات",
       "sourceSeconds": "552",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 551.509333,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/WzOV_7FMPPk.mp3"
     },
     {
       "id": "sfs55u3mSnI",
@@ -207,7 +251,9 @@
       "channel": "أندى الأصوات",
       "sourceSeconds": "507",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 507.425688,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/sfs55u3mSnI.mp3"
     },
     {
       "id": "AaJkgNjkCXk",
@@ -216,7 +262,9 @@
       "channel": "أندى الأصوات",
       "sourceSeconds": "364",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 364.330667,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/AaJkgNjkCXk.mp3"
     },
     {
       "id": "f7ai0MyFrAs",
@@ -225,7 +273,9 @@
       "channel": "أندى الأصوات",
       "sourceSeconds": "365",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 364.791688,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/f7ai0MyFrAs.mp3"
     },
     {
       "id": "gVZojRUOncE",
@@ -234,7 +284,9 @@
       "channel": "الهدى Alhuda",
       "sourceSeconds": "592",
       "availability": "OK",
-      "licenceNotes": []
+      "licenceNotes": [],
+      "seconds": 592.155292,
+      "audio": "https://github.com/TeoPoulter/wycombedawah/releases/download/yasser-radio-audio-v1/gVZojRUOncE.mp3"
     }
   ]
 }
