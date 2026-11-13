@@ -108,7 +108,7 @@ return `<div class="music-scrim ${openClass}" aria-hidden="${hidden}" data-music
           <div><span class="broadcast-kicker"><i></i> WMC sound</span><h1>Nasheed archive</h1></div>
         </header>
         <div class="playlist-switcher">
-          ${musicLibrary.playlists.map((item) => `<button type="button" class="playlist-card ${item.id === playlist?.id ? 'active' : ''} ${item.special?'special-playlist':''}" aria-pressed="${item.id===playlist?.id}" data-playlist="${esc(item.id)}"><img src="${esc(item.cover)}" alt=""><span><strong>${esc(item.title)}</strong><small>${item.tracks.length} tracks${item.repeatOne?' · Repeat one':''}</small></span></button>`).join('')}
+          ${musicLibrary.playlists.map((item) => `<button type="button" class="playlist-card ${item.id === playlist?.id ? 'active' : ''} ${item.special?'special-playlist':''}" aria-pressed="${item.id===playlist?.id}" data-playlist="${esc(item.id)}"><img src="${esc(item.cover)}" alt=""><span><strong>${esc(item.title)}</strong><small>${item.tracks.length} tracks${item.repeatOne?' · Auto repeat':''}</small></span></button>`).join('')}
         </div>
         <div class="now-playing">
           <img src="${esc(playlist?.cover || '')}" alt="${esc(playlist?.title || '')} cover">
@@ -161,16 +161,38 @@ try{musicLibrary={"version":2,"generatedAt":"2026-08-31T13:10:29.281Z","playlist
 <style>
 #screen-mode .screen-canvas{display:block;background:#000}
 #screen-mode .screen-scene{position:absolute;inset:0;display:grid;place-items:center;overflow:hidden;background:var(--screen-bg,#000);isolation:isolate}
-#screen-mode .screen-scene:before,#screen-mode .screen-scene:after{content:'';position:absolute;pointer-events:none;z-index:-1}
-#screen-mode .screen-logo{width:min(58vw,1100px);height:auto;max-height:78vh;object-fit:contain;filter:var(--logo-filter,none);position:relative;z-index:1;user-select:none;-webkit-user-drag:none}
+#screen-mode .screen-scene:before,#screen-mode .screen-scene:after{content:none}
+#screen-mode .screen-logo{width:min(58vw,1100px);height:auto;max-height:78vh;object-fit:contain;position:relative;z-index:2;user-select:none;-webkit-user-drag:none}
 #screen-mode .screen-scene[data-brand=criterion] .screen-logo{width:min(54vw,1500px);max-height:48vh}
-#screen-mode .screen-scene[data-effect=frame]:after{inset:6vh 5vw;border:1px solid var(--screen-accent,#d2a96e66)}
-#screen-mode .screen-scene[data-effect=double-frame]:after{inset:7vh 6vw;border:1px solid var(--screen-accent,#d2a96e66);outline:1px solid #ffffff0d;outline-offset:14px}
-#screen-mode .screen-scene[data-effect=halo]:before{width:55vmin;height:55vmin;border:1px solid var(--screen-accent,#d2a96e33);border-radius:50%;box-shadow:0 0 0 9vmin #ffffff02,0 0 0 18vmin #ffffff01}
-#screen-mode .screen-scene[data-effect=arch]:before{inset:9vh 25vw -15vh;border:1px solid var(--screen-accent,#d2a96e33);border-radius:50% 50% 0 0}
-#screen-mode .screen-scene[data-effect=horizon]:after{left:0;right:0;bottom:14vh;height:1px;background:linear-gradient(90deg,transparent,var(--screen-accent,#d2a96e55),transparent);box-shadow:0 20px 100px 12px #c0a37514}
-#screen-mode .screen-scene[data-effect=corner]:after{inset:6vh 5vw;border:1px solid var(--screen-accent,#d2a96e55);clip-path:polygon(0 0,12% 0,12% 1px,1px 1px,1px 18%,0 18%,0 0,100% 0,100% 18%,calc(100% - 1px) 18%,calc(100% - 1px) 1px,88% 1px,88% 0,100% 0,100% 100%,88% 100%,88% calc(100% - 1px),calc(100% - 1px) calc(100% - 1px),calc(100% - 1px) 82%,100% 82%,100% 100%,0 100%,0 82%,1px 82%,1px calc(100% - 1px),12% calc(100% - 1px),12% 100%,0 100%)}
-@media(max-width:700px){#screen-mode .screen-logo{width:90vw;max-height:85vh}#screen-mode .screen-scene[data-brand=criterion] .screen-logo{width:84vw}}
+/* Every sharp decorative line and particle is clipped OUTSIDE the protected logo area. */
+#screen-mode .screen-decor{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:1;color:var(--screen-accent,#d2a96e55)}
+#screen-mode .screen-decor .line{fill:none;stroke:currentColor;stroke-width:1;vector-effect:non-scaling-stroke}
+#screen-mode .screen-decor .quiet{opacity:.35}
+#screen-mode .screen-atmosphere{position:absolute;inset:-20%;z-index:0;pointer-events:none;opacity:.42;background:radial-gradient(ellipse at 15% 25%,var(--motion-a,#a27f4922),transparent 44%),radial-gradient(ellipse at 85% 80%,var(--motion-b,#165f5a44),transparent 43%);transform:translate3d(0,0,0)}
+#screen-mode .screen-scene[data-motion=aurora] .screen-atmosphere{animation:ambient-aurora 48s ease-in-out infinite alternate}
+#screen-mode .screen-scene[data-motion=breathe] .screen-atmosphere{animation:ambient-breathe 28s ease-in-out infinite alternate}
+#screen-mode .screen-scene[data-motion=drift] .screen-atmosphere{animation:ambient-drift 62s ease-in-out infinite alternate}
+#screen-mode .screen-scene[data-motion=silk] .screen-atmosphere{background:linear-gradient(115deg,transparent 15%,var(--motion-a) 38%,transparent 60%),radial-gradient(ellipse at 90% 90%,var(--motion-b),transparent 60%);animation:ambient-silk 70s ease-in-out infinite alternate}
+#screen-mode .screen-scene[data-motion=tide] .screen-atmosphere{background:radial-gradient(ellipse at 50% 115%,var(--motion-a),transparent 65%),radial-gradient(ellipse at 15% 0%,var(--motion-b),transparent 60%);animation:ambient-tide 42s ease-in-out infinite alternate}
+#screen-mode .screen-scene[data-motion=orbit] .screen-atmosphere{animation:ambient-orbit 80s linear infinite}
+#screen-mode .screen-scene[data-motion=trace] .screen-atmosphere{animation:ambient-breathe 36s ease-in-out infinite alternate}
+#screen-mode .screen-scene[data-motion=trace] .tracer{stroke-dasharray:80 520;animation:ambient-trace 80s linear infinite;opacity:.55}
+#screen-mode .screen-scene[data-motion=stars] .star{animation:ambient-twinkle 13s ease-in-out infinite alternate;animation-delay:var(--delay)}
+#screen-mode .screen-scene[data-motion=constellation] .constellation{animation:ambient-float 38s ease-in-out infinite alternate}
+#screen-mode .screen-scene[data-motion=waves] .wave{animation:ambient-wave 38s ease-in-out infinite alternate;transform-origin:center;animation-delay:var(--delay)}
+@keyframes ambient-aurora{from{transform:translate3d(-3%,2%,0) scale(1)}to{transform:translate3d(4%,-3%,0) scale(1.12)}}
+@keyframes ambient-breathe{from{opacity:.18;transform:scale(1)}to{opacity:.48;transform:scale(1.06)}}
+@keyframes ambient-drift{from{transform:translate3d(-5%,-3%,0)}to{transform:translate3d(5%,4%,0)}}
+@keyframes ambient-silk{from{transform:translate3d(-7%,0,0) rotate(-4deg);opacity:.2}to{transform:translate3d(7%,2%,0) rotate(4deg);opacity:.45}}
+@keyframes ambient-tide{from{transform:translate3d(0,4%,0) scale(1);opacity:.25}to{transform:translate3d(0,-3%,0) scale(1.1);opacity:.5}}
+@keyframes ambient-orbit{0%,100%{transform:translate3d(-3%,0,0)}25%{transform:translate3d(0,-3%,0)}50%{transform:translate3d(3%,0,0)}75%{transform:translate3d(0,3%,0)}}
+@keyframes ambient-trace{to{stroke-dashoffset:-2400}}
+@keyframes ambient-twinkle{from{opacity:.12}to{opacity:.6}}
+@keyframes ambient-float{from{transform:translate(0,-8px);opacity:.3}to{transform:translate(0,8px);opacity:.55}}
+@keyframes ambient-wave{from{transform:translateY(-5px);opacity:.25}to{transform:translateY(5px);opacity:.55}}
+@media(max-width:700px){#screen-mode .screen-logo{width:90vw;max-height:78vh}#screen-mode .screen-scene[data-brand=criterion] .screen-logo{width:84vw}}
+@media(prefers-reduced-motion:reduce){#screen-mode .screen-atmosphere,#screen-mode .screen-decor *{animation:none!important}}
+#screen-mode.motion-paused .screen-atmosphere,#screen-mode.motion-paused .screen-decor *{animation-play-state:paused!important}
 </style>
 <section class="screen-mode" id="screen-mode" role="dialog" aria-label="Ambient screen" aria-modal="true" tabindex="-1" hidden><div class="screen-canvas"></div></section>
 <script type="module">
@@ -211,24 +233,71 @@ const criterionTreatments=[
  {id:'sky',name:'Sky Halo',background:'#a3d3ff',light:true,effect:'halo',accent:'#14518a33'},
  {id:'ink',name:'Pure Ink',background:'#00070d'}
 ];
+const motionTreatments=[
+ {id:'aurora',name:'Aurora Drift',motion:'aurora'},
+ {id:'breathing',name:'Breathing Light',motion:'breathe'},
+ {id:'drifting',name:'Drifting Glow',motion:'drift'},
+ {id:'silk',name:'Silk Light',motion:'silk'},
+ {id:'tide',name:'Quiet Tide',motion:'tide',effect:'horizon'},
+ {id:'orbit',name:'Orbit Glow',motion:'orbit',effect:'halo'},
+ {id:'trace',name:'Light Trace',motion:'trace',effect:'frame'},
+ {id:'stars',name:'Distant Stars',motion:'stars',effect:'stars'},
+ {id:'constellation',name:'Constellation',motion:'constellation',effect:'constellation'},
+ {id:'waves',name:'Gentle Waves',motion:'waves',effect:'waves'}
+];
+for(const [list,brand] of [[treatments,'wmc'],[criterionTreatments,'criterion']]){
+ for(const motion of motionTreatments)list.push({...motion,background:brand==='wmc'?'radial-gradient(ellipse at center,#153f3c,#071c20 90%)':'radial-gradient(ellipse at center,#09263d,#00101d 90%)',accent:brand==='wmc'?'#d2a96e44':'#a3d3ff44'});
+}
 const views=screenBrands.flatMap(brand=>(brand.id==='criterion'?criterionTreatments:treatments).map(t=>({...t,id:brand.id+'-'+t.id,name:brand.name+' '+t.name,src:t.light?brand.lightSrc:brand.src,alt:brand.alt,brand:brand.id}))).concat({id:'black',name:'Black screen',background:'#000'});
 for(const src of new Set(views.map(v=>v.src).filter(Boolean))){const img=new Image();img.src=src}
 
 let selected=0;try{const stored=localStorage.getItem('wmc-screen-view-id');if(stored)selected=Math.max(0,views.findIndex(v=>v.id===stored));else{const legacy=Number(localStorage.getItem('wmc-screen-view'))||0;selected=legacy<3?legacy:legacy===5?views.length-1:0}}catch{}
 let priorFocus,wasFullscreen=false;
-function show(){const view=views[selected],scene=document.createElement('div');scene.className='screen-scene';scene.dataset.effect=view.effect||'plain';scene.dataset.brand=view.brand||'';scene.style.setProperty('--screen-bg',view.background);scene.style.setProperty('--screen-accent',view.accent||'#d2a96e66');scene.style.setProperty('--logo-filter',view.filter||'none');
+let sceneSequence=0;
+function decoration(effect,motion){
+ const id='screen-safe-'+(++sceneSequence);
+ let paths='';
+ if(effect==='frame'||effect==='double-frame'||effect==='corner'){
+  paths=effect==='corner'?'<path class="line" d="M50 190V60H180M820 60H950V190M950 810V940H820M180 940H50V810"/>':'<rect class="line" x="50" y="60" width="900" height="880" rx="2"/>';
+  if(effect==='double-frame')paths+='<rect class="line quiet" x="38" y="46" width="924" height="908" rx="2"/>';
+  if(motion==='trace')paths+='<rect class="line tracer" x="50" y="60" width="900" height="880" rx="2"/>';
+ }else if(effect==='halo'){
+  paths='<ellipse class="line" cx="500" cy="500" rx="475" ry="465"/><ellipse class="line quiet" cx="500" cy="500" rx="490" ry="485"/>';
+ }else if(effect==='arch'){
+  paths='<path class="line" d="M55 930V230Q55 65 220 65H780Q945 65 945 230V930"/>';
+ }else if(effect==='horizon'){
+  paths='<path class="line" d="M80 870H920"/><path class="line quiet" d="M180 885H820"/>';
+ }else if(effect==='stars'){
+  const points=[[70,120],[220,85],[450,110],[780,90],[925,190],[65,410],[930,620],[120,820],[350,920],[690,890],[850,850],[940,400]];
+  paths=points.map(([x,y],i)=>`<circle class="star" style="--delay:-${i*1.7}s" cx="${x}" cy="${y}" r="${i%3===0?1.8:1}" fill="currentColor"/>`).join('');
+ }else if(effect==='constellation'){
+  paths='<g class="constellation"><path class="line quiet" d="M45 130L160 75L285 135M755 875L860 930L960 860"/><g fill="currentColor"><circle cx="45" cy="130" r="2"/><circle cx="160" cy="75" r="2"/><circle cx="285" cy="135" r="2"/><circle cx="755" cy="875" r="2"/><circle cx="860" cy="930" r="2"/><circle cx="960" cy="860" r="2"/></g></g>';
+ }else if(effect==='waves'){
+  paths=[0,1,2].map(i=>`<path class="line wave" style="--delay:-${i*5}s" d="M-40 ${865+i*27}Q230 ${805+i*27} 500 ${865+i*27}T1040 ${865+i*27}"/>`).join('');
+ }
+ if(!paths)return null;
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.classList.add('screen-decor');svg.setAttribute('viewBox','0 0 1000 1000');svg.setAttribute('preserveAspectRatio','none');svg.setAttribute('aria-hidden','true');
+ svg.innerHTML=`<defs><clipPath id="${id}"><path d="M0 0H1000V1000H0Z M120 230V770H880V230Z" clip-rule="evenodd" fill-rule="evenodd"/></clipPath></defs><g clip-path="url(#${id})">${paths}</g>`;
+ return svg;
+}
+function show(){
+ const view=views[selected],scene=document.createElement('div');scene.className='screen-scene';scene.dataset.screenId=view.id;scene.dataset.effect=view.effect||'plain';scene.dataset.brand=view.brand||'';scene.dataset.motion=view.motion||'none';scene.style.setProperty('--screen-bg',view.background);scene.style.setProperty('--screen-accent',view.accent||'#d2a96e55');
+ scene.style.setProperty('--motion-a',view.brand==='criterion'?'#14518a88':'#2e807866');scene.style.setProperty('--motion-b',view.brand==='criterion'?'#a3d3ff22':'#d2a96e22');
+ if(view.motion){const atmosphere=document.createElement('div');atmosphere.className='screen-atmosphere';atmosphere.setAttribute('aria-hidden','true');scene.append(atmosphere)}
+ const decor=decoration(view.effect,view.motion);if(decor)scene.append(decor);
  if(view.src){const img=new Image();img.alt=view.alt;img.className='screen-logo';img.src=view.src;img.draggable=false;scene.append(img)}
  const prior=canvas.lastElementChild;while(canvas.children.length>1)canvas.firstElementChild.remove();canvas.append(scene);screen.setAttribute('aria-label',view.name+'. Left or right to change. Up or down to switch brand. Back or Escape to exit.');
- if(prior&&!matchMedia('(prefers-reduced-motion: reduce)').matches){scene.animate([{opacity:0},{opacity:1}],{duration:420,easing:'ease-out'}).finished.then(()=>prior.remove()).catch(()=>prior.remove())}else prior?.remove();
+ if(prior&&typeof scene.animate==='function'&&!matchMedia('(prefers-reduced-motion: reduce)').matches){scene.animate([{opacity:0},{opacity:1}],{duration:420,easing:'ease-out'}).finished.then(()=>prior.remove()).catch(()=>prior.remove())}else prior?.remove();
  try{localStorage.setItem('wmc-screen-view-id',view.id)}catch{}
 }
 function change(step){selected=(selected+step+views.length)%views.length;show()}
 async function fullscreen(){try{if(!document.fullscreenElement){if(screen.requestFullscreen)await screen.requestFullscreen();else if(screen.webkitRequestFullscreen)screen.webkitRequestFullscreen()}}catch{}}
 function open(){priorFocus=document.activeElement;screen.hidden=false;player.inert=true;player.setAttribute('aria-hidden','true');document.body.style.overflow='hidden';document.documentElement.style.overflow='hidden';show();screen.focus();fullscreen()}
-async function close(){screen.hidden=true;player.inert=false;player.removeAttribute('aria-hidden');document.body.style.overflow='';document.documentElement.style.overflow='';if(document.fullscreenElement===screen)await document.exitFullscreen().catch(()=>{});priorFocus?.focus()}
+async function close(){screen.hidden=true;canvas.replaceChildren();player.inert=false;player.removeAttribute('aria-hidden');document.body.style.overflow='';document.documentElement.style.overflow='';if(document.fullscreenElement===screen)await document.exitFullscreen().catch(()=>{});priorFocus?.focus()}
 screen.addEventListener('click',()=>change(1));
-document.addEventListener('keydown',e=>{if(screen.hidden)return;if(['ArrowRight','ArrowLeft','Enter',' '].includes(e.key)){e.preventDefault();change(e.key==='ArrowLeft'?-1:1)}else if(['Escape','Backspace','BrowserBack'].includes(e.key)||e.keyCode===10009){e.preventDefault();close()}else if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();const nextBrand=views[selected].brand==='criterion'?'wmc':'criterion';selected=views.findIndex(v=>v.brand===nextBrand);show()}else if(e.key==='Home'||e.key==='End'){e.preventDefault();selected=e.key==='Home'?0:views.length-1;show()}else if(e.key==='Tab'){e.preventDefault();screen.focus()}});
+document.addEventListener('keydown',e=>{if(screen.hidden)return;if(['ArrowRight','ArrowLeft','Enter',' '].includes(e.key)){e.preventDefault();change(e.key==='ArrowLeft'?-1:1)}else if(['Escape','Backspace','BrowserBack'].includes(e.key)||[4,10009].includes(e.keyCode)){e.preventDefault();close()}else if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();const nextBrand=views[selected].brand==='criterion'?'wmc':'criterion';selected=views.findIndex(v=>v.brand===nextBrand);show()}else if(e.key==='Home'||e.key==='End'){e.preventDefault();selected=e.key==='Home'?0:views.length-1;show()}else if(e.key==='Tab'){e.preventDefault();screen.focus()}});
 document.addEventListener('fullscreenchange',()=>{if(document.fullscreenElement===screen)wasFullscreen=true;else if(wasFullscreen&&!screen.hidden){wasFullscreen=false;close()}});
 function install(){const head=player.querySelector('.music-panel-head');if(!head||head.querySelector('.screen-launch'))return;const button=document.createElement('button');button.type='button';button.className='screen-launch';button.title='Full screen: left/right arrows, Enter or tap to change style; up/down switches WMC and Criterion. Back/Escape exits. Your choice is remembered.';button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Screen';button.onclick=open;head.append(button)}
+document.addEventListener('visibilitychange',()=>screen.classList.toggle('motion-paused',document.hidden));
 new MutationObserver(install).observe(player,{childList:true,subtree:true});install();
 </script></body></html>
