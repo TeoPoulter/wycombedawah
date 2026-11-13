@@ -194,6 +194,38 @@ try{musicLibrary={"version":2,"generatedAt":"2026-08-31T13:10:29.281Z","playlist
 @media(prefers-reduced-motion:reduce){#screen-mode .screen-atmosphere,#screen-mode .screen-decor *{animation:none!important}}
 #screen-mode.motion-paused .screen-atmosphere,#screen-mode.motion-paused .screen-decor *{animation-play-state:paused!important}
 </style>
+<style>
+/* Richer motion palette; all sharp artwork retains the protected logo exclusion. */
+#screen-mode .screen-atmosphere{opacity:.85;background:radial-gradient(ellipse at 12% 18%,var(--motion-a),transparent 56%),radial-gradient(ellipse at 88% 82%,var(--motion-b),transparent 56%)}
+#screen-mode .screen-atmosphere:after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 75% 12%,var(--motion-c),transparent 48%);animation:ambient-counterflow 31s ease-in-out infinite alternate}
+#screen-mode .screen-scene[data-motion]:not([data-motion=none]):after{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at center,#00101633,transparent 65%)}
+#screen-mode .screen-scene[data-motion=aurora] .screen-atmosphere{animation-duration:24s}
+#screen-mode .screen-scene[data-motion=drift] .screen-atmosphere{animation-duration:32s}
+#screen-mode .screen-scene[data-motion=silk] .screen-atmosphere{animation-duration:36s}
+#screen-mode .screen-scene[data-motion=orbit] .screen-atmosphere{animation-duration:40s}
+#screen-mode .screen-scene[data-motion=tide] .screen-atmosphere{animation-duration:26s}
+#screen-mode .screen-decor .line{stroke-width:1.35}
+#screen-mode .screen-decor .quiet{opacity:.6}
+#screen-mode .screen-scene[data-motion=trace] .tracer{stroke-width:2.5;opacity:1;stroke-dasharray:180 440;animation-duration:42s}
+#screen-mode .screen-scene[data-motion=ribbons] .screen-atmosphere{background:repeating-linear-gradient(120deg,transparent 0%,transparent 18%,var(--motion-a) 28%,transparent 40%,var(--motion-b) 57%,transparent 72%);animation:ambient-ribbons 28s ease-in-out infinite alternate}
+#screen-mode .screen-scene[data-motion=beams] .screen-atmosphere{background:conic-gradient(from 195deg at 20% 0%,transparent 0deg,var(--motion-a) 18deg,transparent 38deg,var(--motion-c) 53deg,transparent 75deg);animation:ambient-beams 34s ease-in-out infinite alternate}
+#screen-mode .screen-scene[data-motion=mesh] .screen-atmosphere{background:radial-gradient(ellipse at 10% 25%,var(--motion-a),transparent 58%),radial-gradient(ellipse at 90% 30%,var(--motion-c),transparent 60%),radial-gradient(ellipse at 55% 100%,var(--motion-b),transparent 65%);animation:ambient-mesh 30s ease-in-out infinite alternate}
+#screen-mode .screen-scene[data-motion=ripple] .ring{transform-origin:500px 500px;animation:ambient-ripple 18s ease-in-out infinite;animation-delay:var(--delay)}
+#screen-mode .screen-scene[data-motion=embers] .ember{animation:ambient-embers 18s ease-in-out infinite alternate;animation-delay:var(--delay)}
+#screen-mode .screen-scene[data-motion=ripple] .screen-atmosphere,#screen-mode .screen-scene[data-motion=embers] .screen-atmosphere{animation:ambient-drift 30s ease-in-out infinite alternate}
+@keyframes ambient-counterflow{from{transform:translate3d(5%,-4%,0);opacity:.4}to{transform:translate3d(-7%,7%,0);opacity:.9}}
+@keyframes ambient-ribbons{from{transform:translate3d(-9%,-3%,0) rotate(-5deg)}to{transform:translate3d(9%,3%,0) rotate(5deg)}}
+@keyframes ambient-beams{from{transform:rotate(-8deg) scale(1.03);opacity:.55}to{transform:rotate(8deg) scale(1.15);opacity:.95}}
+@keyframes ambient-mesh{from{transform:translate3d(-5%,-4%,0) scale(1)}to{transform:translate3d(5%,4%,0) scale(1.17)}}
+@keyframes ambient-ripple{0%{transform:scale(1);opacity:.15}45%{opacity:.75}100%{transform:scale(1.14);opacity:.05}}
+@keyframes ambient-embers{from{transform:translateY(12px);opacity:.15}to{transform:translateY(-28px);opacity:.85}}
+@keyframes ambient-breathe{from{opacity:.5;transform:scale(1)}to{opacity:.95;transform:scale(1.12)}}
+@keyframes ambient-twinkle{from{opacity:.25}to{opacity:1}}
+@keyframes ambient-float{from{transform:translate(0,-12px);opacity:.45}to{transform:translate(0,12px);opacity:.9}}
+@keyframes ambient-wave{from{transform:translateY(-12px);opacity:.4}to{transform:translateY(12px);opacity:.9}}
+@media(prefers-reduced-motion:reduce){#screen-mode .screen-atmosphere:after{animation:none!important}}
+#screen-mode.motion-paused .screen-atmosphere:after{animation-play-state:paused!important}
+</style>
 <section class="screen-mode" id="screen-mode" role="dialog" aria-label="Ambient screen" aria-modal="true" tabindex="-1" hidden><div class="screen-canvas"></div></section>
 <script type="module">
 const screen=document.querySelector('#screen-mode'),canvas=screen.querySelector('.screen-canvas'),player=document.querySelector('#app');
@@ -248,6 +280,15 @@ const motionTreatments=[
 for(const [list,brand] of [[treatments,'wmc'],[criterionTreatments,'criterion']]){
  for(const motion of motionTreatments)list.push({...motion,background:brand==='wmc'?'radial-gradient(ellipse at center,#153f3c,#071c20 90%)':'radial-gradient(ellipse at center,#09263d,#00101d 90%)',accent:brand==='wmc'?'#d2a96e44':'#a3d3ff44'});
 }
+// Five additional motion families replace five static treatments; 25 choices per brand remain.
+const vividFamilies=[{motion:'ribbons',name:'Luminous Ribbons'},{motion:'ripple',name:'Radiant Ripples',effect:'ripple'},{motion:'beams',name:'Polar Beams'},{motion:'mesh',name:'Colour Mesh'},{motion:'embers',name:'Floating Lights',effect:'embers'}];
+for(const list of [treatments,criterionTreatments]){
+ [1,4,6,11,14].forEach((index,i)=>Object.assign(list[index],vividFamilies[i],{effect:vividFamilies[i].effect||'plain',light:false}));
+ list.forEach((t,i)=>{if(!t.motion)return;const criterion=list===criterionTreatments;
+  const palettes=criterion?[['#087cdbdd','#3abfe3bb','#6657d6aa'],['#14518aee','#16a8baaa','#8ebfff99'],['#1842a8dd','#427fe5cc','#aa7fe0aa']]:[['#009d87cc','#d2a96eaa','#277fba99'],['#10846ddd','#c7a05a99','#3c559caa'],['#2a8b79dd','#d1a96eaa','#8e559c99']];
+  [t.motionA,t.motionB,t.motionC]=palettes[i%palettes.length];t.accent=criterion?'#a3d3ffbb':'#d2a96eaa';
+ });
+}
 const views=screenBrands.flatMap(brand=>(brand.id==='criterion'?criterionTreatments:treatments).map(t=>({...t,id:brand.id+'-'+t.id,name:brand.name+' '+t.name,src:t.light?brand.lightSrc:brand.src,alt:brand.alt,brand:brand.id}))).concat({id:'black',name:'Black screen',background:'#000'});
 for(const src of new Set(views.map(v=>v.src).filter(Boolean))){const img=new Image();img.src=src}
 
@@ -267,9 +308,13 @@ function decoration(effect,motion){
   paths='<path class="line" d="M55 930V230Q55 65 220 65H780Q945 65 945 230V930"/>';
  }else if(effect==='horizon'){
   paths='<path class="line" d="M80 870H920"/><path class="line quiet" d="M180 885H820"/>';
+ }else if(effect==='ripple'){
+  paths=[0,1,2].map(i=>`<ellipse class="line ring" style="--delay:-${i*6}s" cx="500" cy="500" rx="475" ry="465"/>`).join('');
+ }else if(effect==='embers'){
+  paths=Array.from({length:28},(_,i)=>{const x=i%2===0?30+(i*19)%70:900+(i*17)%70,y=60+(i*113)%880;return `<circle class="ember" style="--delay:-${i*.9}s" cx="${x}" cy="${y}" r="${2+i%3}" fill="currentColor"/>`}).join('');
  }else if(effect==='stars'){
   const points=[[70,120],[220,85],[450,110],[780,90],[925,190],[65,410],[930,620],[120,820],[350,920],[690,890],[850,850],[940,400]];
-  paths=points.map(([x,y],i)=>`<circle class="star" style="--delay:-${i*1.7}s" cx="${x}" cy="${y}" r="${i%3===0?1.8:1}" fill="currentColor"/>`).join('');
+  paths=points.map(([x,y],i)=>`<circle class="star" style="--delay:-${i*1.7}s" cx="${x}" cy="${y}" r="${i%3===0?3:1.8}" fill="currentColor"/>`).join('');
  }else if(effect==='constellation'){
   paths='<g class="constellation"><path class="line quiet" d="M45 130L160 75L285 135M755 875L860 930L960 860"/><g fill="currentColor"><circle cx="45" cy="130" r="2"/><circle cx="160" cy="75" r="2"/><circle cx="285" cy="135" r="2"/><circle cx="755" cy="875" r="2"/><circle cx="860" cy="930" r="2"/><circle cx="960" cy="860" r="2"/></g></g>';
  }else if(effect==='waves'){
@@ -282,7 +327,8 @@ function decoration(effect,motion){
 }
 function show(){
  const view=views[selected],scene=document.createElement('div');scene.className='screen-scene';scene.dataset.screenId=view.id;scene.dataset.effect=view.effect||'plain';scene.dataset.brand=view.brand||'';scene.dataset.motion=view.motion||'none';scene.style.setProperty('--screen-bg',view.background);scene.style.setProperty('--screen-accent',view.accent||'#d2a96e55');
- scene.style.setProperty('--motion-a',view.brand==='criterion'?'#14518a88':'#2e807866');scene.style.setProperty('--motion-b',view.brand==='criterion'?'#a3d3ff22':'#d2a96e22');
+ scene.style.setProperty('--motion-a',view.motionA||'#2e807866');scene.style.setProperty('--motion-b',view.motionB||'#d2a96e22');
+ scene.style.setProperty('--motion-c',view.motionC||'#277fba55');
  if(view.motion){const atmosphere=document.createElement('div');atmosphere.className='screen-atmosphere';atmosphere.setAttribute('aria-hidden','true');scene.append(atmosphere)}
  const decor=decoration(view.effect,view.motion);if(decor)scene.append(decor);
  if(view.src){const img=new Image();img.alt=view.alt;img.className='screen-logo';img.src=view.src;img.draggable=false;scene.append(img)}
