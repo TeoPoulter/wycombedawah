@@ -158,23 +158,77 @@ try{musicLibrary={"version":2,"generatedAt":"2026-08-31T13:10:29.281Z","playlist
 </style><style>.playlist-switcher{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.playlist-card.special-playlist{border-color:#9a8ab877;background:linear-gradient(135deg,#51425e55,#1f2430);position:relative}.playlist-card.special-playlist small{color:#c8b9d8}.playlist-card.special-playlist.active{box-shadow:0 0 0 1px #c5b3df66}@media(max-width:700px){.playlist-switcher{grid-template-columns:repeat(3,minmax(0,1fr))}.playlist-card.special-playlist{grid-column:1/-1;grid-template-columns:48px 1fr;text-align:left;justify-items:stretch;align-items:center;padding:12px}}</style></head><body><main id="app" aria-label="WMC Nasheed Archive"><p>Preparing your nasheed archive…</p></main><p id="status" role="status" aria-live="polite"></p><style>
 .screen-launch{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid #ffffff24;border-radius:99px;background:#ffffff09;color:#e5ece9;font:500 13px system-ui;cursor:pointer}.screen-launch svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7}.screen-mode{position:fixed;inset:0;z-index:100000;background:#000;color:#fff;overflow:hidden}.screen-mode[hidden]{display:none}.screen-mode:focus{outline:none}.screen-canvas{position:absolute;inset:0;display:grid;place-items:center;background:#000}.screen-art{width:100%;height:100%;object-fit:contain}.screen-logo{width:min(55vw,700px);height:auto;max-height:65vh;object-fit:contain}.screen-toolbar{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;padding:12px 18px;border-radius:20px;background:#152024ed;border:1px solid #ffffff25;transition:opacity .4s;max-width:94vw;box-sizing:border-box}.screen-toolbar button{background:#ffffff0b;border:1px solid #ffffff20;border-radius:12px;padding:12px;color:#fff;cursor:pointer;font:500 14px system-ui;white-space:nowrap}.screen-toolbar button:focus-visible{outline:3px solid #d2a96e;outline-offset:3px}.screen-meta{min-width:100px;text-align:center;font:500 14px system-ui}.screen-meta small{display:block;font-size:10px;color:#a5b5b6;margin-top:5px}.screen-credit{position:absolute;left:18px;top:18px;font:11px system-ui;color:#c8d4d4;background:#0009;padding:7px;border-radius:6px}.screen-credit a{color:inherit}.screen-mode.sleep{cursor:none}.screen-mode.sleep .screen-toolbar,.screen-mode.sleep .screen-credit{opacity:0;pointer-events:none}.screen-notice{font:12px system-ui;text-align:center;color:#bdcbcb;position:absolute;top:20px;left:20px;right:20px}.screen-notice:empty{display:none}@media(max-width:600px){.screen-toolbar{gap:6px;padding:8px;bottom:15px}.screen-toolbar button{font-size:12px;padding:12px 9px}.screen-meta{min-width:65px;font-size:12px}.screen-logo{width:75vw}}@media(prefers-reduced-motion:reduce){.screen-toolbar{transition:none}}
 </style>
-<section class="screen-mode" id="screen-mode" role="dialog" aria-label="Ambient screen" aria-modal="true" tabindex="-1" hidden><div class="screen-canvas"></div><div class="screen-notice" role="status"></div><div class="screen-credit" hidden>Riyadh · <a href="https://commons.wikimedia.org/wiki/File:Riyadh_Skyline.jpg" target="_blank" rel="noopener">B.alotaby</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></div><div class="screen-toolbar"><button type="button" data-screen-prev aria-label="Previous screen">←</button><div class="screen-meta"><span data-screen-name></span><small>← → to switch</small></div><button type="button" data-screen-next aria-label="Next screen">→</button><button type="button" data-screen-full>Fullscreen</button><button type="button" data-screen-close>Exit screen</button></div></section>
+<style>
+#screen-mode .screen-canvas{display:block;background:#000}
+#screen-mode .screen-scene{position:absolute;inset:0;display:grid;place-items:center;overflow:hidden;background:var(--screen-bg,#000);isolation:isolate}
+#screen-mode .screen-scene:before,#screen-mode .screen-scene:after{content:'';position:absolute;pointer-events:none;z-index:-1}
+#screen-mode .screen-logo{width:min(58vw,1100px);height:auto;max-height:78vh;object-fit:contain;filter:var(--logo-filter,none);position:relative;z-index:1;user-select:none;-webkit-user-drag:none}
+#screen-mode .screen-scene[data-brand=criterion] .screen-logo{width:min(54vw,1500px);max-height:48vh}
+#screen-mode .screen-scene[data-effect=frame]:after{inset:6vh 5vw;border:1px solid var(--screen-accent,#d2a96e66)}
+#screen-mode .screen-scene[data-effect=double-frame]:after{inset:7vh 6vw;border:1px solid var(--screen-accent,#d2a96e66);outline:1px solid #ffffff0d;outline-offset:14px}
+#screen-mode .screen-scene[data-effect=halo]:before{width:55vmin;height:55vmin;border:1px solid var(--screen-accent,#d2a96e33);border-radius:50%;box-shadow:0 0 0 9vmin #ffffff02,0 0 0 18vmin #ffffff01}
+#screen-mode .screen-scene[data-effect=arch]:before{inset:9vh 25vw -15vh;border:1px solid var(--screen-accent,#d2a96e33);border-radius:50% 50% 0 0}
+#screen-mode .screen-scene[data-effect=horizon]:after{left:0;right:0;bottom:14vh;height:1px;background:linear-gradient(90deg,transparent,var(--screen-accent,#d2a96e55),transparent);box-shadow:0 20px 100px 12px #c0a37514}
+#screen-mode .screen-scene[data-effect=corner]:after{inset:6vh 5vw;border:1px solid var(--screen-accent,#d2a96e55);clip-path:polygon(0 0,12% 0,12% 1px,1px 1px,1px 18%,0 18%,0 0,100% 0,100% 18%,calc(100% - 1px) 18%,calc(100% - 1px) 1px,88% 1px,88% 0,100% 0,100% 100%,88% 100%,88% calc(100% - 1px),calc(100% - 1px) calc(100% - 1px),calc(100% - 1px) 82%,100% 82%,100% 100%,0 100%,0 82%,1px 82%,1px calc(100% - 1px),12% calc(100% - 1px),12% 100%,0 100%)}
+@media(max-width:700px){#screen-mode .screen-logo{width:90vw;max-height:85vh}#screen-mode .screen-scene[data-brand=criterion] .screen-logo{width:84vw}}
+</style>
+<section class="screen-mode" id="screen-mode" role="dialog" aria-label="Ambient screen" aria-modal="true" tabindex="-1" hidden><div class="screen-canvas"></div></section>
 <script type="module">
 const screen=document.querySelector('#screen-mode'),canvas=screen.querySelector('.screen-canvas'),player=document.querySelector('#app');
-const views=[{name:'WMC Green',src:'/1/assets/wmc-brand-logo.png',logo:true,theme:'green'},{name:'WMC Glow',src:'/1/assets/wmc-brand-logo.png',logo:true,theme:'glow'},{name:'WMC Frame',src:'/1/assets/wmc-brand-logo.png',logo:true,theme:'frame'},{name:'Makkah Panorama',src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3f/Masjidul-Haram.jpg/3840px-Masjidul-Haram.jpg'},{name:'Kaaba at Night',src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Kaaba_at_night_in_2024.jpg/1920px-Kaaba_at_night_in_2024.jpg'},{name:'Black screen'}];
-let selected=0;try{selected=Math.max(0,Math.min(views.length-1,Number(localStorage.getItem('wmc-screen-view'))||0))}catch{}
-let timer,priorFocus,wasFullscreen=false;
-function wake(){screen.classList.remove('sleep');clearTimeout(timer);timer=setTimeout(()=>screen.classList.add('sleep'),4500)}
-function show(){const view=views[selected];canvas.dataset.theme=view.theme||'photo';canvas.replaceChildren();if(view.src){const img=new Image();img.alt=view.logo?'Wycombe Muslim Collective logo':view.name;img.className=view.logo?'screen-logo':'screen-art';img.src=view.src;img.onerror=()=>{screen.querySelector('.screen-notice').textContent='Image unavailable. Press an arrow to choose another screen.'};canvas.append(img)}screen.querySelector('.screen-notice').textContent='';screen.querySelector('[data-screen-name]').textContent=view.name;screen.querySelector('.screen-credit').hidden=true;try{localStorage.setItem('wmc-screen-view',String(selected))}catch{}wake()}
+// Add supplied brand assets here; every brand receives the same set of screen treatments.
+const screenBrands=[{id:'wmc',name:'WMC',alt:'Wycombe Muslim Collective logo',src:'/1/assets/wmc-brand-logo.png',lightSrc:'/nasheeds/wmc-logo-light.png'},{id:'criterion',name:'Criterion',alt:'Criterion Group logo',src:'/nasheeds/criterion-logo-dark.svg',lightSrc:'/nasheeds/criterion-logo-light.svg'}];
+const treatments=[
+ {id:'green',name:'Green',background:'#123840'},
+ {id:'glow',name:'Glow',background:'radial-gradient(ellipse at center,#225952 0%,#123840 48%,#092b31 100%)'},
+ {id:'frame',name:'Frame',background:'linear-gradient(145deg,#17433e,#123840)',effect:'frame'},
+ {id:'emerald',name:'Emerald Halo',background:'radial-gradient(ellipse at 50% 45%,#1c5142,#071f1b 75%)',effect:'halo',accent:'#c5b27b29'},
+ {id:'midnight',name:'Midnight',background:'radial-gradient(ellipse at top,#172c47,#050b16 78%)'},
+ {id:'navy',name:'Navy Frame',background:'linear-gradient(135deg,#15283c,#09131f)',effect:'double-frame',accent:'#bdc9da40'},
+ {id:'teal',name:'Teal Light',background:'radial-gradient(ellipse at 20% 80%,#155f62,transparent 65%),radial-gradient(ellipse at 90% 10%,#234e47,#071b22 80%)'},
+ {id:'black-gold',name:'Black & Gold',background:'radial-gradient(ellipse at 50% 100%,#302519,#080908 75%)',effect:'horizon',accent:'#c5a26555'},
+ {id:'burgundy',name:'Burgundy',background:'radial-gradient(ellipse at 50% 45%,#4a2937,#1d101b 80%)',effect:'arch',accent:'#d5a5a329'},
+ {id:'plum',name:'Plum Halo',background:'radial-gradient(ellipse at center,#3d334d,#14111f 78%)',effect:'halo',accent:'#b9a4dc29'},
+ {id:'bronze',name:'Bronze',background:'linear-gradient(125deg,#3c3024,#161815 65%,#332a20)',effect:'corner',accent:'#dac39855'},
+ {id:'slate',name:'Silver Slate',background:'radial-gradient(ellipse at top,#414c53,#141c23 80%)',},
+ {id:'pearl',name:'Pearl',background:'radial-gradient(ellipse at top,#f2efe6,#d1d7d0 85%)',light:true,effect:'double-frame',accent:'#253c3c35'},
+ {id:'forest',name:'Forest Arch',background:'linear-gradient(155deg,#263b2a,#0b1914 80%)',effect:'arch',accent:'#b7bd8c33'},
+ {id:'ink',name:'Pure Ink',background:'#080b0d',}
+];
+const criterionTreatments=[
+ {id:'navy',name:'Classic Navy',background:'#00101d'},
+ {id:'glow',name:'Blue Glow',background:'radial-gradient(ellipse at center,#123454,#00101d 75%)'},
+ {id:'frame',name:'Blue Frame',background:'#00101d',effect:'frame',accent:'#a3d3ff55'},
+ {id:'halo',name:'Blue Halo',background:'radial-gradient(ellipse at center,#102b43,#00101d 80%)',effect:'halo',accent:'#a3d3ff33'},
+ {id:'cobalt',name:'Cobalt',background:'linear-gradient(145deg,#14518a,#062842)',accent:'#a3d3ff55'},
+ {id:'double-frame',name:'Double Frame',background:'linear-gradient(130deg,#00101d,#0c2b46)',effect:'double-frame',accent:'#a3d3ff44'},
+ {id:'ice',name:'Ice Blue',background:'radial-gradient(ellipse at top,#ffffff,#a3d3ff)',light:true},
+ {id:'horizon',name:'Blue Horizon',background:'radial-gradient(ellipse at 50% 100%,#14518a,#00101d 75%)',effect:'horizon',accent:'#a3d3ff66'},
+ {id:'arch',name:'Navy Arch',background:'#00101d',effect:'arch',accent:'#a3d3ff33'},
+ {id:'soft-light',name:'Soft Light',background:'radial-gradient(ellipse at 15% 20%,#14518a,transparent 60%),linear-gradient(130deg,#00101d,#0a2438)'},
+ {id:'corners',name:'Corner Frame',background:'#00101d',effect:'corner',accent:'#a3d3ff77'},
+ {id:'slate',name:'Blue Slate',background:'linear-gradient(145deg,#233a4a,#00101d)'},
+ {id:'pearl',name:'Pearl',background:'linear-gradient(135deg,#ffffff,#e8f3fc)',light:true,effect:'double-frame',accent:'#14518a44'},
+ {id:'sky',name:'Sky Halo',background:'#a3d3ff',light:true,effect:'halo',accent:'#14518a33'},
+ {id:'ink',name:'Pure Ink',background:'#00070d'}
+];
+const views=screenBrands.flatMap(brand=>(brand.id==='criterion'?criterionTreatments:treatments).map(t=>({...t,id:brand.id+'-'+t.id,name:brand.name+' '+t.name,src:t.light?brand.lightSrc:brand.src,alt:brand.alt,brand:brand.id}))).concat({id:'black',name:'Black screen',background:'#000'});
+for(const src of new Set(views.map(v=>v.src).filter(Boolean))){const img=new Image();img.src=src}
+
+let selected=0;try{const stored=localStorage.getItem('wmc-screen-view-id');if(stored)selected=Math.max(0,views.findIndex(v=>v.id===stored));else{const legacy=Number(localStorage.getItem('wmc-screen-view'))||0;selected=legacy<3?legacy:legacy===5?views.length-1:0}}catch{}
+let priorFocus,wasFullscreen=false;
+function show(){const view=views[selected],scene=document.createElement('div');scene.className='screen-scene';scene.dataset.effect=view.effect||'plain';scene.dataset.brand=view.brand||'';scene.style.setProperty('--screen-bg',view.background);scene.style.setProperty('--screen-accent',view.accent||'#d2a96e66');scene.style.setProperty('--logo-filter',view.filter||'none');
+ if(view.src){const img=new Image();img.alt=view.alt;img.className='screen-logo';img.src=view.src;img.draggable=false;scene.append(img)}
+ const prior=canvas.lastElementChild;while(canvas.children.length>1)canvas.firstElementChild.remove();canvas.append(scene);screen.setAttribute('aria-label',view.name+'. Left or right to change. Up or down to switch brand. Back or Escape to exit.');
+ if(prior&&!matchMedia('(prefers-reduced-motion: reduce)').matches){scene.animate([{opacity:0},{opacity:1}],{duration:420,easing:'ease-out'}).finished.then(()=>prior.remove()).catch(()=>prior.remove())}else prior?.remove();
+ try{localStorage.setItem('wmc-screen-view-id',view.id)}catch{}
+}
 function change(step){selected=(selected+step+views.length)%views.length;show()}
-async function fullscreen(){try{if(!document.fullscreenElement){if(screen.requestFullscreen)await screen.requestFullscreen();else if(screen.webkitRequestFullscreen)screen.webkitRequestFullscreen();else throw Error()}}catch{screen.querySelector('.screen-notice').textContent='Screen mode is active. For edge-to-edge display, use your browser fullscreen option.';setTimeout(()=>{screen.querySelector('.screen-notice').textContent=''},6000)}}
+async function fullscreen(){try{if(!document.fullscreenElement){if(screen.requestFullscreen)await screen.requestFullscreen();else if(screen.webkitRequestFullscreen)screen.webkitRequestFullscreen()}}catch{}}
 function open(){priorFocus=document.activeElement;screen.hidden=false;player.inert=true;player.setAttribute('aria-hidden','true');document.body.style.overflow='hidden';document.documentElement.style.overflow='hidden';show();screen.focus();fullscreen()}
-async function close(){clearTimeout(timer);screen.hidden=true;player.inert=false;player.removeAttribute('aria-hidden');document.body.style.overflow='';document.documentElement.style.overflow='';if(document.fullscreenElement===screen)await document.exitFullscreen().catch(()=>{});priorFocus?.focus()}
-screen.querySelector('[data-screen-prev]').onclick=()=>change(-1);screen.querySelector('[data-screen-next]').onclick=()=>change(1);screen.querySelector('[data-screen-close]').onclick=close;screen.querySelector('[data-screen-full]').onclick=fullscreen;
-for(const event of ['pointermove','pointerdown','touchstart','focusin'])screen.addEventListener(event,wake,{passive:true});
-screen.addEventListener('click',e=>{if(e.target===canvas||e.target.closest('.screen-art,.screen-logo'))change(1)});
-document.addEventListener('keydown',e=>{if(screen.hidden)return;wake();if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();change(e.key==='ArrowRight'?1:-1)}else if(['Escape','Backspace','BrowserBack'].includes(e.key)||e.keyCode===10009){e.preventDefault();close()}else if(e.key==='Tab'){const b=[...screen.querySelectorAll('button')];if(e.shiftKey&&document.activeElement===b[0]){e.preventDefault();b.at(-1).focus()}else if(!e.shiftKey&&document.activeElement===b.at(-1)){e.preventDefault();b[0].focus()}}else if(e.key==='Enter'&&document.activeElement===screen){e.preventDefault();change(1)}});
+async function close(){screen.hidden=true;player.inert=false;player.removeAttribute('aria-hidden');document.body.style.overflow='';document.documentElement.style.overflow='';if(document.fullscreenElement===screen)await document.exitFullscreen().catch(()=>{});priorFocus?.focus()}
+screen.addEventListener('click',()=>change(1));
+document.addEventListener('keydown',e=>{if(screen.hidden)return;if(['ArrowRight','ArrowLeft','Enter',' '].includes(e.key)){e.preventDefault();change(e.key==='ArrowLeft'?-1:1)}else if(['Escape','Backspace','BrowserBack'].includes(e.key)||e.keyCode===10009){e.preventDefault();close()}else if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();const nextBrand=views[selected].brand==='criterion'?'wmc':'criterion';selected=views.findIndex(v=>v.brand===nextBrand);show()}else if(e.key==='Home'||e.key==='End'){e.preventDefault();selected=e.key==='Home'?0:views.length-1;show()}else if(e.key==='Tab'){e.preventDefault();screen.focus()}});
 document.addEventListener('fullscreenchange',()=>{if(document.fullscreenElement===screen)wasFullscreen=true;else if(wasFullscreen&&!screen.hidden){wasFullscreen=false;close()}});
-function install(){const head=player.querySelector('.music-panel-head');if(!head||head.querySelector('.screen-launch'))return;const button=document.createElement('button');button.type='button';button.className='screen-launch';button.title='Full screen: left/right arrows or tap to switch views. Back/Escape exits.';button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Screen';button.onclick=open;head.append(button)}
+function install(){const head=player.querySelector('.music-panel-head');if(!head||head.querySelector('.screen-launch'))return;const button=document.createElement('button');button.type='button';button.className='screen-launch';button.title='Full screen: left/right arrows, Enter or tap to change style; up/down switches WMC and Criterion. Back/Escape exits. Your choice is remembered.';button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Screen';button.onclick=open;head.append(button)}
 new MutationObserver(install).observe(player,{childList:true,subtree:true});install();
 </script></body></html>
