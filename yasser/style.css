@@ -101,3 +101,19 @@ input[type=range]:active::-moz-range-thumb{transform:scale(1.18);box-shadow:0 0 
 @media(max-height:650px){#recording-heading{font-size:16px}#recording-detail{display:none}.now:has(#recording-heading:not(:empty)) h2{font-size:14px}#library-dialog{max-height:94dvh;padding:14px}#library-title{font-size:24px;margin-bottom:8px}.library-footer{padding-top:4px}.library-head,.library-tabs{flex-shrink:0}}
 #favourite-recording{width:44px;min-width:44px;justify-content:center;border-radius:50%;border:1px solid var(--line);padding:0;color:var(--muted)}#favourite-recording svg{width:20px;height:20px;transition:fill .2s,color .2s,transform .25s var(--ease-settle)}#favourite-recording[aria-pressed=true]{color:var(--amber);border-color:#ed8c4455;background:#ed8c440d}#favourite-recording[aria-pressed=true] svg{fill:currentColor;transform:scale(1.04)}.history-actions .row-favourite{color:var(--amber)}
 @media(max-width:400px){.player-bottom{gap:4px}#remove-recording{font-size:0;min-width:54px}#remove-recording:after{content:'Remove';font-size:10px}#repeat{padding:0 9px}.library-tabs{gap:4px}.library-tabs button{padding:0 14px}}
+
+/* Full recording download: keep the lower controls compact and touch-friendly. */
+#download-recording{width:44px;min-width:44px;justify-content:center;padding:0;border:1px solid var(--line);border-radius:50%;color:var(--muted)}
+#download-recording:hover:not(:disabled){color:var(--aqua);border-color:#6ec1d655;background:#6ec1d610}
+#download-recording.download-unavailable{color:#778398}
+#download-recording[aria-busy=true] svg{animation:download-pulse 1s ease-in-out infinite alternate}
+#download-status{font-size:11px;line-height:1.4;color:var(--muted);text-align:center;margin:4px 0 0;overflow-wrap:anywhere}
+#download-status:empty{display:none}
+.player-bottom{flex-wrap:wrap;height:auto;min-height:44px}
+@keyframes download-pulse{to{opacity:.35}}
+@media(max-width:600px){#repeat span{display:none}#repeat{width:44px;min-width:44px;justify-content:center;padding:0}.player-bottom{flex-wrap:nowrap}}
+@media(prefers-reduced-motion:reduce){#download-recording[aria-busy=true] svg{animation:none}}
+
+.player-bottom:has(#remove-recording:not([hidden])) #repeat span{display:none}
+.player-bottom:has(#remove-recording:not([hidden])) #repeat{width:44px;min-width:44px;justify-content:center;padding:0}
+#watch{min-width:44px}

@@ -1,3 +1,4 @@
+import {createDownloadControl} from './download.mjs?v=20261118';
 import {createLibrary} from './curation.mjs?v=20261026-cloud-v13';
 import {applyExclusions,recordingHeading,recordingDetail} from './listening-log.mjs?v=20261026-cloud-v13';
 import {embedUrl,watchUrl,playbackError} from './embed.mjs?v=20261026-cloud-v13';
@@ -10,6 +11,7 @@ let rawCatalog,library,excludedIds=new Set();
 let data,queue,player,provider,selected,ready=false,playing=false,apiPromise,failures=0,generation=0,loadTimer;
 let clock=0,clockAt=performance.now(),length=0,lastSample=0,dragging=false,waitingToResume=false;
 let view='chooser',mode='juz',playbackAjza=[],storageReady=false,userActivity=0;
+const download=createDownloadControl({button:$('download-recording'),message:$('download-status'),getRecording:()=>data?.videos[selected]});
 const time=n=>`${Math.floor((n||0)/60)}:${String(Math.floor((n||0)%60)).padStart(2,'0')}`;
 const icon=name=>`<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-${name}"/></svg>`;
 const status=message=>$('status').textContent=message;
@@ -69,6 +71,7 @@ function api(){
  }).catch(error=>{apiPromise=null;throw error});return apiPromise;
 }
 function controls(){
+ download.update();
  const enabled=ready&&Boolean(selected);
  for(const id of ['play','back','forward','next'])$(id).disabled=!enabled;
  $('previous').disabled=!enabled||queue.index<=0;$('seek').disabled=!enabled;
@@ -177,6 +180,7 @@ for(const [id,delta] of [['back',-10],['forward',10]])$(id).onclick=()=>seekTo((
 document.addEventListener('keydown',event=>{
  if($('library-dialog')?.open||event.defaultPrevented||introOpen||!ready||!selected||view!=='player'||event.altKey||event.ctrlKey||event.metaKey||event.shiftKey)return;
  if(event.target.closest('input:not([type="range"]),textarea,select,[contenteditable]:not([contenteditable="false"])'))return;
+ if(event.key===' '&&event.target.closest('#download-recording'))return;
  if(![' ','ArrowRight','ArrowLeft'].includes(event.key))return;
  event.preventDefault();if(event.repeat)return;
  if(event.key===' ')$('play').click();else $(event.key==='ArrowRight'?'forward':'back').click();
