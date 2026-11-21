@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+<defs><linearGradient id="bg" x2="1" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="#421909"/><stop offset="1" stop-color="#120908"/></linearGradient></defs>
+<rect width="600" height="400" rx="25" fill="url(#bg)"/>
+<path d="M355 400 555 0m-130 400L600 50M495 400 600 190" stroke="#ff9b52" stroke-opacity=".22" stroke-width="2"/>
+<text x="55" y="148" font-family="system-ui,sans-serif" font-size="30" font-weight="700" letter-spacing="8" fill="#ffac6e">WMC</text>
+<text x="50" y="270" font-family="system-ui,sans-serif" font-size="116" font-weight="800" fill="#fff2e5">GYM</text>
+</svg>
