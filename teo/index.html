@@ -8,24 +8,31 @@
 <link rel="icon" href="/wycombe-mark.png">
 <title>Teo | Wycombe Da’wah</title>
 <style>
-:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#1b141a;color:#fff3e8}
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#151016;color:#fff1e5}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at top left,#3c2438,transparent 58%)}
-main{width:min(920px,calc(100% - 36px));margin:auto;padding:clamp(36px,8vw,86px) 0}
-.brand{display:inline-flex;align-items:center;gap:12px;color:#e8c7dd;text-decoration:none;font-weight:650}
-.brand img{width:44px;height:auto}
-h1{font:500 clamp(56px,11vw,104px)/1 Georgia,serif;letter-spacing:-.075em;margin:23px 0 10px}
-header p{color:#dfcbd9;margin:0 0 36px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
-section{background:#241a23;border:1px solid #583c51;border-radius:18px;padding:20px}
-h2{font-size:1.12rem;margin:0 0 12px}
+body{margin:0}
+main{width:min(1120px,calc(100% - 40px));margin:auto;padding:clamp(24px,5vw,64px) 0 56px}
+header{position:relative;isolation:isolate;overflow:hidden;padding:clamp(26px,6vw,72px);border:1px solid #755369;border-radius:28px;background:radial-gradient(ellipse at 85% 35%,#663c58,transparent 63%),linear-gradient(135deg,#301f2e,#211922)}
+header::after{content:"";position:absolute;z-index:-1;right:-5%;top:-55%;width:55%;aspect-ratio:1;border-radius:50%;border:1px solid #ffddad36;box-shadow:0 0 0 28px #ffddad0b,0 0 0 58px #ffddad09,0 0 0 90px #ffddad06}
+.brand{display:inline-flex;align-items:center;gap:12px;color:#f0d1e4;text-decoration:none;font-size:.85rem;font-weight:650}
+.brand img{width:38px;height:auto}
+h1{font:500 clamp(72px,14vw,152px)/.93 Georgia,serif;letter-spacing:-.085em;margin:24px 0 14px}
+header p{color:#f0d9e6;margin:0;font-size:1rem}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:20px}
+section{--accent:#edb8ce;background:#211923;border:1px solid #513949;border-radius:20px;padding:clamp(17px,3vw,30px);min-width:0}
+section:nth-child(2){--accent:#b7dbc8}
+section:nth-child(3){--accent:#ecc693}
+section:nth-child(4){--accent:#c9c1f0}
+h2{display:flex;gap:12px;align-items:center;font:500 clamp(21px,3vw,29px)/1.2 Georgia,serif;margin:0 0 17px;color:var(--accent)}
+h2::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none}
 ul{list-style:none;margin:0;padding:0}
-li+li{border-top:1px solid #493245}
-li a{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:46px;padding:8px 9px;color:#f3dfe9;text-decoration:none;border-radius:7px}
-li a span{color:#dda9cc}
-li a:hover{background:#3b2839}
+li+li{border-top:1px solid #ffffff14}
+li a{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:48px;padding:9px 10px;color:#f4e5ed;text-decoration:none;border-radius:8px;font-size:.95rem;transition:background .18s,color .18s}
+li a span{color:var(--accent);flex:none}
+li a:hover{background:#ffffff0d;color:white}
 a:focus-visible{outline:2px solid #f6bfdc;outline-offset:2px}
-@media(max-width:620px){.grid{grid-template-columns:1fr}}
+@media(max-width:680px){.grid{grid-template-columns:1fr;gap:12px}main{width:calc(100% - 28px)}header{border-radius:21px}}
+@media(prefers-reduced-motion:reduce){li a{transition:none}}
 </style>
 </head>
 <body><main>
